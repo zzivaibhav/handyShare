@@ -1,7 +1,6 @@
 package com.g02.handyShare.User.Entity;
 
 
-import com.fasterxml.jackson.databind.DatabindException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,13 +15,15 @@ import lombok.ToString;
 @AllArgsConstructor
 @Data
 @ToString
-public class UserEntity {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String name;
     private String email;
     private String password;
+
     //variables for storing image data.
     private String imageType;
     private String imageName;
