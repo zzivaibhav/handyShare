@@ -4,6 +4,8 @@ import com.g02.handyShare.Category.DTO.SubCategoryDTO;
 import com.g02.handyShare.Category.Repository.CategoryRepository;
 import com.g02.handyShare.Category.Model.Category;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -75,16 +77,35 @@ public class CategoryController {
 
     // Update a Category
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable(value = "id") Long categoryId,
-                                                   @RequestBody Category categoryDetails) {
+    public ResponseEntity<?> updateCategory(@PathVariable(value = "id") Long categoryId,
+                                            @RequestBody Category categoryDetails) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        category.setName(categoryDetails.getName());
-        category.setDescription(categoryDetails.getDescription());
-        category.setIsActive(categoryDetails.getIsActive());
-        category.setParentCategory(categoryDetails.getParentCategory());
-        category.setSortOrder(categoryDetails.getSortOrder());
+        // Update name only if provided and if it's different from the current name
+        if (categoryDetails.getName() != null && !categoryDetails.getName().equals(category.getName())) {
+            // Check if the new name is unique
+            if (categoryRepository.existsByName(categoryDetails.getName())) {
+                return ResponseEntity.badRequest().body("Category name already exists");
+            }
+            category.setName(categoryDetails.getName());
+        }
+
+        // Update description only if provided
+        if (categoryDetails.getDescription() != null) {
+            category.setDescription(categoryDetails.getDescription());
+        }
+
+        // Update other fields as necessary
+        if (categoryDetails.getIsActive() != null) {
+            category.setIsActive(categoryDetails.getIsActive());
+        }
+        if (categoryDetails.getParentCategory() != null) {
+            category.setParentCategory(categoryDetails.getParentCategory());
+        }
+        if (categoryDetails.getSortOrder() != null) {
+            category.setSortOrder(categoryDetails.getSortOrder());
+        }
 
         final Category updatedCategory = categoryRepository.save(category);
         return ResponseEntity.ok(updatedCategory);
@@ -112,7 +133,6 @@ public class CategoryController {
                 .toList();
     }
 
-    // Helper method to get subcategories as SubCategoryDTO
     private List<SubCategoryDTO> getSubCategoryDTOs(Long parentId, List<Category> allCategories) {
         // Filter for subcategories and map them to SubCategoryDTO
         return allCategories.stream()
@@ -121,6 +141,5 @@ public class CategoryController {
                 .map(subCategory -> new SubCategoryDTO(subCategory.getCategoryId(), subCategory.getName()))
                 .toList();
     }
-
 
 }
