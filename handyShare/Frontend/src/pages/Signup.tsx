@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { InputField } from "../components/Input-field.tsx";
 import { Button } from '../components/Button.tsx';
 
 export default function Signup() {
+  const navigate = useNavigate(); // Initialize useNavigate
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -14,6 +16,11 @@ export default function Signup() {
 
   const handleGoogleSignup = () => {
     // Handle Google signup logic here
+  };
+
+  // Function to navigate to the login page
+  const goToLogin = () => {
+    navigate('/login'); // Navigate to the login page
   };
 
   return (
@@ -118,12 +125,12 @@ export default function Signup() {
 
           <p className="mt-6 text-sm text-left text-[#4f4f4f]">
             Already have an account?{' '}
-            <a
-              href="/login"
-              className="font-medium text-[#333333] hover:underline"
+            <span
+              onClick={goToLogin} // Use the goToLogin function
+              className="font-medium text-[#333333] hover:underline cursor-pointer"
             >
               Log in here
-            </a>
+            </span>
           </p>
         </div>
       </div>
