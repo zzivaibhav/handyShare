@@ -1,5 +1,6 @@
 package com.g02.handyShare.Category.Model;
 
+import com.g02.handyShare.Category.DTO.SubCategoryDTO;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -34,8 +35,12 @@ public class Category {
     @JoinColumn(name = "parent_category_id", referencedColumnName = "categoryId")
     private Category parentCategory;
 
+//    @Transient  // This annotation indicates that the field should not be persisted in the database
+//    private List<Category> subCategories;
+
     @Transient  // This annotation indicates that the field should not be persisted in the database
-    private List<Category> subCategories;
+    private List<SubCategoryDTO> subCategories;
+
 
     // Constructors, Getters, Setters
 
@@ -53,11 +58,11 @@ public class Category {
     }
 
     // Getters and setters for subcategories
-    public List<Category> getSubCategories() {
+    public List<SubCategoryDTO> getSubCategories() {
         return subCategories;
     }
 
-    public void setSubCategories(List<Category> subCategories) {
+    public void setSubCategories(List<SubCategoryDTO> subCategories) {
         this.subCategories = subCategories;
     }
 

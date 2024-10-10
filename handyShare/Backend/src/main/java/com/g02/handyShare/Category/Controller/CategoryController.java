@@ -1,8 +1,8 @@
 package com.g02.handyShare.Category.Controller;
 
+import com.g02.handyShare.Category.DTO.SubCategoryDTO;
 import com.g02.handyShare.Category.Repository.CategoryRepository;
 import com.g02.handyShare.Category.Model.Category;
-import com.g02.handyShare.Category.Repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +53,17 @@ public class CategoryController {
     public ResponseEntity<Category> getCategoryById(@PathVariable(value = "id") Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        // Find subcategories and map them to SubCategoryDTO
+        List<Category> allCategories = categoryRepository.findAll();
+        List<SubCategoryDTO> subCategoryDTOs = allCategories.stream()
+                .filter(subCategory -> subCategory.getParentCategory() != null &&
+                        subCategory.getParentCategory().getCategoryId().equals(categoryId))
+                .map(subCategory -> new SubCategoryDTO(subCategory.getCategoryId(), subCategory.getName()))
+                .toList();
+
+        category.setSubCategories(subCategoryDTOs);
+
         return ResponseEntity.ok().body(category);
     }
 
@@ -93,16 +104,23 @@ public class CategoryController {
     @GetMapping("/tree")
     public List<Category> getCategoryTree() {
         List<Category> allCategories = categoryRepository.findAll();
+
+        // Filter for parent categories and populate their subCategories as SubCategoryDTO
         return allCategories.stream()
                 .filter(category -> category.getParentCategory() == null)  // Only parent categories
-                .peek(parent -> parent.setSubCategories(getSubCategories(parent.getCategoryId(), allCategories)))
+                .peek(parent -> parent.setSubCategories(getSubCategoryDTOs(parent.getCategoryId(), allCategories)))
                 .toList();
     }
 
-    private List<Category> getSubCategories(Long parentId, List<Category> allCategories) {
+    // Helper method to get subcategories as SubCategoryDTO
+    private List<SubCategoryDTO> getSubCategoryDTOs(Long parentId, List<Category> allCategories) {
+        // Filter for subcategories and map them to SubCategoryDTO
         return allCategories.stream()
-                .filter(category -> category.getParentCategory() != null && category.getParentCategory().getCategoryId().equals(parentId))
+                .filter(category -> category.getParentCategory() != null &&
+                        category.getParentCategory().getCategoryId().equals(parentId))
+                .map(subCategory -> new SubCategoryDTO(subCategory.getCategoryId(), subCategory.getName()))
                 .toList();
     }
+
 
 }
