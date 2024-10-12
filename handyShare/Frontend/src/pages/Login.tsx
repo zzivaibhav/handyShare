@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { InputField } from "../components/Input-field.tsx";
 import { Button } from '../components/Button.tsx';
+import { Link } from 'react-router-dom';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -60,6 +61,11 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <div className="text-right">
+              <Link to="/forgot-password" className="text-sm text-[#0295db] hover:underline">
+                Forgot Password?
+              </Link>
+            </div>
 
             <Button type="submit" className="w-full bg-[#333333] text-white py-3 rounded-lg">
               Log In
