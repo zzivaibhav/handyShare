@@ -1,4 +1,4 @@
-package com.g02.handyShare.Category.Model;
+package com.g02.handyShare.Category.Entity;
 
 import com.g02.handyShare.Category.DTO.SubCategoryDTO;
 import jakarta.persistence.*;
