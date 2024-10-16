@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
-import { SERVER_URL } from '../../constants';
+import {  SERVER_URL_CATEGORIES } from '../../constants';
 import { Button } from 'antd';
 
 export default function CategoriesNavigation({ onCategorySelect }) { // Accept the prop
@@ -8,7 +8,7 @@ export default function CategoriesNavigation({ onCategorySelect }) { // Accept t
 
     useEffect(() => {
         const fetchCategories = async () => {
-            const response = await axios.get(SERVER_URL + "/allCategories");
+            const response = await axios.get(SERVER_URL_CATEGORIES + "/allCategories");
             setCategories(response.data);
             console.log(response.data); // Log the response data
         };

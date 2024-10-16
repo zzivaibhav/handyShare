@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { InputField } from "../components/Input-field.tsx";
-import { Button } from '../components/Button.tsx';
+import InputField from "../components/Input-field.js";
+import  Button from '../components/Button.js';
 import { Link } from "react-router-dom";
 
 export default function ForgotPassword() {

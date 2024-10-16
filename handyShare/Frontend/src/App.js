@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom'; 
-import Signup from './pages/Signup.tsx'; 
-import Login from './pages/Login.tsx';
+import Signup from './pages/Signup.js'; 
+import Login from './pages/Login.js';
 import ForgotPassword from './pages/ForgotPassword.tsx';
 import HomeScreen from './pages/HomeScreen.js';
 
