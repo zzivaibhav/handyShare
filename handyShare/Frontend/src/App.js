@@ -7,14 +7,14 @@ import HomeScreen from './pages/HomeScreen.js';
 
 function App() {
   return (
-<HomeScreen/>
-    // <Routes>
-    //   <Route path="/" element={<Signup />} /> {/* Add a route for the root path */}
-    //   <Route path="/signup" element={<Signup />} />
-    //   <Route path="/login" element={<Login />} />
-    //   <Route path="/forgot-password" element={<ForgotPassword />} />
-    //   <Route path = "/home-page" element={HomeScreen}/>
-    // </Routes>
+
+    <Routes>
+      <Route path="/" element={<Signup />} /> {/* Add a route for the root path */}
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path = "/homepage" element={<HomeScreen/>}/>
+    </Routes>
   );
 }
 

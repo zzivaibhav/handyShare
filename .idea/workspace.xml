@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fe97f115-cee4-445b-aa02-b1601066c32c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/User/Entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/User/Entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handyShare/Frontend/Dummy_File.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handyShare/Frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handyShare/Frontend/src/components/Homepage/CategoriesNavigation.js" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Frontend/src/components/Homepage/CategoriesNavigation.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handyShare/Frontend/src/components/Homepage/HeaderBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Frontend/src/components/Homepage/HeaderBar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handyShare/Frontend/src/pages/HomeScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Frontend/src/pages/HomeScreen.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,31 +40,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Spring Boot.HandyShareApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feat/user-profile&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Project/course-project-g02&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.HandyShareApplication.executor": "Run",
+    "git-widget-placeholder": "feat/home-page-frontend",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/Project/course-project-g02",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.0",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="HandyShareApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
@@ -102,6 +105,7 @@
       <workItem from="1728314200280" duration="28000" />
       <workItem from="1728314238497" duration="54000" />
       <workItem from="1728349094875" duration="23000" />
+      <workItem from="1729006616596" duration="744000" />
     </task>
     <servers />
   </component>

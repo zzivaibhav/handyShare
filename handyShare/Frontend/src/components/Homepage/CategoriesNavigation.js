@@ -8,7 +8,7 @@ export default function CategoriesNavigation({ onCategorySelect }) { // Accept t
 
     useEffect(() => {
         const fetchCategories = async () => {
-            const response = await axios.get(SERVER_URL + "/categories");
+            const response = await axios.get(SERVER_URL + "/allCategories");
             setCategories(response.data);
             console.log(response.data); // Log the response data
         };
@@ -18,11 +18,10 @@ export default function CategoriesNavigation({ onCategorySelect }) { // Accept t
     return (
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', alignItems: 'center' }}>
             {categories.map((category, index) => (
-                <div key={index} style={{ paddingBottom: '5%' }}>
+                <div key={index} style={{ paddingBottom: '5%' , width:'90%'}}>
                     <Button 
                         style={{ width: '100%', height: '77px' }} 
-                        color="primary" 
-                        variant="solid"
+                       color="primary" variant="outlined"
                         onClick={() => onCategorySelect(category.name)} // Call the prop function
                     >
                         {category.name}
