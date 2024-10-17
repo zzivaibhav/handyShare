@@ -16,7 +16,9 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
+
 @CrossOrigin(origins = "*")
+
 public class CategoryController {
 
   @Autowired
@@ -54,7 +56,8 @@ public class CategoryController {
         return ResponseEntity.ok().body(category.get());
     }
 
-    @GetMapping("/all/allCategories")
+
+    @GetMapping("all/allCategories")
     public List<Category> getAllCategories() {
         return categoryService.getAllCategories();
     }
