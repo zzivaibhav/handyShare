@@ -31,9 +31,9 @@ const HomeScreen = () => {
           zIndex: 1000, // Ensures the header stays on top
           display: 'flex',
           alignItems: 'center',
-          background: '#fff',
+          background: '#3B7BF8',
           justifyContent: 'center',
-          height: `${headerHeight}px`, // Set the height of the header
+          height: '10%', // Set the height of the header
           width: '100%',
         }}
       >
@@ -41,7 +41,7 @@ const HomeScreen = () => {
       </Header>
 
       {/* Main Content Area */}
-      <Content style={{ paddingTop: `${headerHeight}px` }}> {/* Adds padding to avoid overlapping */}
+      <Content > {/* Adds padding to avoid overlapping */}
         <Layout
           style={{
             padding: '24px 48px', // Adjust padding based on your needs
@@ -57,7 +57,8 @@ const HomeScreen = () => {
             style={{
               background: 'white',
               height: '100vh', // Full height for Sider
-              overflowY: 'auto', // Enable scrolling in the sidebar
+              overflowY:'auto', // Enable scrolling in the sidebar
+              scrollbarWidth:'none',
               position: 'sticky', // Keeps it sticky when scrolling
               top: 0,
             }}
