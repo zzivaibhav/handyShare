@@ -25,7 +25,7 @@ public class UserController {
     @Autowired
     UserRepository repo;
 
-    @PostMapping("all/register")
+    @PostMapping("/all/register")
     public ResponseEntity<String> registerUser(@Valid @RequestBody User user) {
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             return ResponseEntity.badRequest().body("Email is required");
