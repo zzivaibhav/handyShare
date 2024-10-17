@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/api/v1/trending")
+@RequestMapping("/api/v1")
 @CrossOrigin("*")
 public class TrendingController {
 
@@ -17,7 +17,7 @@ public class TrendingController {
     TrendingService service;
 
 
-    @GetMapping("/getTrendingByCategory")
+    @GetMapping("all/getTrendingByCategory")
     public ResponseEntity<?> getTrendingByCategory(@RequestParam String category) {
         return ResponseEntity.ok().body(service.fetchTrendingsByCategory(category));
     }
