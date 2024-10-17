@@ -10,7 +10,7 @@ function ContentHomeScreen({ category }) {
   useEffect(() => {
     const fetchTrending = async () => {
       try {
-        const response = await axios.get(SERVER_URL_TRENDING + `/getTrendingByCategory?category=${category}`);
+        const response = await axios.get(SERVER_URL_TRENDING + `/all/getTrendingByCategory?category=${category}`);
         setTrending(response.data.body);
       } catch (error) {
         console.log("Error while loading trending topics", error);
