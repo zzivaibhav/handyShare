@@ -19,23 +19,37 @@ public class ProductService {
         return productRepository.saveAll(products);
     }
 
-    // Update product entries
-    public Product updateProduct(Long id, Product updatedProduct) {
-        return productRepository.findById(id)
-                .map(existingProduct -> {
-                    // Update fields
-                    existingProduct.setName(updatedProduct.getName());
-                    existingProduct.setDescription(updatedProduct.getDescription());
-                    existingProduct.setCategory(updatedProduct.getCategory());
-                    existingProduct.setRentalPrice(updatedProduct.getRentalPrice());
-                    existingProduct.setAvailable(updatedProduct.getAvailable());
-                    return productRepository.save(existingProduct);
-                })
-                .orElseThrow(() -> new RuntimeException("Product not found with id " + id));
+    //update product entries
+    public Product updateProduct(Long id, Product updatedProduct){
+        Optional<Product> existingProductOptional=productRepository.findById(id);
+
+        if (existingProductOptional.isPresent()){
+            Product existingProduct=existingProductOptional.get();
+            //update fields
+            existingProduct.setName(updatedProduct.getName());
+            existingProduct.setDescription(updatedProduct.getDescription());
+            existingProduct.setCategory(updatedProduct.getCategory());
+            existingProduct.setRentalPrice(updatedProduct.getRentalPrice());
+            existingProduct.setAvailable(updatedProduct.getAvailable());
+
+            return productRepository.save(existingProduct);
+        }else{
+            throw new CustomException("Product not found with id: "+ id);
+        }
     }
 
-    // Delete product
-    public void deleteProduct(Long productId) {
-        productRepository.deleteById(productId);
+    public Product getProductById(Long id){
+        return productRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Product not Found!"));
+    }
+
+    //delete product
+    public boolean deleteProduct(Long productId){
+        if(productRepository.existsById(productId)){
+            productRepository.deleteById(productId);
+            return true;
+        }else {
+            return false;
+        }
     }
 }
