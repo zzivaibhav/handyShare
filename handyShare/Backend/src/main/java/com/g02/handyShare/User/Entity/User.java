@@ -36,6 +36,10 @@ public class User {
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 
+    private String role;
+
+    private boolean is_email_verified; // Field to check if email is verified
+    private String verificationToken;
     //variables for storing image data.
     private String imageType;
     private String imageName;
