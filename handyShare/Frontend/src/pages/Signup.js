@@ -1,56 +1,76 @@
-import { Button } from 'antd';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import InputField from '../components/Input-field.js';
-import CustomButton from '../components/Button.js';
-// Adjust the import path if necessary
+import InputField from "../components/Input-field.js";
+import Button from '../components/Button.js';
+import { Link, useNavigate } from 'react-router-dom';
 
-export default function Signup() {
-  const navigate = useNavigate(); // Initialize useNavigate
+export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [error, setError] = useState(null); // To handle login errors
+  const navigate = useNavigate(); // To redirect after login
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle signup logic here
+
+    // Prepare login data
+    const loginData = new URLSearchParams({
+      'email': email,
+      'password': password,
+    });
+
+    try {
+      const response = await fetch('http://localhost:8080/api/v1/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',  // Use this for form login
+        },
+        body: loginData,
+        credentials: 'include', // Ensures cookies are sent for session-based auth
+      });
+
+      if (response.ok) {
+        // On successful login
+        console.log('Login successful');
+        navigate('/dashboard'); // Redirect to the dashboard after successful login
+      } else {
+        // Handle login error
+        const errorMsg = await response.text();
+        setError('Login failed. Please check your email and password.');
+      }
+    } catch (error) {
+      setError('An error occurred during login. Please try again.');
+    }
   };
 
-  const handleGoogleSignup = () => {
-    // Handle Google signup logic here
-  };
-
-  // Function to navigate to the login page
-  const goToLogin = () => {
-    navigate('/login'); // Navigate to the login page
+  const handleGoogleLogin = () => {
+    // Handle Google login logic here
   };
 
   return (
     <div
       className="min-h-screen flex items-center justify-center"
       style={{
-        backgroundColor: '#f2f2f2', // Light grey background
+        backgroundColor: '#f2f2f2',
       }}
     >
       <div className="flex w-full max-w-6xl bg-white rounded-lg shadow-2xl overflow-hidden">
-        {/* Left Side - Greyish Background */}
         <div
           className="w-2/5 flex items-center justify-center"
           style={{
-            backgroundColor: '#fff', // Greyish tone for the left side
+            backgroundColor: '#fff',
           }}
         >
-          <img src = "Assets/Logo.png"/>
+          <img src="Assets/Logo.png" alt="Logo" />
         </div>
 
-        {/* Right Side - Signup Form */}
         <div className="w-3/5 p-10">
           <h1 className="text-4xl font-semibold text-left text-[#333333]">
-            Create an Account
+            Log In
           </h1>
           <p className="text-left text-[#808080] mt-2 mb-8">
-            Join handyShare to explore unique rental opportunities!
+            Access your handyShare account and manage rentals easily!
           </p>
+          {error && <p className="text-red-500 mb-4">{error}</p>}
           <form onSubmit={handleSubmit} className="space-y-6">
             <InputField
               label="Email Address"
@@ -61,52 +81,29 @@ export default function Signup() {
               required
             />
             <InputField
-              label="Create Password"
+              label="Password"
               type="password"
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="terms"
-                checked={acceptTerms}
-                onChange={(e) => setAcceptTerms(e.target.checked)}
-                className="h-5 w-5 text-[#333333] border-gray-300 rounded"
-                required
-              />
-              <label htmlFor="terms" className="ml-2 text-sm text-[#4f4f4f]">
-                I agree to the{' '}
-                <a
-                  href="/terms"
-                  className="text-[#333333] hover:underline"
-                >
-                  Terms of Service
-                </a>{' '}
-                and{' '}
-                <a
-                  href="/privacy"
-                  className="text-[#333333] hover:underline"
-                >
-                  Privacy Policy
-                </a>
-              </label>
+            <div className="text-right">
+              <Link to="/forgot-password" className="text-sm text-[#0295db] hover:underline">
+                Forgot Password?
+              </Link>
             </div>
 
             <Button type="submit" className="w-full bg-[#333333] text-white py-3 rounded-lg">
-              Sign Up
+              Log In
             </Button>
-            
           </form>
 
           <div className="mt-8 text-center">
             <p className="text-sm text-gray-500">Or continue with</p>
             <Button
               variant="secondary"
-              onClick={handleGoogleSignup}
+              onClick={handleGoogleLogin}
               className="flex items-center justify-center w-full border border-[#333333] text-[#333333] mt-4 py-3 rounded-lg"
             >
               <svg
@@ -119,18 +116,15 @@ export default function Signup() {
                   fill="#4285F4"
                 />
               </svg>
-              Sign up with Google
+              Log in with Google
             </Button>
           </div>
 
           <p className="mt-6 text-sm text-left text-[#4f4f4f]">
-            Already have an account?{' '}
-            <span
-              onClick={goToLogin} // Use the goToLogin function
-              className="font-medium text-[#333333] hover:underline cursor-pointer"
-            >
-              Log in here
-            </span>
+            Don't have an account yet?{' '}
+            <Link to="/signup" className="font-medium text-[#333333] hover:underline">
+              Sign up here
+            </Link>
           </p>
         </div>
       </div>
