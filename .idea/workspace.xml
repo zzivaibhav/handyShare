@@ -5,17 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fe97f115-cee4-445b-aa02-b1601066c32c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/Category/Controller/TrendingController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/Category/DTO/ProductIDRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/Category/Entity/Trending.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/Category/Repository/TrendingRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/Category/Service/TrendingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/Category/Controller/CategoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/Category/Controller/CategoryController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/Product/Controller/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/Product/Controller/ProductController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/Product/Model/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/Product/Entity/Product.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/Product/Repository/ProductRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/Product/Repository/ProductRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/Product/Service/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Backend/src/main/java/com/g02/handyShare/Product/Service/ProductService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,7 +51,6 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Spring Boot.HandyShareApplication.executor": "Run",
-    "git-widget-placeholder": "feat/24-homescreen-components-apis",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/Project/course-project-g02",
@@ -73,14 +61,12 @@
     "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.0",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RunManager">
     <configuration name="HandyShareApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
-      <module name="handyShare" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.g02.handyShare.HandyShareApplication" />
       <method v="2">
         <option name="Make" enabled="true" />
