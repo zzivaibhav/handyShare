@@ -16,6 +16,7 @@ import java.util.List;
 //API starting with /all are accessible by all.
 //API starting with /user are accessible by user and admin both.
 //API starting with /admin are accessible by admin only.
+@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
@@ -39,10 +40,17 @@ public class UserController {
         }
     }
 
+
+    
+
     @GetMapping("/admin/getUser") //Api accessible by the ADMIN only
     public ResponseEntity<List<User>> getUsers() {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok().body(users);
+    }
+    @PostMapping("/perform_login")
+    public String login(){
+        return "loggedin";
     }
 
     @GetMapping("/all/verifyUser")
