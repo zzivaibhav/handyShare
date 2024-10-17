@@ -17,6 +17,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@Valid @RequestBody User user) {
         String result = userService.registerUser(user);
@@ -26,5 +27,6 @@ public class UserController {
         }
 
         return ResponseEntity.ok(result);
+
     }
 }
