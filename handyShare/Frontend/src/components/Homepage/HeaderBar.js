@@ -40,6 +40,7 @@ const HeaderBar = () => {
         >Lendings</Button>
         <Button>Borrowings</Button>
         <Button
+          href='/profile'
           type="primary"
           shape="circle"
           icon={<UserOutlined />}

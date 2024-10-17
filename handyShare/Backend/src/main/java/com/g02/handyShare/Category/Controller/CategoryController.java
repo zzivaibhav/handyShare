@@ -36,6 +36,10 @@ public class CategoryController {
                     .orElseThrow(() -> new RuntimeException("Parent category not found")));
         }
 
+        // Set the isActive status from the incoming data, defaulting to true if not provided
+        Boolean isActive = (Boolean) categoryData.getOrDefault("isActive", true);
+        category.setIsActive(isActive);
+
         Category savedCategory = categoryService.createCategory(category);
         return ResponseEntity
                 .created(URI.create("/api/v1/categories/" + savedCategory.getCategoryId()))
