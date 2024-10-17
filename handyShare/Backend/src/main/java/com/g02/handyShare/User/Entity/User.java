@@ -1,27 +1,21 @@
 package com.g02.handyShare.User.Entity;
 
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
 @ToString
-@Builder
-public class User implements UserDetails {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,40 +41,7 @@ public class User implements UserDetails {
     private boolean is_email_verified; // Field to check if email is verified
     private String verificationToken;
     //variables for storing image data.
-//    private String imageType;
-//    private String imageName;
-//    private String imageData;
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Return the roles/authorities, here as an empty list for simplicity
-        return List.of(new SimpleGrantedAuthority(role.toString()));
-    }
-
-    @Override
-    public String getUsername() {
-        return email; // Use email as the username
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+    private String imageType;
+    private String imageName;
+    private String imageData;
 }
