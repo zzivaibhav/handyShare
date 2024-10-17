@@ -5,11 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fe97f115-cee4-445b-aa02-b1601066c32c" name="Changes" comment="">
+
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/handyShare/Frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Frontend/src/App.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/handyShare/Frontend/src/components/Homepage/CategoriesNavigation.js" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Frontend/src/components/Homepage/CategoriesNavigation.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/handyShare/Frontend/src/components/Homepage/HeaderBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Frontend/src/components/Homepage/HeaderBar.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/handyShare/Frontend/src/pages/HomeScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/handyShare/Frontend/src/pages/HomeScreen.js" afterDir="false" />
+
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,11 +21,17 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="feat/24-homescreen-components-apis" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="JpbToolWindowState">
@@ -50,7 +58,9 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Spring Boot.HandyShareApplication.executor": "Run",
+
     "git-widget-placeholder": "feat/home-page-frontend",
+
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/Project/course-project-g02",
@@ -61,7 +71,9 @@
     "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.15",
+
     "project.structure.side.proportion": "0.0",
+
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -105,7 +117,9 @@
       <workItem from="1728314200280" duration="28000" />
       <workItem from="1728314238497" duration="54000" />
       <workItem from="1728349094875" duration="23000" />
+
       <workItem from="1729006616596" duration="744000" />
+
     </task>
     <servers />
   </component>

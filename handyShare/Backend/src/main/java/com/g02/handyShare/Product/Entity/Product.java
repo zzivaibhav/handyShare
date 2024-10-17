@@ -1,15 +1,15 @@
-package com.g02.handyShare.Product.Model;
+package com.g02.handyShare.Product.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.g02.handyShare.Category.Entity.Trending;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -35,4 +35,6 @@ public class Product {
 
     @NotNull(message="Availability is required.")
     private Boolean available;
+
+
 }
