@@ -10,18 +10,19 @@ const HeaderBar = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#fff',
-        padding: '0 20px',
-        boxShadow: '0 2px 8px #f0f1f2',
-        height: '70px', // Matches header height
+        backgroundColor: '#3B7BF8',
+      
+        height: '100%', 
+        flex:1,
+       
       }}
     >
-      {/* Logo */}
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+     
+      <div style={{ display: 'flex', alignItems: 'center' , justifyContent:'space-between'}}>
         <img
-          src="/path-to-your-logo.png"
+          src="/Assets/Logo.png"
           alt="App logo"
-          style={{ height: '40px', marginRight: '20px' }}
+          style={{ height: '40px', marginRight: '30px' }}
         />
       </div>
 
@@ -34,7 +35,9 @@ const HeaderBar = () => {
 
       {/* Right side buttons */}
       <Space>
-        <Button>Lendings</Button>
+        <Button
+        href='/login'
+        >Lendings</Button>
         <Button>Borrowings</Button>
         <Button
           type="primary"

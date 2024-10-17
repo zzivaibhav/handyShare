@@ -1,15 +1,45 @@
 import React, { useState } from 'react';
-import { InputField } from "../components/Input-field.tsx";
-import { Button } from '../components/Button.tsx';
-import { Link } from 'react-router-dom';
+import InputField from "../components/Input-field.js";
+import Button from '../components/Button.js';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(null); // To handle login errors
+  const navigate = useNavigate(); // To redirect after login
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here
+
+    // Prepare login data
+    const loginData = new URLSearchParams({
+      'username': email,
+      'password': password,
+    });
+
+    try {
+      const response = await fetch('http://localhost:8080/api/v1/all/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',  // Use this for form login
+        },
+        body: loginData,
+        credentials: 'include', // Ensures cookies are sent for session-based auth
+      });
+
+      if (response.ok) {
+        // On successful login
+        console.log('Login successful');
+        navigate('/dashboard'); // Redirect to the dashboard after successful login
+      } else {
+        // Handle login error
+        const errorMsg = await response.text();
+        setError('Login failed. Please check your email and password.');
+      }
+    } catch (error) {
+      setError('An error occurred during login. Please try again.');
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -20,23 +50,19 @@ export default function Login() {
     <div
       className="min-h-screen flex items-center justify-center"
       style={{
-        backgroundColor: '#f2f2f2', // Light grey background
+        backgroundColor: '#f2f2f2',
       }}
     >
       <div className="flex w-full max-w-6xl bg-white rounded-lg shadow-2xl overflow-hidden">
-        {/* Left Side - Greyish Background */}
         <div
           className="w-2/5 flex items-center justify-center"
           style={{
-            backgroundColor: '#d9d9d9', // Greyish tone for the left side
+            backgroundColor: '#fff',
           }}
         >
-          <p className="text-[#4f4f4f] font-semibold text-lg">
-            Welcome Back to handyShare!
-          </p>
+          <img src="Assets/Logo.png" alt="Logo" />
         </div>
 
-        {/* Right Side - Login Form */}
         <div className="w-3/5 p-10">
           <h1 className="text-4xl font-semibold text-left text-[#333333]">
             Log In
@@ -44,6 +70,7 @@ export default function Login() {
           <p className="text-left text-[#808080] mt-2 mb-8">
             Access your handyShare account and manage rentals easily!
           </p>
+          {error && <p className="text-red-500 mb-4">{error}</p>}
           <form onSubmit={handleSubmit} className="space-y-6">
             <InputField
               label="Email Address"
@@ -95,12 +122,9 @@ export default function Login() {
 
           <p className="mt-6 text-sm text-left text-[#4f4f4f]">
             Don't have an account yet?{' '}
-            <a
-              href="/signup"
-              className="font-medium text-[#333333] hover:underline"
-            >
+            <Link to="/signup" className="font-medium text-[#333333] hover:underline">
               Sign up here
-            </a>
+            </Link>
           </p>
         </div>
       </div>

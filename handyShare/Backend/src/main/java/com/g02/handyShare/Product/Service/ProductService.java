@@ -1,11 +1,12 @@
 package com.g02.handyShare.Product.Service;
 
-import com.g02.handyShare.Product.Model.Product;
+import com.g02.handyShare.Product.Entity.Product;
 import com.g02.handyShare.Product.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class ProductService {
@@ -13,9 +14,9 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    //add product
-    public Product addProduct(Product product){
-        return productRepository.save(product);
+    // Add multiple products
+    public List<Product> addProduct(List<Product> products) {
+        return productRepository.saveAll(products);
     }
 
     //update product entries
@@ -33,13 +34,22 @@ public class ProductService {
 
             return productRepository.save(existingProduct);
         }else{
-            throw new RuntimeException("Product not found with id"+ id);
+            throw new CustomException("Product not found with id: "+ id);
         }
     }
 
-    //delete product
-    public void deleteProduct(Long productId){
-        productRepository.deleteById(productId);
+    public Product getProductById(Long id){
+        return productRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Product not Found!"));
+    }
 
+    //delete product
+    public boolean deleteProduct(Long productId){
+        if(productRepository.existsById(productId)){
+            productRepository.deleteById(productId);
+            return true;
+        }else {
+            return false;
+        }
     }
 }

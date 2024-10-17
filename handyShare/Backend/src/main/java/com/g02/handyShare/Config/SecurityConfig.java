@@ -32,8 +32,8 @@ public class SecurityConfig {
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/signup", "/api/v1/all/**").permitAll()  // Permit these endpoints
-                        .requestMatchers("/admin/**").hasAuthority("admin")  // Only accessible by users with ADMIN role
-                        .requestMatchers("/user/**").hasAuthority("user")    // Only accessible by users with USER role
+                        .requestMatchers("/api/v1/admin/**").hasAuthority("admin")  // Only accessible by users with ADMIN role
+                        .requestMatchers("/api/v1/user/**").hasAuthority("user")    // Only accessible by users with USER role
                         .anyRequest().authenticated()  // All other endpoints need authentication
                 )
                 .httpBasic(Customizer.withDefaults())

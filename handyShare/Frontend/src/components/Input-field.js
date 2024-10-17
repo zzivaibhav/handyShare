@@ -1,22 +1,13 @@
 import React from 'react';
 
-interface InputFieldProps {
-  label: string;
-  type: "text" | "email" | "password";
-  id: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  required?: boolean;
-}
-
-export function InputField({
+export default function InputField({
   label,
   type,
   id,
   value,
   onChange,
   required = false,
-}: InputFieldProps) {
+}) {
   return (
     <div>
       <label

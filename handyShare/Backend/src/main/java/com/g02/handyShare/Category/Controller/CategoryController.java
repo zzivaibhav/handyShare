@@ -3,6 +3,8 @@ package com.g02.handyShare.Category.Controller;
 import com.g02.handyShare.Category.DTO.SubCategoryDTO;
 import com.g02.handyShare.Category.Entity.Category;
 import com.g02.handyShare.Category.Service.CategoryService;
+import com.g02.handyShare.Category.Service.CategoryServiceImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,11 +15,14 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/categories")
+@RequestMapping("/api/v1")
+
+@CrossOrigin(origins = "*")
+
 public class CategoryController {
 
-    @Autowired
-    private CategoryService categoryService;
+  @Autowired
+    private CategoryService categoryService ;
 
     @PostMapping
     public ResponseEntity<Category> createCategory(@RequestBody Map<String, Object> categoryData) {
@@ -51,7 +56,8 @@ public class CategoryController {
         return ResponseEntity.ok().body(category.get());
     }
 
-    @GetMapping
+
+    @GetMapping("all/allCategories")
     public List<Category> getAllCategories() {
         return categoryService.getAllCategories();
     }

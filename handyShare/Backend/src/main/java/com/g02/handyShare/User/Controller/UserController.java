@@ -26,6 +26,7 @@ public class UserController {
 
     @PostMapping("all/register")
     public ResponseEntity<String> registerUser( @RequestBody User user) {
+
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             return ResponseEntity.badRequest().body("Email is required");
         } else {
