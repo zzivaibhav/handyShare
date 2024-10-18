@@ -2,11 +2,12 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom'; 
 import Signup from './pages/Signup.js'; 
 import Login from './pages/Login.js';
-import ForgotPassword from './pages/ForgotPassword.tsx';
+import ForgotPassword from './pages/ForgotPassword.js';
 import HomeScreen from './pages/HomeScreen.js';
 import Profile from './pages/Profile';
 import ProfileUpdate from './pages/ProfileUpdate';
 import AdminDashboard from './pages/AdminDashboard.js';
+import ProductPage from './pages/ProductPage.js';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Route path="/profile" element={<Profile/>} />
       <Route path = "/profile-update" element={<ProfileUpdate/>}/>
       <Route path="/admin" element={<AdminDashboard/>} />
+      <Route path="/product-page" element={<ProductPage/>} />
     </Routes>
   );
 }
