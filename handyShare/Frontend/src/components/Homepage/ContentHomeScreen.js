@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import axios from 'axios';
-import { SERVER_URL_CATEGORIES, SERVER_URL_TRENDING } from '../../constants';
+import { SERVER_URL, SERVER_URL_CATEGORIES, SERVER_URL_TRENDING } from '../../constants';
 
 function ContentHomeScreen({ category }) {
   const [trending, setTrending] = useState([]);
@@ -10,7 +10,7 @@ function ContentHomeScreen({ category }) {
   useEffect(() => {
     const fetchTrending = async () => {
       try {
-        const response = await axios.get(SERVER_URL_TRENDING + `/all/getTrendingByCategory?category=${category}`);
+        const response = await axios.get(SERVER_URL+ `/api/v1/all/getTrendingByCategory?category=${category}`);
         setTrending(response.data.body);
       } catch (error) {
         console.log("Error while loading trending topics", error);
@@ -19,7 +19,7 @@ function ContentHomeScreen({ category }) {
   
     const fetchNewListings = async () => {
       try {
-        const response = await axios.get(SERVER_URL_CATEGORIES + "/newlistings");
+        const response = await axios.get(SERVER_URL + "/api/v1/all/newlistings");
         setNewlyAdded(response.data);
       } catch (error) {
         console.log(error);
