@@ -1,11 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import HeaderBar from '../components/Homepage/HeaderBar';
 import PaymentForm from '../components/Payment/PaymentForm';
-import { Layout } from 'antd';
+import FeedbackForm from '../components/Feedback/FeedbackForm'; // Import the feedback form
+import { Layout, message } from 'antd';
+import Feedback from './Feedback';
 
 const { Header, Content, Footer } = Layout;
 
 const Payment = () => {
+  const [paymentComplete, setPaymentComplete] = useState(false); // Track payment completion
+
+  const handlePaymentSuccess = () => {
+    message.success('Payment successful!');
+    setPaymentComplete(true); // Set paymentComplete to true after payment
+  };
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       {/* Header */}
@@ -25,17 +34,23 @@ const Payment = () => {
       {/* Main content */}
       <Content style={{ padding: '100px 50px', marginTop: '64px' }}>
         <div style={{ maxWidth: '600px', margin: '0 auto', background: '#fff', padding: '24px', borderRadius: '8px' }}>
-          <h2
-            style={{
-              textAlign: 'center',
-              fontSize: '28px', // Larger font size
-              fontWeight: 'bold', // Bold font weight
-              marginBottom: '20px',
-            }}
-          >
-            Payment
-          </h2>
-          <PaymentForm />
+          {!paymentComplete ? (
+            <>
+              <h2
+                style={{
+                  textAlign: 'center',
+                  fontSize: '28px',
+                  fontWeight: 'bold',
+                  marginBottom: '20px',
+                }}
+              >
+                Payment
+              </h2>
+              <PaymentForm onSuccess={handlePaymentSuccess} /> {/* Handle payment success */}
+            </>
+          ) : (
+            <Feedback/> // Show feedback form after payment
+          )}
         </div>
       </Content>
 

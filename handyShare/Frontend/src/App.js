@@ -8,7 +8,9 @@ import Profile from './pages/Profile';
 import ProfileUpdate from './pages/ProfileUpdate';
 import AdminDashboard from './pages/AdminDashboard.js';
 import ProductPage from './pages/ProductPage.js';
-
+import Payment from './pages/Payment.js';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import Feedback from './pages/Feedback.js';
 function App() {
   return (
     <Routes>
@@ -21,6 +23,8 @@ function App() {
       <Route path = "/profile-update" element={<ProfileUpdate/>}/>
       <Route path="/admin" element={<AdminDashboard/>} />
       <Route path="/product-page" element={<ProductPage/>} />
+      <Route path="/payment" element={<Payment/>} />
+      <Route path="/feedback" element={<Feedback/>} />
     </Routes>
   );
 }
