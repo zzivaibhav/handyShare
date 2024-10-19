@@ -1,37 +1,49 @@
 import React, { useState } from 'react';
-import InputField from "../components/Input-field.js";
-import Button from '../components/Button.js';
-import { Link } from "react-router-dom";
 
-export default function ForgotPassword() {
+function ForgotPassword() {
   const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle password reset logic here
+    // Simulate password reset logic
+    if (email) {
+      setMessage(`Password reset link sent to ${email}`);
+    } else {
+      setMessage('Please enter a valid email address.');
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f2f2f2]">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-2xl p-8">
-        <h1 className="text-3xl font-semibold text-center text-[#333333] mb-6">
-          Forgot Password
-        </h1>
-        <p className="text-center text-[#808080] mb-6">
-          Enter your email address and we'll send you a link to reset your password.
-        </p>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <InputField
-            label="Email Address"
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-         
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-md w-96">
+        <h2 className="text-2xl font-bold mb-6 text-center">Forgot Password</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+              Email Address
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Send Reset Link
+          </button>
         </form>
+        {message && <p className="mt-4 text-center text-green-500">{message}</p>}
       </div>
     </div>
   );
 }
+
+export default ForgotPassword;
