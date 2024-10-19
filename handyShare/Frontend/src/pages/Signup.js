@@ -12,7 +12,6 @@ export default function Signup() {
   const [loading, setLoading] = useState(false); 
 
   const handleSubmit = async () => {
-    // Check if all fields are filled before submission
     if (!name || !email || !password || !acceptTerms) {
       alert('Please fill in all fields and accept the terms.');
       return;
@@ -136,6 +135,16 @@ export default function Signup() {
               {loading ? 'Signing Up...' : 'Sign Up'}
             </Button>
           </form>
+
+          <p className="mt-4 text-center text-sm text-[#4f4f4f]">
+            Already have an account?{' '}
+            <button
+              onClick={() => navigate('/login')}
+              className="text-[#333333] hover:underline"
+            >
+              Log in here
+            </button>
+          </p>
 
           {/* Remaining code */}
         </div>
