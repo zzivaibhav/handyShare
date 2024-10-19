@@ -4,6 +4,7 @@ import Signup from './pages/Signup.js';
 import Login from './pages/Login.js';
 import ForgotPassword from './pages/ForgotPassword.tsx';
 import HomeScreen from './pages/HomeScreen.js';
+import Payment from './pages/Payment.js';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path = "/homepage" element={<HomeScreen/>}/>
+      <Route path="/payment" element={<Payment/>} />
     </Routes>
   );
 }
