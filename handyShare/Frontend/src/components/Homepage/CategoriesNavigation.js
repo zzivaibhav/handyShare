@@ -8,7 +8,7 @@ export default function CategoriesNavigation({ onCategorySelect }) { // Accept t
 
     useEffect(() => {
         const fetchCategories = async () => {
-            const response = await axios.get(SERVER_URL + "/api/v1/all/allCategories");
+            const response = await axios.get("http://localhost:8080/api/v1/all/allCategories");
             setCategories(response.data);
             console.log(response.data); // Log the response data
         };
