@@ -25,11 +25,8 @@ public class UserService {
         // Check if email already exists
         User existingUser = userRepository.findByEmail(user.getEmail());
 
-        if (existingUser != null) {
-            // Update existing user if needed
-          
-            userRepository.save(existingUser); // Save updated user
-            return "User updated successfully. Please check your email for verification."; // Return a success message
+        if (existingUser != null) {          
+           return "already registered"; 
         }
 
         // Encrypt password before saving for new user
@@ -60,5 +57,16 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public String verifyUser(String token) {
+       User existingUser = findByToken(token);
+       if(existingUser != null){
+        existingUser.set_email_verified(true);
+        existingUser.setVerificationToken(null); 
+        userRepository.save(existingUser);
+        return "Successfully verified email";
+       }
+      return "Failed verifying the email";
     }
 }

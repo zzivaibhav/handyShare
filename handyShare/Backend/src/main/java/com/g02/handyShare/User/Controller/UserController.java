@@ -3,7 +3,6 @@ package com.g02.handyShare.User.Controller;
 import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
 import com.g02.handyShare.User.Service.UserService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +24,9 @@ public class UserController {
     @Autowired
     UserRepository repo;
 
-    @PostMapping("/all/register")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody User user) {
+    @PostMapping("all/register")
+    public ResponseEntity<String> registerUser( @RequestBody User user) {
+
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             return ResponseEntity.badRequest().body("Email is required");
         } else {
@@ -55,13 +55,11 @@ public class UserController {
 
     @GetMapping("/all/verifyUser")
     public ResponseEntity<String> verifyEmail(@RequestParam String token) {
-        User user = userService.findByToken(token);
-        if (user != null) {
-            user.set_email_verified(true);
-            user.setVerificationToken(null); // Set the verification token to null
-            userService.registerUser(user); // Save the updated user to the repository
-            return ResponseEntity.ok("Email verified successfully!");
-        }
+        String response = userService.verifyUser(token);
+            if(response.contains("Successfully")){
+                return ResponseEntity.ok().body("Email varified");
+            }
+       
         return ResponseEntity.badRequest().body("Invalid or expired token.");
     }
 }

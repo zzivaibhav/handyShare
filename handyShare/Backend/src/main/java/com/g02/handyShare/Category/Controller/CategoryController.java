@@ -16,7 +16,9 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
+
 @CrossOrigin(origins = "*")
+
 public class CategoryController {
 
   @Autowired
@@ -33,6 +35,10 @@ public class CategoryController {
             category.setParentCategory(categoryService.getCategoryById(parentCategoryId)
                     .orElseThrow(() -> new RuntimeException("Parent category not found")));
         }
+
+        // Set the isActive status from the incoming data, defaulting to true if not provided
+        Boolean isActive = (Boolean) categoryData.getOrDefault("isActive", true);
+        category.setIsActive(isActive);
 
         Category savedCategory = categoryService.createCategory(category);
         return ResponseEntity
@@ -53,6 +59,7 @@ public class CategoryController {
         // If found, return the category
         return ResponseEntity.ok().body(category.get());
     }
+
 
     @GetMapping("/all/allCategories")
     public List<Category> getAllCategories() {
