@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
+import { Link } from 'react-router-dom';
 
 const ProductsList = () => {
   const [products, setProducts] = useState([]);
@@ -176,17 +177,19 @@ const ProductsList = () => {
           {/* Product Grid */}
           <div className="w-3/4 grid grid-cols-3 gap-6 ml-6">
             {currentProducts.map((product, index) => (
-              <div key={index} className="bg-white shadow-md rounded-lg p-4">
-                <img
-                  src={product.image} 
-                  alt={product.name}
-                  className="w-full h-48 object-cover rounded-md mb-4"
-                />
-                <h3 className="text-xl font-semibold">{product.name}</h3>
-                <p className="mt-2">{product.description}</p>
-                <p className="mt-2 text-lg font-medium">Hourly Price: ${product.rentalPrice}</p>
-                <p className="mt-1 text-gray-500">Available for {product.availability} hours</p>
-              </div>
+              <Link to={`/product/${product.id}`} key={index}>
+                <div className="bg-white shadow-md rounded-lg p-4">
+                  <img
+                    src={product.image} 
+                    alt={product.name}
+                    className="w-full h-48 object-cover rounded-md mb-4"
+                  />
+                  <h3 className="text-xl font-semibold">{product.name}</h3>
+                  <p className="mt-2">{product.description}</p>
+                  <p className="mt-2 text-lg font-medium">Hourly Price: ${product.rentalPrice}</p>
+                  <p className="mt-1 text-gray-500">Available for {product.availability} hours</p>
+                </div>
+              </Link>
             ))}
           </div>
         </div>

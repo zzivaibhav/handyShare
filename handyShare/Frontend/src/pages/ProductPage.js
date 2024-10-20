@@ -1,20 +1,21 @@
 import React from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
-export default function ProductPage() {
+const ProductPage = () => {
+  // Define the reviews variable
   const reviews = [
     { user: 'Alice', comment: 'Great product!' },
     { user: 'Bob', comment: 'Very useful and affordable.' },
   ];
 
-  const [product, setProduct] = React.useState({});
+  const { id } = useParams();
+  const [product, setProduct] = React.useState(null);
 
   React.useEffect(() => {
     const fetchProduct = async () => {
       try {
-        console.log('Fetching product with ID:', id); // Debugging line
         const response = await axios.get(`http://localhost:8080/api/v1/all/products/${id}`);
-        console.log('Product data:', response.data); // Debugging line
         setProduct(response.data);
       } catch (error) {
         console.error('Error fetching product:', error);
@@ -22,6 +23,8 @@ export default function ProductPage() {
     };
     fetchProduct();
   }, [id]);
+
+  if (!product) return <div>Loading...</div>;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -35,10 +38,10 @@ export default function ProductPage() {
       </header>
       <main className="flex-grow p-8 flex">
         <div className="w-1/3 bg-gray-100 p-4">
-          <img src="/path/to/image.jpg" alt="Product" className="w-full h-64 object-cover" />
+          <img src={product.image} alt={product.name} className="w-full h-64 object-cover" />
           <div className="mt-4">
             <h3 className="text-lg font-bold">Description</h3>
-            <p>Product description goes here.</p>
+            <p>{product.description}</p>
           </div>
           <div className="mt-4">
             <h3 className="text-lg font-bold">Reviews</h3>
@@ -50,8 +53,8 @@ export default function ProductPage() {
           </div>
         </div>
         <div className="w-1/3 px-4">
-          <h2 className="text-2xl font-bold">Product Name</h2>
-          <p className="text-lg">Price: $20/hour</p>
+          <h2 className="text-2xl font-bold">{product.name}</h2>
+          <p className="text-lg">Price: ${product.rentalPrice}/hour</p>
           <p>Transaction Time: 2 hours</p>
           <div className="mt-4">
             <label>From</label>
@@ -72,4 +75,6 @@ export default function ProductPage() {
       </main>
     </div>
   );
-}
+};
+
+export default ProductPage;
