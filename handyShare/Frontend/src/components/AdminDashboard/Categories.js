@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Input, message, Switch, Tooltip } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import { SERVER_URL_CATEGORIES } from '../../constants';
+// import { SERVER_URL_CATEGORIES } from '../../constants';
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);

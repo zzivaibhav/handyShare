@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
-import {  SERVER_URL } from '../../constants';
 import { Button } from 'antd';
 
 export default function CategoriesNavigation({ onCategorySelect }) { // Accept the prop
@@ -31,4 +30,3 @@ export default function CategoriesNavigation({ onCategorySelect }) { // Accept t
         </div>
     );
 }
-

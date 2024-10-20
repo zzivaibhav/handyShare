@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 import LendFormPage from '../components/LendingPage/LendFormPage.js'; 
 import { Layout, Menu, Table } from 'antd';
+import axios from 'axios';
+import { message } from 'antd';
+
 
 const { Header, Content, Sider } = Layout;
 
 const LendPage = () => {
-  const [view, setView] = useState('lendings'); 
+  const [view, setView] = useState('lendings');
   const [lentItems, setLentItems] = useState([
     {
       key: '1',
@@ -22,7 +25,7 @@ const LendPage = () => {
       price: '$15',
       availability: 'Available for 8 hours'
     }
-  ]); // Sample lent items, you can replace it with data from API
+   ]); // Sample lent items, you can replace it with data from API
 
   // Columns for the table listing the items
   const columns = [

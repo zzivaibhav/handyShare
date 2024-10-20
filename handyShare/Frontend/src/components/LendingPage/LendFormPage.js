@@ -6,14 +6,14 @@ import axios from 'axios';
 const { Step } = Steps;
 const { Option } = Select;
 
-const LendFormTabs = () => {
+const LendFormTabs = ({ selectedCategory }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [form] = Form.useForm();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     price: '',
-    category: '',
+    category: selectedCategory || '',
     city: '',
     state: '',
     pincode: '',
@@ -28,13 +28,16 @@ const LendFormTabs = () => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get("http://localhost:8080/api/v1/all/allCategories");
-        setCategories(response.data.map(cat => cat.name)); // Assuming the response is an array of categories
+        setCategories(response.data.map(cat => cat.name));
+        if (selectedCategory && !formData.category) {
+          setFormData(prevData => ({ ...prevData, category: selectedCategory }));
+        }
       } catch (error) {
         message.error('Failed to fetch categories');
       }
     };
     fetchCategories();
-  }, []);
+  }, [selectedCategory]);
 
   const steps = [
     {

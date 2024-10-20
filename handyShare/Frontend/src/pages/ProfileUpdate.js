@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Layout } from 'antd';
 import ProfileHeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 import { useLocation } from 'react-router-dom'; 
