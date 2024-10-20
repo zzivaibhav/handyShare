@@ -33,6 +33,7 @@ const LendFormTabs = ({ selectedCategory }) => {
           setFormData(prevData => ({ ...prevData, category: selectedCategory }));
         }
       } catch (error) {
+        console.error('Error fetching categories:', error.response || error);
         message.error('Failed to fetch categories');
       }
     };
@@ -154,9 +155,16 @@ const LendFormTabs = ({ selectedCategory }) => {
     setCurrentStep(currentStep - 1);
   };
 
-  const handleSubmit = () => {
-    console.log(formData);
-    message.success('Item listed successfully');
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post('http://localhost:8080/api/v1/lending/item', formData);
+      console.log(response.data);
+      message.success('Item listed successfully');
+      // Optionally, reset form or redirect user
+    } catch (error) {
+      console.error('Error submitting item:', error);
+      message.error('Failed to list item');
+    }
   };
 
   return (

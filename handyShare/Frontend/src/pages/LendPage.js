@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 import LendFormPage from '../components/LendingPage/LendFormPage.js'; 
 import { Layout, Menu, Table } from 'antd';
@@ -10,22 +10,23 @@ const { Header, Content, Sider } = Layout;
 
 const LendPage = () => {
   const [view, setView] = useState('lendings');
-  const [lentItems, setLentItems] = useState([
-    {
-      key: '1',
-      name: 'Bicycle',
-      description: 'Mountain bike with 21 gears',
-      price: '$10',
-      availability: 'Available for 5 hours'
-    },
-    {
-      key: '2',
-      name: 'Camera',
-      description: 'Canon DSLR camera',
-      price: '$15',
-      availability: 'Available for 8 hours'
-    }
-   ]); // Sample lent items, you can replace it with data from API
+  const [loading, setLoading] = useState(true);
+  const [lentItems, setLentItems] = useState([]); // Define lentItems here
+
+  useEffect(() => {
+    const fetchLentItems = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/v1/lending/items');
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching lent items:', error);
+        message.error('Failed to load lent items');
+        setLoading(false);
+      }
+    };
+
+    fetchLentItems();
+  }, []);
 
   // Columns for the table listing the items
   const columns = [
@@ -78,7 +79,7 @@ const LendPage = () => {
             {view === 'lendings' ? (
               <>
                 <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom:'10px' }}>Your Lent Items</h1>
-                <Table columns={columns} dataSource={lentItems} />
+                <Table columns={columns} dataSource={lentItems} loading={loading} />
               </>
             ) : (
               <LendFormPage />
