@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Space, Layout, Menu, Form, Input } from 'antd';
+import { Button, Layout, Menu, Form, Input } from 'antd';
 import ProfileHeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar'; 
 import defaultImage from '../components/ProfileUpdatePage/defaultProfileImage.png'; 
 import { useNavigate } from 'react-router-dom'; 

@@ -63,7 +63,10 @@ public class CategoryController {
 
     @GetMapping("/all/allCategories")
     public List<Category> getAllCategories() {
-        return categoryService.getAllCategories();
+        System.out.println("Fetching all categories");
+        List<Category> categories = categoryService.getAllCategories();
+        System.out.println("Found " + categories.size() + " categories");
+        return categories;
     }
 
     @PutMapping("/all/{id}")

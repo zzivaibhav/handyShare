@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
-import { Layout } from 'antd';
 import ProfileHeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 import { useLocation } from 'react-router-dom'; 
-
-const { Header, Content, Footer, Sider } = Layout;
 
 const ProfileUpdate = () => {
   const location = useLocation(); 
