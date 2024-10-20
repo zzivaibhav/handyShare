@@ -1,5 +1,6 @@
 package com.g02.handyShare.Product.Service;
 
+import com.g02.handyShare.Category.Entity.Category;
 import com.g02.handyShare.Product.Entity.Product;
 import com.g02.handyShare.Product.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,10 @@ public class ProductService {
     public Product getProductById(Long id){
         return productRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("Product not Found!"));
+    }
+
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
     }
 
     //delete product

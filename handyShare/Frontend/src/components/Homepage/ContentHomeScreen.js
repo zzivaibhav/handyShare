@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import axios from 'axios';
-import { SERVER_URL, SERVER_URL_CATEGORIES, SERVER_URL_TRENDING } from '../../constants';
+import { SERVER_URL } from '../../constants';
 
 function ContentHomeScreen({ category }) {
   const [trending, setTrending] = useState([]);
