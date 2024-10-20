@@ -25,7 +25,7 @@ function App() {
       <Route path="/profile" element={<Profile/>} />
       <Route path = "/profile-update" element={<ProfileUpdate/>}/>
       <Route path="/admin" element={<AdminDashboard/>} />
-      <Route path="/product-page" element={<ProductPage/>} />
+      <Route path="/product/:id" element={<ProductPage />} />
       <Route path="/lend" element={<LendPage />} />
       <Route path="/products" element={<ProductsListPage />} />
       <Route path="/payment" element={<Payment/>} />

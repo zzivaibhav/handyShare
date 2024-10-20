@@ -1,10 +1,27 @@
 import React from 'react';
+import axios from 'axios';
 
 export default function ProductPage() {
   const reviews = [
     { user: 'Alice', comment: 'Great product!' },
     { user: 'Bob', comment: 'Very useful and affordable.' },
   ];
+
+  const [product, setProduct] = React.useState({});
+
+  React.useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        console.log('Fetching product with ID:', id); // Debugging line
+        const response = await axios.get(`http://localhost:8080/api/v1/all/products/${id}`);
+        console.log('Product data:', response.data); // Debugging line
+        setProduct(response.data);
+      } catch (error) {
+        console.error('Error fetching product:', error);
+      }
+    };
+    fetchProduct();
+  }, [id]);
 
   return (
     <div className="min-h-screen flex flex-col">
