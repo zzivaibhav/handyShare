@@ -8,6 +8,11 @@ import Profile from './pages/Profile';
 import ProfileUpdate from './pages/ProfileUpdate';
 import AdminDashboard from './pages/AdminDashboard.js';
 import ProductPage from './pages/ProductPage.js';
+import LendPage from './pages/LendPage.js';
+import ProductsListPage from './pages/ProductsList.js';
+import Payment from './pages/Payment.js';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import Feedback from './pages/Feedback.js';
 
 function App() {
   return (
@@ -20,7 +25,11 @@ function App() {
       <Route path="/profile" element={<Profile/>} />
       <Route path = "/profile-update" element={<ProfileUpdate/>}/>
       <Route path="/admin" element={<AdminDashboard/>} />
-      <Route path="/product-page" element={<ProductPage/>} />
+      <Route path="/product/:id" element={<ProductPage />} />
+      <Route path="/lend" element={<LendPage />} />
+      <Route path="/products" element={<ProductsListPage />} />
+      <Route path="/payment" element={<Payment/>} />
+      <Route path="/feedback" element={<Feedback/>} />
     </Routes>
   );
 }
