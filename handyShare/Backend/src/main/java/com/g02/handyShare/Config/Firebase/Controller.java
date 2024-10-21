@@ -16,7 +16,7 @@ public class Controller {
         this.firebaseService = firebaseService;
     }
 
-    @PostMapping("/upload")
+    @PostMapping("api/v1/all/upload")
     public ResponseEntity<String> uploadFile(@RequestPart MultipartFile file,
                                              @RequestParam String path) {
         try {

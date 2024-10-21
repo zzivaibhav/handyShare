@@ -30,23 +30,32 @@ public class FirebaseService {
         File file = convertMultiPartToFile(multipartFile);
         Path filePath = file.toPath();
 
-        // Initialize the Firebase Storage
+        // Initialize Firebase Storage
         Storage storage = StorageOptions.newBuilder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                 .setProjectId("handyshare-b3506")
                 .build()
                 .getService();
 
-        // Create a BlobId with the specified folder path
+        // Create BlobId with the specified folder path
         BlobId blobId = BlobId.of("handyshare-b3506.appspot.com", path + "/" + objectName);
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(multipartFile.getContentType()).build();
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+                .setContentType(multipartFile.getContentType())
+                .build();
 
+        // Upload the file
         storage.create(blobInfo, Files.readAllBytes(filePath));
+
+        // Make the file publicly accessible
+        storage.get(blobId).createAcl(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
+
+        // Construct the public URL
+        String publicUrl = String.format("https://storage.googleapis.com/%s/%s", "handyshare-b3506.appspot.com", path + "/" + objectName);
 
         // Optionally, delete the temporary file after upload
         file.delete();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("File uploaded successfully to path: " + path);
+        return ResponseEntity.status(HttpStatus.CREATED).body(publicUrl);
     }
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
