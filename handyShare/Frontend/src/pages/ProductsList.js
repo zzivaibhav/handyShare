@@ -18,7 +18,7 @@ const ProductsList = () => {
     // Fetch products and categories data from API
     const fetchData = async () => {
       try {
-        const productsResponse = await axios.get('http://localhost:8080/api/v1/all/products/allProducts');
+        const productsResponse = await axios.get('http://localhost:8080/api/v1/all/allProducts');
         const categoriesResponse = await axios.get('http://localhost:8080/api/v1/all/allCategories');
         setProducts(productsResponse.data);
         setCategories(categoriesResponse.data.map(cat => cat.name)); 
