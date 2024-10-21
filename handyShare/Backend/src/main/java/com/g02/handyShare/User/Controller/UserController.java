@@ -41,9 +41,6 @@ public class UserController {
         }
     }
 
-
-    
-
     @GetMapping("/all/admin/getUser") //Api accessible by the ADMIN only
     public ResponseEntity<List<User>> getUsers() {
         List<User> users = userService.getAllUsers();
@@ -58,7 +55,7 @@ public class UserController {
     public ResponseEntity<String> verifyEmail(@RequestParam String token) {
         String response = userService.verifyUser(token);
             if(response.contains("Successfully")){
-                return ResponseEntity.ok().body("Email varified");
+                return ResponseEntity.ok().body("Email is successfully verified !!!");
             }
        
         return ResponseEntity.badRequest().body("Invalid or expired token.");

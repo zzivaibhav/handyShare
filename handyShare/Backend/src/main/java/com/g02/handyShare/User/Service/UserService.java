@@ -19,7 +19,7 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private EmailService emailService; // Injecting EmailService
+    private EmailService emailService; 
 
     public String registerUser(User user) {
         // Check if email already exists
@@ -29,7 +29,7 @@ public class UserService {
            return "already registered"; 
         }
 
-        // Encrypt password before saving for new user
+        // Encrypting password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         // Generate a verification token
@@ -40,8 +40,7 @@ public class UserService {
         String verificationLink = "http://localhost:8080/api/v1/all/verifyUser?token=" + token;
 
         // Send the email to the user to verify
-        String response = emailService.sendEmail(user.getEmail(), "Verify your email",
-                "Please verify your email by clicking on the following link: " + verificationLink);
+        String response = emailService.sendEmail(user.getEmail(), "Verify your email",verificationLink);
 
         if (response.contains("Success")) {
             // Save new user to the database
@@ -52,7 +51,7 @@ public class UserService {
     }
 
     public User findByToken(String token) {
-        return userRepository.findByVerificationToken(token); // Implement this method in your UserRepository
+        return userRepository.findByVerificationToken(token); 
     }
 
     public List<User> getAllUsers() {
