@@ -92,17 +92,13 @@
 		</dependency>
 	<!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
 <dependency>
-    <groupId>com.google.firebase</groupId>
-    <artifactId>firebase-admin</artifactId>
-    <version>9.4.1</version>
+  <groupId>com.google.firebase</groupId>
+  <artifactId>firebase-admin</artifactId>
+  <version>9.1.1</version> <!-- Use the latest version -->
 </dependency>
 
-<!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-storage -->
-<dependency>
-    <groupId>com.google.firebase</groupId>
-    <artifactId>firebase-storage</artifactId>
-    <version>21.0.1</version>
-</dependency>
+
+
 
 		<dependency>
 			<groupId>jakarta.validation</groupId>
