@@ -64,4 +64,11 @@ public class ProductService {
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
         return productRepository.findNewlyAddedProductsByCategory(category, oneWeekAgo);
     }
+
+    public Product addProduct(Product product) {
+        if (product.getUserId() == null) {
+            throw new CustomException("User ID is required for adding a product.");
+        }
+        return productRepository.save(product);
+    }
 }
