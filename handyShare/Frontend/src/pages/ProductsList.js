@@ -18,7 +18,7 @@ const ProductsList = () => {
     // Fetch products and categories data from API
     const fetchData = async () => {
       try {
-        const productsResponse = await axios.get('http://localhost:8080/api/v1/all/products/allProducts');
+        const productsResponse = await axios.get('http://localhost:8080/api/v1/all/allProducts');
         const categoriesResponse = await axios.get('http://localhost:8080/api/v1/all/allCategories');
         setProducts(productsResponse.data);
         setCategories(categoriesResponse.data.map(cat => cat.name)); 
@@ -32,6 +32,7 @@ const ProductsList = () => {
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters({ ...filters, [name]: value });
+    setCurrentPage(1); // Reset to first page when filters change
   };
 
   const handleSortChange = (e) => {
@@ -40,13 +41,13 @@ const ProductsList = () => {
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset to first page when search query changes
   };
 
   const sortedProducts = useMemo(() => {
     return [...products].sort((a, b) => {
       if (sortOption === 'newest') {
-        // Assuming products have a 'createdAt' field
-        return new Date(b.createdAt) - new Date(a.createdAt);
+        return new Date(b.createdDate) - new Date(a.createdDate);
       } else if (sortOption === 'highest') {
         return b.rentalPrice - a.rentalPrice;
       } else {
@@ -58,8 +59,8 @@ const ProductsList = () => {
   const filteredProducts = useMemo(() => {
     return sortedProducts.filter(product => {
       return (
-        (!filters.priceRange || product.rentalPrice <= filters.priceRange) &&
-        (!filters.availability || product.availability >= filters.availability) &&
+        (!filters.priceRange || product.rentalPrice <= parseFloat(filters.priceRange)) &&
+        (!filters.availability || product.availability >= parseFloat(filters.availability)) &&
         (!filters.category || product.category === filters.category) &&
         (product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
          product.category.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -181,7 +182,7 @@ const ProductsList = () => {
 
           {/* Product Grid */}
           <div className="w-3/4 grid grid-cols-3 gap-6 ml-6">
-            {products.map((product) => (
+            {currentProducts.map((product) => (
               <Link to={`/product/${product.id}`} key={product.id}>
                 <div className="bg-white shadow-md rounded-lg p-4">
                   {product.image ? (

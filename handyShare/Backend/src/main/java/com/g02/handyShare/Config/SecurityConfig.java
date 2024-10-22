@@ -31,15 +31,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(customizer -> customizer.disable())
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/signup", "/api/v1/all/genToken").permitAll()  // Permit these endpoints
+                        .requestMatchers("/api/v1/all/**").permitAll() // Bypass authentication for all /api/v1/all/** endpoints
                         .requestMatchers("/api/v1/admin/**").hasAuthority("admin")  // Only accessible by users with ADMIN role
                         .requestMatchers("/api/v1/user/**").hasAuthority("user")    // Only accessible by users with USER role
                         .anyRequest().authenticated()  // All other endpoints need authentication
                 )
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
                 .build();
     }
 

@@ -66,9 +66,9 @@ public class ProductService {
     }
 
     public Product addProduct(Product product) {
-        if (product.getUserId() == null) {
-            throw new CustomException("User ID is required for adding a product.");
-        }
+        // if (product.getUserId() == null) {
+        //     throw new CustomException("User ID is required for adding a product.");
+        // }
         return productRepository.save(product);
     }
 }
