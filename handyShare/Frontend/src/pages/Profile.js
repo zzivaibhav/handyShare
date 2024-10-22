@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Button, Layout, Menu, Form, Input } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Button, Layout, Menu, Form, Input, message } from 'antd';
+import axios from 'axios'; // Import Axios
 import ProfileHeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar'; 
 import defaultImage from '../components/ProfileUpdatePage/defaultProfileImage.png'; 
 import { useNavigate } from 'react-router-dom'; 
@@ -9,18 +10,40 @@ const { Header, Content, Sider } = Layout;
 const Profile = () => {
   const navigate = useNavigate(); 
 
-  // Default current user details
-  const [userDetails] = useState({
-    name: 'John Doe', 
-    email: 'johndoe@example.com', 
+  // State to hold user details
+  const [userDetails, setUserDetails] = useState({
+    name: '', 
+    email: '', 
     address: null, 
-    phone: '123-456-7890',
+    phone: '',
     pincode: null, 
     profileImage: null,
   });
 
   // State to handle the current view (Profile or Change Password)
   const [view, setView] = useState('profile');
+
+  // Fetch user details from API using Axios
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const token = localStorage.getItem('token'); // Retrieve the access token from localStorage
+
+        const response = await axios.get('http://localhost:8080/api/v1/user/getUser', {
+          headers: {
+            Authorization: `Bearer ${token}`, // Pass the access token in the Authorization header
+
+          },
+        });
+        setUserDetails(response.data); // Update state with the fetched user details
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+        message.error('Failed to load user details'); // Show error message if request fails
+      }
+    };
+
+    fetchUserDetails();
+  }, []);
 
   // Handle menu item click
   const handleMenuClick = (e) => {

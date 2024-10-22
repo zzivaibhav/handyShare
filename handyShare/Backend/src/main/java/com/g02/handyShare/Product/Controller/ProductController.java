@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/all")
+@RequestMapping("/api/v1")
 
 @CrossOrigin(origins = "*")
 public class ProductController {
@@ -58,7 +58,7 @@ public class ProductController {
 
  
 
-    @GetMapping("/newly-added")
+    @GetMapping("/all/newly-added")
     public ResponseEntity<List<Product>> getNewlyAddedProductsByCategory(@RequestParam String category) {
         List<Product> products = productService.getNewlyAddedProductsByCategory(category);
         return ResponseEntity.ok().body(products);

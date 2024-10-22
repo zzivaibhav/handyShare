@@ -17,8 +17,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1")
 
-@CrossOrigin(origins = "*")
-
+@CrossOrigin(origins = "http://localhost:3001", 
+allowedHeaders = {"Authorization", "Content-Type"}, 
+methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS})
 public class CategoryController {
 
   @Autowired
@@ -46,7 +47,7 @@ public class CategoryController {
                 .body(savedCategory);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/category/{id}")
     public ResponseEntity<?> getCategoryById(@PathVariable(value = "id") Long categoryId) {
         Optional<Category> category = categoryService.getCategoryById(categoryId);
 
@@ -69,18 +70,18 @@ public class CategoryController {
         return categories;
     }
 
-    @PutMapping("/all/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable(value = "id") Long categoryId,
-                                                   @RequestBody Category categoryDetails) {
-        Category updatedCategory = categoryService.updateCategory(categoryId, categoryDetails);
-        return ResponseEntity.ok(updatedCategory);
-    }
+    // @PutMapping("/all/{id}")
+    // public ResponseEntity<Category> updateCategory(@PathVariable(value = "id") Long categoryId,
+    //                                                @RequestBody Category categoryDetails) {
+    //     Category updatedCategory = categoryService.updateCategory(categoryId, categoryDetails);
+    //     return ResponseEntity.ok(updatedCategory);
+    // }
 
-    @DeleteMapping("/all/{id}")
-    public ResponseEntity<?> deleteCategory(@PathVariable(value = "id") Long categoryId) {
-        categoryService.deleteCategory(categoryId);
-        return ResponseEntity.ok().build();
-    }
+    // @DeleteMapping("/all/{id}")
+    // public ResponseEntity<?> deleteCategory(@PathVariable(value = "id") Long categoryId) {
+    //     categoryService.deleteCategory(categoryId);
+    //     return ResponseEntity.ok().build();
+    // }
 
     @GetMapping("/tree")
     public List<Category> getCategoryTree() {
