@@ -1,16 +1,15 @@
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';  // Import useLocation
+import { useNavigate, useLocation } from 'react-router-dom';  
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 import defaultProfileImage from './defaultProfileImage.png'; 
 
 const RentSummaryPage = () => {
   const navigate = useNavigate();
-  const location = useLocation();  // Get passed state
+  const location = useLocation();  
 
-  // Extract product, hours, and selectedDate from state
+  // Extracting product, hours, and selectedDate from state
   const { product, hours, selectedDate } = location.state || {};
 
-  // If no data was passed, you could redirect the user or handle it accordingly
   if (!product || !hours) {
     return <div>Invalid data passed. Please go back and try again.</div>;
   }
@@ -26,11 +25,6 @@ const RentSummaryPage = () => {
         <div className="bg-white shadow-md rounded-lg p-6">
           <div className="flex">
             <div className="w-1/3">
-              {/* <img
-                src={product.image || defaultProfileImage }  // Use a fallback image if not available
-                alt={product.name}
-                className="w-full h-48 object-cover rounded-md"
-              /> */}
             {product.image ? (
             <img src={product.image} alt={product.name} className="w-full h-64 object-cover rounded-md mb-4" />
           ) : (
