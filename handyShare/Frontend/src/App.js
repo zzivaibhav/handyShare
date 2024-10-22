@@ -13,6 +13,7 @@ import ProductsListPage from './pages/ProductsList.js';
 import Payment from './pages/Payment.js';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Feedback from './pages/Feedback.js';
+import RentSummaryPage from './pages/RentSummaryPage.js';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
       <Route path="/products" element={<ProductsListPage />} />
       <Route path="/payment" element={<Payment/>} />
       <Route path="/feedback" element={<Feedback/>} />
+      <Route path="/rent-summary" element={<RentSummaryPage/>} />
     </Routes>
   );
 }

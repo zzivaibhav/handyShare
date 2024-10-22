@@ -83,10 +83,8 @@ const Profile = () => {
   };
 
   return (
-    <Layout>
-      <Header>
-        <ProfileHeaderBar/>
-      </Header>
+    <div>
+      <ProfileHeaderBar/>
       <Layout>
         <Sider width={200}>
           <Menu
@@ -181,7 +179,7 @@ const Profile = () => {
           </Content>
         </Layout>
       </Layout>
-    </Layout>
+    </div>
   );
 };
 
