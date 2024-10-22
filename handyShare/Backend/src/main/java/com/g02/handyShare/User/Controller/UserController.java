@@ -17,7 +17,7 @@ import java.util.Optional;
 // /admin -> accessible by admin only
 
 @RestController
-@RequestMapping("/api/v1")
+ @RequestMapping("/api/v1")
 @CrossOrigin(origins = "*")
 public class UserController {
 
@@ -27,8 +27,7 @@ public class UserController {
     @Autowired
     UserRepository repo;
 
-    @PostMapping("all/register")
-    public ResponseEntity<String> registerUser(@RequestBody User user) {
+
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             return ResponseEntity.badRequest().body("Email is required");
         } else {
