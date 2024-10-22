@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 import { Link } from 'react-router-dom';
@@ -42,25 +42,30 @@ const ProductsList = () => {
     setSearchQuery(e.target.value);
   };
 
-  const sortedProducts = products.sort((a, b) => {
-    if (sortOption === 'newest') {
-      return b.id - a.id;
-    } else if (sortOption === 'highest') {
-      return b.rentalPrice - a.rentalPrice;
-    } else {
-      return a.rentalPrice - b.rentalPrice;
-    }
-  });
+  const sortedProducts = useMemo(() => {
+    return [...products].sort((a, b) => {
+      if (sortOption === 'newest') {
+        // Assuming products have a 'createdAt' field
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      } else if (sortOption === 'highest') {
+        return b.rentalPrice - a.rentalPrice;
+      } else {
+        return a.rentalPrice - b.rentalPrice;
+      }
+    });
+  }, [products, sortOption]);
 
-  const filteredProducts = sortedProducts.filter(product => {
-    return (
-      (!filters.priceRange || product.rentalPrice <= filters.priceRange) &&
-      (!filters.availability || product.availability >= filters.availability) &&
-      (!filters.category || product.category === filters.category) &&
-      (product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-       product.category.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
-  });
+  const filteredProducts = useMemo(() => {
+    return sortedProducts.filter(product => {
+      return (
+        (!filters.priceRange || product.rentalPrice <= filters.priceRange) &&
+        (!filters.availability || product.availability >= filters.availability) &&
+        (!filters.category || product.category === filters.category) &&
+        (product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+         product.category.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    });
+  }, [sortedProducts, filters, searchQuery]);
 
   // Pagination logic
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -176,16 +181,22 @@ const ProductsList = () => {
 
           {/* Product Grid */}
           <div className="w-3/4 grid grid-cols-3 gap-6 ml-6">
-            {currentProducts.map((product, index) => (
-              <Link to={`/product/${product.id}`} key={index}>
+            {products.map((product) => (
+              <Link to={`/product/${product.id}`} key={product.id}>
                 <div className="bg-white shadow-md rounded-lg p-4">
-                  <img
-                    src={product.image} 
-                    alt={product.name}
-                    className="w-full h-48 object-cover rounded-md mb-4"
-                  />
+                  {product.image ? (
+                    <img
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-48 object-cover rounded-md mb-4"
+                    />
+                  ) : (
+                    <div className="w-full h-48 bg-gray-300 rounded-md mb-4 flex items-center justify-center">
+                      <span>No Image Available</span>
+                    </div>
+                  )}
                   <h3 className="text-xl font-semibold">{product.name}</h3>
-                  <p className="mt-2">{product.description}</p>
+                  <p className="mt-2">{product.description || 'No description available.'}</p>
                   <p className="mt-2 text-lg font-medium">Hourly Price: ${product.rentalPrice}</p>
                   <p className="mt-1 text-gray-500">Available for {product.availability} hours</p>
                 </div>

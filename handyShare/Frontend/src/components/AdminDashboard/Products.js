@@ -36,12 +36,7 @@ const Products = () => {
   // Function to handle deleting a product
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/api/v1/all/products/delete/${id}`, {
-        auth: {
-          username: 'yashharjani2001@gmail.com',
-          password: 'admin@123'
-        }
-      });
+      await axios.delete(`http://localhost:8080/api/v1/all/products/delete/${id}`);
       setProducts(products.filter(product => product.id !== id));
       message.success('Product deleted successfully!');
     } catch (error) {
