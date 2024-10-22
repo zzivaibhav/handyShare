@@ -42,14 +42,13 @@ public class Product {
     @NotNull(message="Availability is required.")
     private Boolean available;
 
-    private Long userId;
+    // private Long userId; // Commented out as not needed currently
 
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
     @PrePersist
     protected void onCreate() {
-    this.createdDate = LocalDateTime.now();
-}
-
+        this.createdDate = LocalDateTime.now();
+    }
 }

@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import HeaderBar from '../components/Homepage/HeaderBar.js'; // Updated import path to unified HeaderBar
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { message } from 'antd';
 
 const ProductPage = () => {
@@ -32,9 +30,9 @@ const ProductPage = () => {
         setProduct(productResponse.data);
 
         // Fetch reviews related to the product
-        const reviewsResponse = await axios.get(`http://localhost:8080/api/v1/all/allProducts/${id}/reviews`);
-        console.log('Fetched Reviews:', reviewsResponse.data); // Debugging
-        setReviews(reviewsResponse.data);
+        //const reviewsResponse = await axios.get(`http://localhost:8080/api/v1/all/allProducts/${id}/reviews`);
+        //console.log('Fetched Reviews:', reviewsResponse.data); // Debugging
+        //setReviews(reviewsResponse.data);
 
         // Check if userId exists before making the request
         if (productResponse.data.userId) {
@@ -63,7 +61,7 @@ const ProductPage = () => {
       return;
     }
 
-    try {
+    /*try {
       // Example POST request to initiate rental without userId
       await axios.post('http://localhost:8080/api/v1/rentals', {
         productId: product.id,
@@ -75,7 +73,7 @@ const ProductPage = () => {
     } catch (err) {
       console.error('Error initiating rental:', err);
       message.error('Failed to initiate rental. Please try again.');
-    }
+    }*/
   };
 
   if (loading) return <div className="p-8 mt-16">Loading...</div>;
@@ -123,12 +121,11 @@ const ProductPage = () => {
           {/* Date Picker for Rental Date */}
           <div className="mt-6">
             <label className="block text-lg font-medium mb-2">Select Rental Date:</label>
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
-              dateFormat="MMMM d, yyyy"
+            <input
+              type="date"
+              value={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}
+              onChange={(e) => setSelectedDate(new Date(e.target.value))}
               className="w-full p-2 border border-gray-300 rounded-md"
-              placeholderText="Choose a date"
             />
           </div>
 
