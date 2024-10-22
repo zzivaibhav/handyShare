@@ -15,7 +15,7 @@ import java.util.List;
 //API starting with /admin are accessible by admin only.
 
 @RestController
-@RequestMapping("/api/v1")
+ @RequestMapping("/api/v1/all")
 @CrossOrigin(origins = "*")
 public class UserController {
 
@@ -25,7 +25,7 @@ public class UserController {
     @Autowired
     UserRepository repo;
 
-    @PostMapping("all/register")
+    @PostMapping("/register")
     public ResponseEntity<String> registerUser( @RequestBody User user) {
 
         if (user.getEmail() == null || user.getEmail().isEmpty()) {

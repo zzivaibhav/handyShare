@@ -48,6 +48,8 @@ public class UserService {
             userRepository.save(user);
             return "User registered successfully. Please check your email for verification.";
         }
+
+        userRepository.save(user);
         return "Enter a valid email address.";
     }
 
