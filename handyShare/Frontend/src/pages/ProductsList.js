@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 import { Link } from 'react-router-dom';
@@ -44,29 +44,25 @@ const ProductsList = () => {
     setCurrentPage(1); // Reset to first page when search query changes
   };
 
-  const sortedProducts = useMemo(() => {
-    return [...products].sort((a, b) => {
-      if (sortOption === 'newest') {
-        return new Date(b.createdDate) - new Date(a.createdDate);
-      } else if (sortOption === 'highest') {
-        return b.rentalPrice - a.rentalPrice;
-      } else {
-        return a.rentalPrice - b.rentalPrice;
-      }
-    });
-  }, [products, sortOption]);
+  const sortedProducts = products.sort((a, b) => {
+    if (sortOption === 'newest') {
+      return b.id - a.id;
+    } else if (sortOption === 'highest') {
+      return b.rentalPrice - a.rentalPrice;
+    } else {
+      return a.rentalPrice - b.rentalPrice;
+    }
+  });
 
-  const filteredProducts = useMemo(() => {
-    return sortedProducts.filter(product => {
-      return (
-        (!filters.priceRange || product.rentalPrice <= parseFloat(filters.priceRange)) &&
-        (!filters.availability || product.availability >= parseFloat(filters.availability)) &&
-        (!filters.category || product.category === filters.category) &&
-        (product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-         product.category.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-    });
-  }, [sortedProducts, filters, searchQuery]);
+  const filteredProducts = sortedProducts.filter(product => {
+    return (
+      (!filters.priceRange || product.rentalPrice <= filters.priceRange) &&
+      (!filters.availability || product.availability >= filters.availability) &&
+      (!filters.category || product.category === filters.category) &&
+      (product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+       product.category.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+  });
 
   // Pagination logic
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -183,7 +179,7 @@ const ProductsList = () => {
           {/* Product Grid */}
           <div className="w-3/4 grid grid-cols-3 gap-6 ml-6">
             {currentProducts.map((product) => (
-              <Link to={`/product/${product.id}`} key={product.id}>
+              <Link to={`/product/${product.id}`} key={product.id}>  
                 <div className="bg-white shadow-md rounded-lg p-4">
                   {product.image ? (
                     <img
