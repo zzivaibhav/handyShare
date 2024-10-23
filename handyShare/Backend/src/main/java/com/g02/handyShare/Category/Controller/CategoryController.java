@@ -17,9 +17,11 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1")
 
-@CrossOrigin(origins = "http://localhost:3001", 
-allowedHeaders = {"Authorization", "Content-Type"}, 
-methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS})
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true" )
+
+// @CrossOrigin(origins = "http://localhost:3000", 
+// allowedHeaders = {"Authorization", "Content-Type"}, 
+// methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS})
 public class CategoryController {
 
   @Autowired
@@ -47,7 +49,7 @@ public class CategoryController {
                 .body(savedCategory);
     }
 
-    @GetMapping("/category/{id}")
+    @GetMapping("/user/category/{id}")
     public ResponseEntity<?> getCategoryById(@PathVariable(value = "id") Long categoryId) {
         Optional<Category> category = categoryService.getCategoryById(categoryId);
 
@@ -62,7 +64,7 @@ public class CategoryController {
     }
 
 
-    @GetMapping("/all/allCategories")
+    @GetMapping("/user/allCategories")
     public List<Category> getAllCategories() {
         System.out.println("Fetching all categories");
         List<Category> categories = categoryService.getAllCategories();
@@ -86,5 +88,10 @@ public class CategoryController {
     @GetMapping("/tree")
     public List<Category> getCategoryTree() {
         return categoryService.getCategoryTree();
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public void handleOptions() {
+        // this will allow the preflight request to pass
     }
 }

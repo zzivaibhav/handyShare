@@ -35,12 +35,12 @@ public class Product {
     @NotBlank(message="Category is required.")
     private String category;
 
+    private String productImage;
+
     @NotNull(message = "Rental Price is required.")  // Use @NotNull for Double
     @Min(value = 0, message = "Rental Price should be positive.")
     private Double rentalPrice;
-
-    @NotNull(message="Availability is required.")
-    private Boolean available;
+ 
 
     // private Long userId; // Commented out as not needed currently
 
@@ -49,6 +49,9 @@ public class Product {
 
     @PrePersist
     protected void onCreate() {
-        this.createdDate = LocalDateTime.now();
-    }
+    this.createdDate = LocalDateTime.now();
+
+    
+}
+
 }

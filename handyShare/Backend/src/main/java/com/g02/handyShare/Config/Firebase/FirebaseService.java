@@ -18,7 +18,7 @@ import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
 
 @Service
 public class FirebaseService {
-    public ResponseEntity<String> uploadFile(MultipartFile multipartFile, String path) throws IOException {
+    public String uploadFile(MultipartFile multipartFile, String path) throws IOException {
         String objectName = generateFileName(multipartFile);
 
         // Load the Firebase service account key from the classpath
@@ -55,7 +55,7 @@ public class FirebaseService {
         // Optionally, delete the temporary file after upload
         file.delete();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(publicUrl);
+        return publicUrl;
     }
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {

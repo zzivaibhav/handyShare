@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -52,11 +53,30 @@ public class Profile {
    public ResponseEntity<?> fetchUser(){
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
-        System.out.println(userName);
+     
 
         User response = profileService.getUser(userName);
        
         return ResponseEntity.ok().body(response);
    }
+
+   @PutMapping("/user/update-profile")
+    public ResponseEntity<?> updateUser(@RequestParam("profileImage") MultipartFile file, 
+                                        @RequestParam("name") String name,
+                                        @RequestParam("address") String address,
+                                        @RequestParam("pincode") String pincode,
+                                        @RequestParam("phone") String phone
+                                        ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        
+        User user = new User();
+        user.setName(name);
+        user.setPincode(pincode);
+        user.setAddress(address);
+        user.setPhone(phone);                                   
+        ResponseEntity<?> response = profileService.modifyUser(file, user, email, "user_profile_pictures");
+        return ResponseEntity.ok().body(response);
+    }
 
 }

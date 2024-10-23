@@ -17,7 +17,7 @@ const Profile = () => {
     address: null, 
     phone: '',
     pincode: null, 
-    profileImage: null,
+    imageData: null,
   });
 
   // State to handle the current view (Profile or Change Password)
@@ -84,7 +84,7 @@ const Profile = () => {
                 <h1 style={{ fontSize: '24px', fontWeight: 'bold' }}>Profile</h1>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <img
-                    src={userDetails.profileImage || defaultImage} // Use the imported default image
+                    src={userDetails.imageData || defaultImage} // Use the imported default image
                     alt="Profile"
                     style={{
                       height: '100px',
