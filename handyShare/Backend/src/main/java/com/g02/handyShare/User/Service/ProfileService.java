@@ -42,6 +42,7 @@ public class ProfileService {
             existingUser.setPincode(user.getPincode());
             existingUser.setAddress(user.getAddress());
             existingUser.setPhone(user.getPhone());
+            existingUser.setImageData(imageUrl);
 
             repo.save(existingUser);
             return ResponseEntity.ok().body("Profile updated successfully!");

@@ -28,8 +28,18 @@ const ProductPage = () => {
       }
 
       try {
+        const token = localStorage.getItem('token');
         // Fetch product details
-        const productResponse = await axios.get(`http://localhost:8080/api/v1/all/${id}`);
+        const productResponse = await axios.get(`http://localhost:8080/api/v1/user/product/${id}`,{
+        
+          headers: {
+                     
+            Authorization: `Bearer ${token}`
+        },
+        withCredentials: true
+
+        
+        });
         console.log('Fetched Product:', productResponse.data); // Debugging
         setProduct(productResponse.data);
 
@@ -40,7 +50,16 @@ const ProductPage = () => {
 
         // Check if userId exists before making the request
         if (productResponse.data.userId) {
-          const lenderResponse = await axios.get(`http://localhost:8080/api/v1/all/users/${productResponse.data.userId}`);
+          const lenderResponse = await axios.get(`http://localhost:8080/api/v1/all/users/${productResponse.data.userId}`,{
+        
+            headers: {
+                       
+              Authorization: `Bearer ${token}`
+          },
+          withCredentials: true
+  
+          
+          });
           console.log('Fetched Lender:', lenderResponse.data); // Debugging
           setLender(lenderResponse.data);
         } else {
@@ -51,7 +70,7 @@ const ProductPage = () => {
         setLoading(false);
       } catch (err) {
         console.error('Error fetching product details:', err);
-        setError('Failed to load product details.');
+        setError('/Under Development');
         setLoading(false);
       }
     };
@@ -100,8 +119,8 @@ const ProductPage = () => {
       <main className="flex-grow p-8 mt-16 flex">
 
         <div className="w-1/3 bg-gray-100 p-4 mr-6 rounded-lg shadow-md">
-          {product.image ? (
-            <img src={product.image} alt={product.name} className="w-full h-64 object-cover rounded-md mb-4" />
+          {product.productImage ? (
+            <img src={product.productImage} alt={product.name} className="w-full h-64 object-cover rounded-md mb-4" />
           ) : (
             <div className="w-full h-64 bg-gray-300 rounded-md mb-4 flex items-center justify-center">
               <span>No Image Available</span>

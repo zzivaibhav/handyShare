@@ -62,7 +62,7 @@ public class UserController {
 
     
 
-    @GetMapping("/all/admin/getUser") //Api accessible by the ADMIN only
+    @GetMapping("/admin/getUser") //Api accessible by the ADMIN only
     public ResponseEntity<List<User>> getUsers() {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok().body(users);

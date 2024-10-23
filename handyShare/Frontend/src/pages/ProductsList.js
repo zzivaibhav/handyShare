@@ -18,8 +18,28 @@ const ProductsList = () => {
     // Fetch products and categories data from API
     const fetchData = async () => {
       try {
-        const productsResponse = await axios.get('http://localhost:8080/api/v1/all/allProducts');
-        const categoriesResponse = await axios.get('http://localhost:8080/api/v1/all/allCategories');
+        const token = localStorage.getItem('token')
+        const productsResponse = await axios.get('http://localhost:8080/api/v1/user/allProducts',{
+        
+          headers: {
+                     
+            Authorization: `Bearer ${token}`
+        },
+        withCredentials: true
+
+        }
+      );  
+        const categoriesResponse = await axios.get('http://localhost:8080/api/v1/user/allCategories',{
+        
+            headers: {
+                       
+              Authorization: `Bearer ${token}`
+          },
+          withCredentials: true
+
+          }
+        );
+        console.log(productsResponse.data);
         setProducts(productsResponse.data);
         setCategories(categoriesResponse.data.map(cat => cat.name)); 
       } catch (error) {
@@ -181,9 +201,9 @@ const ProductsList = () => {
             {currentProducts.map((product) => (
               <Link to={`/product/${product.id}`} key={product.id}>  
                 <div className="bg-white shadow-md rounded-lg p-4">
-                  {product.image ? (
+                  {product.productImage ? (
                     <img
-                      src={product.image} 
+                      src={product.productImage} 
                       alt={product.name}
                       className="w-full h-48 object-cover rounded-md mb-4"
                     />

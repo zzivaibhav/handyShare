@@ -25,8 +25,8 @@ const RentSummaryPage = () => {
         <div className="bg-white shadow-md rounded-lg p-6">
           <div className="flex">
             <div className="w-1/3">
-            {product.image ? (
-            <img src={product.image} alt={product.name} className="w-full h-64 object-cover rounded-md mb-4" />
+            {product.productImage ? (
+            <img src={product.productImage} alt={product.name} className="w-full h-64 object-cover rounded-md mb-4" />
           ) : (
             <div className="w-full h-64 bg-gray-300 rounded-md mb-4 flex items-center justify-center">
               <span>No Image Available</span>

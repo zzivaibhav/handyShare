@@ -1,7 +1,9 @@
 package com.g02.handyShare.Product.Controller;
 
 import com.g02.handyShare.Category.Entity.Category;
+import com.g02.handyShare.Config.Firebase.FirebaseService;
 import com.g02.handyShare.Product.Entity.Product;
+import com.g02.handyShare.Product.Repository.ProductRepository;
 import com.g02.handyShare.Product.Service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +21,28 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1")
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true" )
+
 public class ProductController {
     @Autowired
     private ProductService productService;
 
+     @Autowired
+    private ProductRepository productRepository;
+
+      private FirebaseService firebaseService;
+
+    @Autowired
+    public void Controller(FirebaseService firebaseService) {
+        this.firebaseService = firebaseService;
+    }
+
+
     @PostMapping("/user/add")
     public ResponseEntity<?> addProducts(@ModelAttribute Product product,
-                                         @RequestParam("productImageData") MultipartFile file) {
+                                         @RequestParam("image") MultipartFile file) {
+
+                                            
     
         // Upload the image file and store its URL in the product's image data
         ResponseEntity<?> savedProduct = productService.addProduct(product, file);
@@ -35,18 +51,14 @@ public class ProductController {
     }
     
 
-//    @PutMapping("/update/{id}")
-//    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product){
-//        Product updatedProduct=productService.updateProduct(id, product);
-//        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
-//    }
 
-    @GetMapping("/{id}")
+
+    @GetMapping("user/product/{id}")
     public Product viewProductById(@PathVariable Long id){
         return productService.getProductById(id);
     }
 
-    @GetMapping("/allProducts")
+    @GetMapping("/user/allProducts")
     public List<Product> getAllCategories() {
         return productService.getAllProducts();
     }
@@ -68,4 +80,10 @@ public class ProductController {
         List<Product> products = productService.getNewlyAddedProductsByCategory(category);
         return ResponseEntity.ok().body(products);
     }
+
+    //    @PutMapping("/update/{id}")
+//    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product){
+//        Product updatedProduct=productService.updateProduct(id, product);
+//        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+//    }
 }
