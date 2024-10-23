@@ -17,8 +17,11 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1")
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true" )
 
+// @CrossOrigin(origins = "http://localhost:3000", 
+// allowedHeaders = {"Authorization", "Content-Type"}, 
+// methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS})
 public class CategoryController {
 
   @Autowired
@@ -46,7 +49,7 @@ public class CategoryController {
                 .body(savedCategory);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/user/category/{id}")
     public ResponseEntity<?> getCategoryById(@PathVariable(value = "id") Long categoryId) {
         Optional<Category> category = categoryService.getCategoryById(categoryId);
 
@@ -61,7 +64,7 @@ public class CategoryController {
     }
 
 
-    @GetMapping("/all/allCategories")
+    @GetMapping("/user/allCategories")
     public List<Category> getAllCategories() {
         System.out.println("Fetching all categories");
         List<Category> categories = categoryService.getAllCategories();
@@ -69,21 +72,26 @@ public class CategoryController {
         return categories;
     }
 
-    @PutMapping("/all/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable(value = "id") Long categoryId,
-                                                   @RequestBody Category categoryDetails) {
-        Category updatedCategory = categoryService.updateCategory(categoryId, categoryDetails);
-        return ResponseEntity.ok(updatedCategory);
-    }
+    // @PutMapping("/all/{id}")
+    // public ResponseEntity<Category> updateCategory(@PathVariable(value = "id") Long categoryId,
+    //                                                @RequestBody Category categoryDetails) {
+    //     Category updatedCategory = categoryService.updateCategory(categoryId, categoryDetails);
+    //     return ResponseEntity.ok(updatedCategory);
+    // }
 
-    @DeleteMapping("/all/{id}")
-    public ResponseEntity<?> deleteCategory(@PathVariable(value = "id") Long categoryId) {
-        categoryService.deleteCategory(categoryId);
-        return ResponseEntity.ok().build();
-    }
+    // @DeleteMapping("/all/{id}")
+    // public ResponseEntity<?> deleteCategory(@PathVariable(value = "id") Long categoryId) {
+    //     categoryService.deleteCategory(categoryId);
+    //     return ResponseEntity.ok().build();
+    // }
 
     @GetMapping("/tree")
     public List<Category> getCategoryTree() {
         return categoryService.getCategoryTree();
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public void handleOptions() {
+        // this will allow the preflight request to pass
     }
 }

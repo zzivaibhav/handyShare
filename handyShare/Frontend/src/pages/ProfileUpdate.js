@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import ProfileHeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
-import { useLocation } from 'react-router-dom'; 
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
+import { SERVER_URL } from '../constants.js';
 
 const ProfileUpdate = () => {
-  const location = useLocation(); 
+  const location = useLocation();
   const { userDetails } = location.state || {}; // Extract user details from state
 
   // State for form fields
@@ -34,15 +36,39 @@ const ProfileUpdate = () => {
     });
   };
 
-  // Simulate form submission
-  const handleSubmit = (e) => {
+  // Handle form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simulate profile update logic
-    console.log('Updated Profile:', profile);
+    // Create FormData object to handle file upload
+    const formData = new FormData();
+    formData.append('name', profile.name);
+    formData.append('address', profile.address);
+    formData.append('pincode', profile.pincode);
+    formData.append('phone', profile.phone);
+    formData.append('password', profile.password);
+    formData.append('email', profile.email);
+    if (profile.profileImage) {
+      formData.append('profileImage', profile.profileImage);
+    }
 
-    // You can show a success message or alert
-    alert('Profile updated successfully!');
+    try {
+      // Make the Axios request
+
+      const token = localStorage.getItem('token')
+      const response = await axios.put(SERVER_URL+'/api/v1/user/update-profile', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`, // Replace with your actual token
+        },
+      });
+
+      console.log('Updated Profile:', response.data);
+      alert('Profile updated successfully!');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('Failed to update profile. Please try again later.');
+    }
   };
 
   return (

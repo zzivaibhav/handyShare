@@ -40,8 +40,11 @@ public class User {
 
     private boolean is_email_verified; // Field to check if email is verified
     private String verificationToken;
+
+    private String Address;
+    private String pincode;
+    private String phone;
     //variables for storing image data.
-    private String imageType;
-    private String imageName;
+  
     private String imageData;
 }

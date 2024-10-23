@@ -1,10 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import HeaderBar from '../components/Homepage/HeaderBar.js'; // Updated import path to unified HeaderBar
+import HeaderBar from '../components/Homepage/HeaderBar.js'; 
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { message } from 'antd';
+import { useNavigate } from 'react-router-dom'; 
 
 const ProductPage = () => {
+  const navigate = useNavigate(); 
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -30,9 +34,9 @@ const ProductPage = () => {
         setProduct(productResponse.data);
 
         // Fetch reviews related to the product
-        //const reviewsResponse = await axios.get(`http://localhost:8080/api/v1/all/allProducts/${id}/reviews`);
-        //console.log('Fetched Reviews:', reviewsResponse.data); // Debugging
-        //setReviews(reviewsResponse.data);
+        // const reviewsResponse = await axios.get(`http://localhost:8080/api/v1/all/allProducts/${id}/reviews`);
+        // console.log('Fetched Reviews:', reviewsResponse.data); // Debugging
+        // setReviews(reviewsResponse.data);
 
         // Check if userId exists before making the request
         if (productResponse.data.userId) {
@@ -60,20 +64,30 @@ const ProductPage = () => {
       message.warning('Please select a date to proceed with the rental.');
       return;
     }
+    // navigate('/rent-summary'); 
 
-    /*try {
-      // Example POST request to initiate rental without userId
-      await axios.post('http://localhost:8080/api/v1/rentals', {
-        productId: product.id,
-        rentalDate: selectedDate,
-      });
+      // Navigate to Rent Summary Page and pass product and other details as state
+  navigate('/rent-summary', { 
+    state: { 
+      product, 
+      hours: product.transactionTime || 2,  // You can dynamically pass hours 
+      selectedDate 
+    } 
+  });
 
-      message.success('Rental initiated successfully!');
-      // Redirect or update UI as needed
-    } catch (err) {
-      console.error('Error initiating rental:', err);
-      message.error('Failed to initiate rental. Please try again.');
-    }*/
+    // try {
+    //   // Example POST request to initiate rental without userId
+    //   await axios.post('http://localhost:8080/api/v1/rentals', {
+    //     productId: product.id,
+    //     rentalDate: selectedDate,
+    //   });
+
+    //   message.success('Rental initiated successfully!');
+    //   // Redirect or update UI as needed
+    // } catch (err) {
+    //   console.error('Error initiating rental:', err);
+    //   message.error('Failed to initiate rental. Please try again.');
+    // }
   };
 
   if (loading) return <div className="p-8 mt-16">Loading...</div>;
@@ -84,7 +98,7 @@ const ProductPage = () => {
     <div className="min-h-screen flex flex-col">
       <HeaderBar />
       <main className="flex-grow p-8 mt-16 flex">
-        {/* Left Section: Product Image and Description */}
+
         <div className="w-1/3 bg-gray-100 p-4 mr-6 rounded-lg shadow-md">
           {product.image ? (
             <img src={product.image} alt={product.name} className="w-full h-64 object-cover rounded-md mb-4" />
@@ -121,11 +135,12 @@ const ProductPage = () => {
           {/* Date Picker for Rental Date */}
           <div className="mt-6">
             <label className="block text-lg font-medium mb-2">Select Rental Date:</label>
-            <input
-              type="date"
-              value={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}
-              onChange={(e) => setSelectedDate(new Date(e.target.value))}
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date) => setSelectedDate(date)}
+              dateFormat="MMMM d, yyyy"
               className="w-full p-2 border border-gray-300 rounded-md"
+              placeholderText="Choose a date"
             />
           </div>
 

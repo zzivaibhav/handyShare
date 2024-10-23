@@ -20,7 +20,7 @@ public class Controller {
     public ResponseEntity<String> uploadFile(@RequestPart MultipartFile file,
                                              @RequestParam String path) {
         try {
-            return firebaseService.uploadFile(file, path);
+            return ResponseEntity.ok().body(firebaseService.uploadFile(file, path));
         } catch (IOException e) {
             return ResponseEntity.status(500).body("File upload failed: " + e.getMessage());
         }

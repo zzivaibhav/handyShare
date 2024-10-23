@@ -7,28 +7,33 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/all")
+@RequestMapping("/api/v1")
 
 @CrossOrigin(origins = "*")
 public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @PostMapping("/add")
-    public ResponseEntity<?> addProducts(@RequestBody  List<Product> products) {
-        List<Product> savedProducts = productService.addProduct(products);
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Products added successfully.");
-        response.put("products", savedProducts);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    @PostMapping("/user/add")
+    public ResponseEntity<?> addProducts(@ModelAttribute Product product,
+                                         @RequestParam("productImageData") MultipartFile file) {
+    
+        // Upload the image file and store its URL in the product's image data
+        ResponseEntity<?> savedProduct = productService.addProduct(product, file);
+    
+        return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
     }
+    
 
 //    @PutMapping("/update/{id}")
 //    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product){
@@ -58,7 +63,7 @@ public class ProductController {
 
  
 
-    @GetMapping("/newly-added")
+    @GetMapping("/user/newly-added")
     public ResponseEntity<List<Product>> getNewlyAddedProductsByCategory(@RequestParam String category) {
         List<Product> products = productService.getNewlyAddedProductsByCategory(category);
         return ResponseEntity.ok().body(products);

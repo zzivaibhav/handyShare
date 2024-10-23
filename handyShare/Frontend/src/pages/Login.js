@@ -35,7 +35,7 @@ export default function Login() {
 
         // Save the JWT token (you can use localStorage or cookies)
         localStorage.setItem('token', token);
-        console.log(token);
+       
 
         // Redirect to the homepage after successful login
         navigate('/homepage');
