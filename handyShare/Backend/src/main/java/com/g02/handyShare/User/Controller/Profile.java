@@ -2,6 +2,7 @@ package com.g02.handyShare.User.Controller;
 
 import com.g02.handyShare.Config.CustomUserDetailsService;
 import com.g02.handyShare.Config.Jwt.JwtUtil;
+import com.g02.handyShare.User.DTO.PasswordChangeRequest;
 import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
 import com.g02.handyShare.User.Service.ProfileService;
@@ -78,5 +79,13 @@ public class Profile {
         ResponseEntity<?> response = profileService.modifyUser(file, user, email, "user_profile_pictures");
         return ResponseEntity.ok().body(response);
     }
-
+    @PatchMapping("/user/changePassword")
+    public ResponseEntity<?> changePassword(
+        @RequestBody PasswordChangeRequest request
+    ){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        String result = profileService.changePassword(request,email);
+        return ResponseEntity.ok().body(result);
+    }
 }

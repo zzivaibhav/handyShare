@@ -51,9 +51,31 @@ const Profile = () => {
   };
 
   // Handle password change form submission
-  const onFinishPasswordChange = (values) => {
-    console.log('Password change values:', values);
+  const onFinishPasswordChange = async (values) => {
+    try {
+      const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+  console.log(values.currentPassword)
+      // Send request to the API to change the password
+      const response = await axios.patch(
+        'http://localhost:8080/api/v1/user/changePassword',
+        {
+          currentPassword: values.currentPassword,
+          newPassword: values.newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
+          },
+        }
+      );
+  
+      message.success(response.data); // Show success message
+    } catch (error) {
+      console.error('Password change error:', error);
+      message.error('Failed to change password'); // Show error message if request fails
+    }
   };
+  
 
   // Navigate to the Profile Update page with user details
   const handleEditClick = () => {
