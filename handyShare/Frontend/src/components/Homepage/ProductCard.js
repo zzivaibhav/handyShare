@@ -1,7 +1,8 @@
-// ProductCard.js
 import React from 'react';
 
-function ProductCard({ name, description, rentalPrice }) {
+function ProductCard({ name, description, rentalPrice, productImage }) {
+  const placeholderImage = 'path_to_placeholder_image'; // Path to the placeholder image
+
   return (
     <div 
       style={{
@@ -19,6 +20,7 @@ function ProductCard({ name, description, rentalPrice }) {
         color: 'white'
       }}
     >
+      {/* Image section */}
       <div style={{
         height: '250px', 
         width: '100%', 
@@ -29,9 +31,14 @@ function ProductCard({ name, description, rentalPrice }) {
         justifyContent: 'center', 
         alignItems: 'center',
       }}>
-        <span style={{ color: '#3B7BF8', fontSize: '16px' }}>Image Placeholder</span>
+        <img 
+          src={productImage || placeholderImage}  // Use productImage if available, otherwise show placeholder
+          alt={name} 
+          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10px' }} 
+        />
       </div>
 
+      {/* Name, description, and price section */}
       <div style={{ fontWeight: 'bold', fontSize: '20px', marginBottom: '5px', textAlign: 'center' }}>
         {name}
       </div>

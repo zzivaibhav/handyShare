@@ -63,7 +63,7 @@ public class ProductController {
 
  
 
-    @GetMapping("/all/newly-added")
+    @GetMapping("/user/newly-added")
     public ResponseEntity<List<Product>> getNewlyAddedProductsByCategory(@RequestParam String category) {
         List<Product> products = productService.getNewlyAddedProductsByCategory(category);
         return ResponseEntity.ok().body(products);
