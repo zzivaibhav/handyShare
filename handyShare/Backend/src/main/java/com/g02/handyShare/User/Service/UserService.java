@@ -41,8 +41,7 @@ public class UserService {
         String verificationLink = "http://localhost:8080/api/v1/all/verifyUser?token=" + token;
 
         // Send the email to the user to verify
-        String response = emailService.sendEmail(user.getEmail(), "Verify your email",
-                "Please verify your email by clicking on the following link: " + verificationLink);
+        String response = emailService.sendEmail(user.getEmail(), "Verify your email", verificationLink);
 
         if (response.contains("Success")) {
             // Save new user to the database
@@ -55,7 +54,7 @@ public class UserService {
     }
 
     public User findByToken(String token) {
-        return userRepository.findByVerificationToken(token); // Implement this method in your UserRepository
+        return userRepository.findByVerificationToken(token); 
     }
 
     public List<User> getAllUsers() {
