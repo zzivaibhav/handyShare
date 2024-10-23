@@ -5,10 +5,9 @@ import { Layout, Menu, Table } from 'antd';
 import axios from 'axios';
 import { message } from 'antd';
 
-
 const { Header, Content, Sider } = Layout;
 
-const LendPage = () => {
+const LendPage = ({ onProductAdded }) => {
   const [view, setView] = useState('lendings');
   const [loading, setLoading] = useState(true);
   const [lentItems, setLentItems] = useState([]); // Define lentItems here
@@ -16,7 +15,8 @@ const LendPage = () => {
   useEffect(() => {
     const fetchLentItems = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/lending/items');
+        const response = await axios.get('http://localhost:8080/api/v1/all/lending/items');
+        setLentItems(response.data); // Add the fetched data
         setLoading(false);
       } catch (error) {
         console.error('Error fetching lent items:', error);
@@ -27,6 +27,12 @@ const LendPage = () => {
 
     fetchLentItems();
   }, []);
+
+  // Handle item creation
+  const handleProductAdded = () => {
+    message.success('New product added successfully!');
+    onProductAdded(); // Notify the parent to refresh the product list
+  };
 
   // Columns for the table listing the items
   const columns = [
@@ -82,7 +88,7 @@ const LendPage = () => {
                 <Table columns={columns} dataSource={lentItems} loading={loading} />
               </>
             ) : (
-              <LendFormPage />
+              <LendFormPage onProductAdded={handleProductAdded} />
             )}
           </Content>
         </Layout>

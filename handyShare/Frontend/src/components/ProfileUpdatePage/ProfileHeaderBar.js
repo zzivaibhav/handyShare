@@ -32,11 +32,13 @@ const ProfileHeaderBar = () => {
       <Space>
         <Button>Lendings</Button>
         <Button>Borrowings</Button>
+        <Link to='/profile'>
         <Button
           type="primary"
           shape="circle"
           icon={<UserOutlined />}
         />
+        </Link>
       </Space>
     </Header>
   );

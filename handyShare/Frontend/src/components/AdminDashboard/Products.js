@@ -21,7 +21,7 @@ const Products = () => {
   // Function to fetch products from the API
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/v1/all/products/allProducts");
+      const response = await axios.get("http://localhost:8080/api/v1/all/allProducts");
       setProducts(response.data);
     } catch (error) {
       message.error('Failed to load products');
@@ -83,11 +83,11 @@ const Products = () => {
     try {
       if (editMode) {
         // Update product
-        await axios.put(`http://localhost:8080/api/v1/all/products/update/${selectedProduct.id}`, newProduct);
+        await axios.put(`http://localhost:8080/api/v1/all/update/${selectedProduct.id}`, newProduct);
         message.success('Product updated successfully');
       } else {
         // Create new product
-        await axios.post(`http://localhost:8080/api/v1/all/products/add`, newProduct);
+        await axios.post(`http://localhost:8080/api/v1/all/add`, newProduct);
         message.success('Product added successfully');
       }
 
