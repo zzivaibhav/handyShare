@@ -1,10 +1,17 @@
+# Use an official OpenJDK runtime as a parent image
 FROM amazoncorretto:17-al2023-jdk
 
-#Set the working directory in the container
+# Set the working directory inside the container
 WORKDIR /app
 
-#Copy the jar file from the Maven build directory into the container
-COPY target/*.jar app.jar
+# Copy the compiled JAR file from your target directory into the container
+# Copy the compiled JAR file from your target directory into the container
+COPY handyShare/Backend/target/handyshare-0.0.1-SNAPSHOT.jar /app/app.jar
 
-#Run the jar file
+# Expose the port on which your Spring Boot application will run (adjust as needed)
+EXPOSE 8080
+
+# Define the command to run your Spring Boot application when the container starts
 ENTRYPOINT ["java", "-jar", "app.jar"]
+
+
