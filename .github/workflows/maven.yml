@@ -127,4 +127,4 @@ jobs:
           docker pull ${{ secrets.DOCKER_USERNAME }}/handyshare-app-backend:${{ github.sha }}
           docker stop handyshare-app-backend || true
           docker rm handyshare-app-backend || true
-          docker run -d --name handyshare-app-backend -p 8090:8090 ${{ secrets.DOCKER_USERNAME }}/handyshare-app-backend:${{ github.sha }}
+          docker run -d --name handyshare-app-backend -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/handyshare-app-backend:${{ github.sha }}
