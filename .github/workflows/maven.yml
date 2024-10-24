@@ -119,7 +119,7 @@ jobs:
           docker pull ${{ secrets.DOCKER_USERNAME }}/handyshare-app-frontend:${{ github.sha }}
           docker stop handyshare-app-frontend || true
           docker rm handyshare-app-frontend || true
-          docker run -d --name handyshare-app-frontend -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/handyshare-app-frontend:${{ github.sha }}
+          docker run -d --name handyshare-app-frontend ${{ secrets.DOCKER_USERNAME }}/handyshare-app-frontend:${{ github.sha }}
 
       # Deploy the backend Docker container
       - name: Deploy backend Docker container
