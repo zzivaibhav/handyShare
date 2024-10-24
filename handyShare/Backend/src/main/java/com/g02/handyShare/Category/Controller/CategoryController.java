@@ -72,18 +72,18 @@ public class CategoryController {
         return categories;
     }
 
-    // @PutMapping("/all/{id}")
-    // public ResponseEntity<Category> updateCategory(@PathVariable(value = "id") Long categoryId,
-    //                                                @RequestBody Category categoryDetails) {
-    //     Category updatedCategory = categoryService.updateCategory(categoryId, categoryDetails);
-    //     return ResponseEntity.ok(updatedCategory);
-    // }
+    @PutMapping("/all/category/{id}")
+    public ResponseEntity<Category> updateCategory(@PathVariable(value = "id") Long categoryId,
+                                                   @RequestBody Category categoryDetails) {
+        Category updatedCategory = categoryService.updateCategory(categoryId, categoryDetails);
+        return ResponseEntity.ok(updatedCategory);
+    }
 
-    // @DeleteMapping("/all/{id}")
-    // public ResponseEntity<?> deleteCategory(@PathVariable(value = "id") Long categoryId) {
-    //     categoryService.deleteCategory(categoryId);
-    //     return ResponseEntity.ok().build();
-    // }
+    @DeleteMapping("/all/category/delete/{id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable(value = "id") Long categoryId) {
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping("/tree")
     public List<Category> getCategoryTree() {

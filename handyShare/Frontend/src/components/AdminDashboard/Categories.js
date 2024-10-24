@@ -21,7 +21,18 @@ const Categories = () => {
   // Fetch categories from API
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/v1/all/allCategories");
+      // Fetch product details
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`http://localhost:8080/api/v1/user/allCategories`,{
+      
+        headers: {
+                   
+          Authorization: `Bearer ${token}`
+      },
+      withCredentials: true
+
+      
+      });
       setCategories(response.data);
       setFilteredCategories(response.data); // Initialize filtered categories
     } catch (error) {
@@ -70,7 +81,7 @@ const Categories = () => {
     try {
       if (editMode) {
         // Update category
-        await axios.put(`http://localhost:8080/api/v1/all/${selectedCategory.categoryId}`, newCategory);
+        await axios.put(`http://localhost:8080/api/v1/all/category/${selectedCategory.categoryId}`, newCategory);
         message.success('Category updated successfully');
       } else {
         // Create new category
@@ -91,7 +102,7 @@ const Categories = () => {
   // Delete category
   const handleDelete = async (categoryId) => {
     try {
-      await axios.delete(`http://localhost:8080/api/v1/all/${categoryId}`);
+      await axios.delete(`http://localhost:8080/api/v1/all/category/delete/${categoryId}`);
       message.success('Category deleted successfully');
       fetchCategories();
     } catch (error) {

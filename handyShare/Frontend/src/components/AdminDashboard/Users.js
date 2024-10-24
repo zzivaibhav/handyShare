@@ -1,27 +1,37 @@
-// import React, { useState } from 'react';
-// import { Button, Table, Input } from 'antd';
+// import React, { useState, useEffect } from 'react';
+// import { Button, Table, Input, message } from 'antd';
 // import { DeleteOutlined, SearchOutlined } from '@ant-design/icons';
+// import axios from 'axios';
 
 // const Users = () => {
-//   const [users, setUsers] = useState([
-//     {
-//       key: '1',
-//       name: 'John Doe',
-//       email: 'john@example.com',
-//       role: 'Admin',
-//     },
-//     {
-//       key: '2',
-//       name: 'Jane Smith',
-//       email: 'jane@example.com',
-//       role: 'User',
-//     },
-//   ]);
-
+//   const [users, setUsers] = useState([]);
 //   const [searchText, setSearchText] = useState('');
 
+//   // Fetch users from backend
+//   useEffect(async () => {
+//     const token = localStorage.getItem('token');
+//     // axios.get('http://localhost:8080/api/v1/admin/getUser')
+//     const productResponse = await axios.get(`http://localhost:8080/api/v1/admin/getUser`,{
+        
+//       headers: {
+                 
+//         Authorization: `Bearer ${token}`
+//     },
+//     withCredentials: true
+
+    
+//     })
+//     .then(response => {
+//       setUsers(response.data);
+//     })
+//     .catch(error => {
+//       message.error('Failed to load users');
+//       console.error(error);
+//     });
+//   }, []);
+
 //   const handleDelete = (key) => {
-//     setUsers(users.filter(user => user.key !== key));
+//     setUsers(users.filter(user => user.id !== key));
 //   };
 
 //   const columns = [
@@ -47,7 +57,7 @@
 //         <Button
 //           type="link"
 //           icon={<DeleteOutlined />}
-//           onClick={() => handleDelete(record.key)}
+//           onClick={() => handleDelete(record.id)}
 //         />
 //       ),
 //     },
@@ -73,6 +83,7 @@
 //         columns={columns} 
 //         dataSource={filteredUsers} 
 //         pagination={{ pageSize: 5 }} 
+//         rowKey="id"  // Ensure each row has a unique key (using id from backend)
 //         style={{ marginTop: '20px' }} 
 //       />
 //     </div>
@@ -90,20 +101,28 @@ const Users = () => {
   const [users, setUsers] = useState([]);
   const [searchText, setSearchText] = useState('');
 
-  // Fetch users from backend
+  // Fetch users from the backend
   useEffect(() => {
-    axios.get('http://localhost:8080/api/v1/all/admin/getUser')
-    .then(response => {
-      setUsers(response.data);
-    })
-    .catch(error => {
-      message.error('Failed to load users');
-      console.error(error);
-    });
+    const fetchUsers = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await axios.get(`http://localhost:8080/api/v1/admin/getUser`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
+        setUsers(response.data);
+      } catch (error) {
+        message.error('Failed to load users');
+        console.error(error);
+      }
+    };
+    fetchUsers();
   }, []);
 
   const handleDelete = (key) => {
-    setUsers(users.filter(user => user.id !== key));
+    setUsers(users.filter((user) => user.id !== key));
   };
 
   const columns = [
@@ -136,9 +155,10 @@ const Users = () => {
   ];
 
   // Filter users based on search text
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchText.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchText.toLowerCase())
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
@@ -148,15 +168,15 @@ const Users = () => {
         placeholder="Search users by name or email"
         prefix={<SearchOutlined />}
         value={searchText}
-        onChange={e => setSearchText(e.target.value)}
-        style={{ marginBottom: '8px', width: '300px', marginTop:'10px' }}
+        onChange={(e) => setSearchText(e.target.value)}
+        style={{ marginBottom: '8px', width: '300px', marginTop: '10px' }}
       />
-      <Table 
-        columns={columns} 
-        dataSource={filteredUsers} 
-        pagination={{ pageSize: 5 }} 
-        rowKey="id"  // Ensure each row has a unique key (using id from backend)
-        style={{ marginTop: '20px' }} 
+      <Table
+        columns={columns}
+        dataSource={filteredUsers}
+        pagination={{ pageSize: 5 }}
+        rowKey="id" // Ensure each row has a unique key (using id from backend)
+        style={{ marginTop: '20px' }}
       />
     </div>
   );

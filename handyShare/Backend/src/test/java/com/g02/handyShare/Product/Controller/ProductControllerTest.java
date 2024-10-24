@@ -33,7 +33,7 @@ public class ProductControllerTest {
         product.setDescription("Test Description");
         product.setCategory("Test Category");
         product.setRentalPrice(100.0);
-        product.setAvailable(true);
+        // product.setAvailable(true);
     }
 
     @Test

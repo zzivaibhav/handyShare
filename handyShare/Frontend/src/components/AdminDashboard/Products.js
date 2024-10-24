@@ -21,7 +21,16 @@ const Products = () => {
   // Function to fetch products from the API
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/v1/all/allProducts");
+      const token = localStorage.getItem('token');
+      const response = await axios.get("http://localhost:8080/api/v1/user/allProducts",{
+      
+        headers: {
+                   
+          Authorization: `Bearer ${token}`
+      },
+      withCredentials: true
+      
+      });
       setProducts(response.data);
     } catch (error) {
       message.error('Failed to load products');
@@ -36,8 +45,14 @@ const Products = () => {
   // Function to handle deleting a product
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/api/v1/all/products/delete/${id}`);
-      setProducts(products.filter(product => product.id !== id));
+      const token = localStorage.getItem('token'); // Retrieve user token
+      await axios.delete(`http://localhost:8080/api/v1/user/product/delete/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include token in the request header
+        },
+        withCredentials: true,
+      });
+      setProducts(products.filter(product => product.id !== id)); // Remove deleted product from state
       message.success('Product deleted successfully!');
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -47,6 +62,7 @@ const Products = () => {
       }
     }
   };
+  
 
   // Open the modal for adding or editing a product
   const showModal = (product = null) => {
@@ -79,18 +95,30 @@ const Products = () => {
       message.error('All fields are required');
       return;
     }
-
+  
+    const token = localStorage.getItem('token'); // Retrieve user token
+  
     try {
       if (editMode) {
         // Update product
-        await axios.put(`http://localhost:8080/api/v1/all/update/${selectedProduct.id}`, newProduct);
+        await axios.put(`http://localhost:8080/api/v1/user/products/update/${selectedProduct.id}`, newProduct, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token in the request header
+          },
+          withCredentials: true,
+        });
         message.success('Product updated successfully');
       } else {
         // Create new product
-        await axios.post(`http://localhost:8080/api/v1/all/add`, newProduct);
+        await axios.post(`http://localhost:8080/api/v1/user/add`, newProduct, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token in the request header
+          },
+          withCredentials: true,
+        });
         message.success('Product added successfully');
       }
-
+  
       fetchProducts(); // Refresh product list
       setIsModalVisible(false);
       setNewProduct({ name: '', rentalPrice: '', category: '', available: true });
@@ -100,6 +128,7 @@ const Products = () => {
       message.error('Error saving product');
     }
   };
+  
 
   // Filter products based on search text, availability, and category
   const filteredProducts = products.filter(product => {

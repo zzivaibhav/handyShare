@@ -27,7 +27,17 @@ const LendFormTabs = ({ selectedCategory }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/v1/all/allCategories");
+        const token = localStorage.getItem('token');
+            const response = await axios.get("http://localhost:8080/api/v1/user/allCategories", {
+                headers: {
+                   
+                    Authorization: `Bearer ${token}`
+                },
+                withCredentials: true
+
+            });
+
+        // const response = await axios.get("http://localhost:8080/api/v1/all/allCategories");
         setCategories(response.data.map(cat => cat.name));
         if (selectedCategory && !formData.category) {
           setFormData(prevData => ({ ...prevData, category: selectedCategory }));

@@ -2,6 +2,7 @@ import { Button } from 'antd';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InputField from '../components/Input-field.js';
+import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -10,14 +11,20 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [loading, setLoading] = useState(false); 
+  const [message, setMessage] = useState(''); // For success/error message
+  const [messageType, setMessageType] = useState(''); // To differentiate between success and error
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const handleSubmit = async () => {
     if (!name || !email || !password || !acceptTerms) {
-      alert('Please fill in all fields and accept the terms.');
+      setMessage('Please fill in all fields and accept the terms.');
+      setMessageType('error');
       return;
     }
   
     setLoading(true);
+    setMessage(''); // Clear any previous messages
   
     const payload = {
       name: name,
@@ -44,27 +51,32 @@ export default function Signup() {
         if (contentType && contentType.includes('application/json')) {
           const data = await response.json();
           console.log('Registration successful:', data);
-          alert('Registration successful!');
+          setMessage('Registration successful! Please check your email for verification.');
+          setMessageType('success');
         } else {
           const textData = await response.text();
           console.log('Registration successful:', textData);
-          alert(textData); // Handle plain text responses
+          setMessage(textData); // Display plain text response
+          setMessageType('success');
         }
-        navigate('/login');
+        setTimeout(() => navigate('/login'), 3000);
       } else {
         if (contentType && contentType.includes('application/json')) {
           const errorData = await response.json();
           console.error('Registration failed:', errorData);
-          alert(`Registration failed: ${errorData.message}`);
+          setMessage(`Registration failed: ${errorData.message}`);
+          setMessageType('error');
         } else {
           const textError = await response.text();
           console.error('Registration failed:', textError);
-          alert(`Registration failed: ${textError}`);
+          setMessage(`Registration failed: ${textError}`);
+          setMessageType('error');
         }
       }
     } catch (error) {
       console.error('Error occurred during registration:', error);
-      alert(`Error occurred: ${error.message}`);
+      setMessage(`Error occurred: ${error.message}`);
+      setMessageType('error');
     } finally {
       setLoading(false);
     }
@@ -83,6 +95,14 @@ export default function Signup() {
           <p className="text-left text-[#808080] mt-2 mb-8">
             Join handyShare to explore unique rental opportunities!
           </p>
+
+          {/* Display success or error messages */}
+          {message && (
+            <div className={`text-center py-2 ${messageType === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+              {message}
+            </div>
+          )}
+
           <form className="space-y-6">
             <InputField
               label="Full Name"
@@ -100,15 +120,22 @@ export default function Signup() {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <InputField
-              label="Create Password"
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-
+            <div className="relative">
+              <InputField
+                label="Create Password"
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+                <span
+                className="absolute right-2 top-7 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
+              </span>
+            </div>
             <div className="flex items-center">
               <input
                 type="checkbox"
@@ -145,8 +172,6 @@ export default function Signup() {
               Log in here
             </button>
           </p>
-
-          {/* Remaining code */}
         </div>
       </div>
     </div>

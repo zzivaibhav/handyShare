@@ -3,12 +3,14 @@ import axios from 'axios'; // Import axios
 import InputField from "../components/Input-field.js";
 import Button from '../components/Button.js';
 import { Link, useNavigate } from 'react-router-dom';
+import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null); // To handle login errors
   const navigate = useNavigate(); // To redirect after login
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -90,14 +92,22 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <InputField
-              label="Password"
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="relative">
+              <InputField
+                label="Password"
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+                <span
+                className="absolute right-2 top-7 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
+              </span>
+            </div>
             <div className="text-right">
               <Link to="/forgot-password" className="text-sm text-[#0295db] hover:underline">
                 Forgot Password?

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import HeaderBar from '../components/Homepage/HeaderBar.js';
-import { Layout, theme } from 'antd';
+import { Layout, Button, theme } from 'antd'; 
 import CategoriesNavigation from '../components/Homepage/CategoriesNavigation.js';
 import ContentHomeScreen from '../components/Homepage/ContentHomeScreen.js';
 
@@ -11,12 +12,18 @@ const HomeScreen = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const headerHeight = 70; // Define the header height
-  const [selectedCategory, setSelectedCategory] = useState(''); // State for selected category
+  const headerHeight = 70; 
+  const [selectedCategory, setSelectedCategory] = useState(''); 
+  const navigate = useNavigate(); 
 
   // Function to handle category selection
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
+  };
+
+  // Function to handle "View Products" button click
+  const handleViewProductsClick = () => {
+    navigate('/products'); 
   };
 
   return (
@@ -41,14 +48,14 @@ const HomeScreen = () => {
       </Header>
 
       {/* Main Content Area */}
-      <Content > {/* Adds padding to avoid overlapping */}
+      <Content> {/* Adds padding to avoid overlapping */}
         <Layout
           style={{
-            padding: '24px 48px', // Adjust padding based on your needs
+            padding: '24px 48px', 
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
             minHeight: '100vh',
-            marginTop: `${headerHeight}px`, // Adds margin to account for fixed header
+            marginTop: `${headerHeight}px`, 
             overflow: 'auto', // Allows scrolling of content area
           }}
         >
@@ -57,14 +64,13 @@ const HomeScreen = () => {
             style={{
               background: 'white',
               height: '100vh', // Full height for Sider
-              overflowY:'auto', // Enable scrolling in the sidebar
-              scrollbarWidth:'none',
+              overflowY: 'auto', // Enable scrolling in the sidebar
+              scrollbarWidth: 'none',
               position: 'sticky', // Keeps it sticky when scrolling
               top: 0,
             }}
             width={200} // Set fixed width for the Sider
           >
-          
             <CategoriesNavigation onCategorySelect={handleCategorySelect} /> {/* Pass handler to CategoriesNavigation */}
           </Sider>
 
@@ -75,7 +81,14 @@ const HomeScreen = () => {
               overflowY: 'auto', // Enables scrolling for the main content
             }}
           >
-          <ContentHomeScreen category={selectedCategory}/>
+            <ContentHomeScreen category={selectedCategory} />
+
+            {/* View Products Button */}
+            <div style={{ marginTop: '24px', textAlign: 'center' }}>
+              <Button type="primary" onClick={handleViewProductsClick}>
+                View All Products
+              </Button>
+            </div>
           </Content>
         </Layout>
       </Content>

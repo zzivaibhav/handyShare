@@ -63,7 +63,7 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/user/product/delete/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id){
         boolean isDeleted = productService.deleteProduct(id);
         if (isDeleted){

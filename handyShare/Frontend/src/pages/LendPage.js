@@ -64,10 +64,8 @@ const LendPage = ({ onProductAdded }) => {
   };
 
   return (
-    <Layout>
-      <Header>
-        <HeaderBar />
-      </Header>
+    <div>
+      <HeaderBar />
       <Layout>
         <Sider width={200}>
           <Menu
@@ -93,7 +91,7 @@ const LendPage = ({ onProductAdded }) => {
           </Content>
         </Layout>
       </Layout>
-    </Layout>
+    </div>
   );
 };
 
