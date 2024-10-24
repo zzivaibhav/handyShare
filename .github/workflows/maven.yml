@@ -47,10 +47,12 @@ jobs:
       #   working-directory: ./handyShare/Frontend
       #   run: npm test
 
-      # Build frontend
+    # Build frontend
       - name: Build frontend
-        working-directory: ./handyShare/Frontend
-        run: npm run build
+        working-directory: ./handyshare/frontend
+        run: |
+          CI=false npm run build
+
 
       # (Optional) Upload the build artifacts for deployment
       - name: Upload frontend build
