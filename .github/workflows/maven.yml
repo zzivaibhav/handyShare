@@ -6,26 +6,139 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: HandyShare CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-  build:
-
+  frontend:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file handyShare/Backend/pom.xml
+      # Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Node.js for React frontend
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Or your preferred Node.js version
+
+      # Navigate to frontend folder
+      - name: Navigate to frontend
+        working-directory: ./handyShare/Frontend
+        run: echo "Navigating to frontend folder"
+
+      # Install frontend dependencies
+      - name: Install dependencies
+        working-directory: ./handyShare/Frontend
+        run: npm install
+
+      # Run frontend tests
+      - name: Run frontend tests
+        working-directory: ./handyShare/Frontend
+        run: npm test
+
+      # Build frontend
+      - name: Build frontend
+        working-directory: ./handyShare/Frontend
+        run: npm run build
+
+      # (Optional) Upload the build artifacts for deployment
+      - name: Upload frontend build
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build
+          path: ./handyShare/Frontend/build
+
+  backend:
+    runs-on: ubuntu-latest
+    needs: frontend
+
+    steps:
+      # Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up JDK 17 for backend (Spring Boot)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      # Cache Maven dependencies
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Navigate to backend folder
+      - name: Navigate to backend
+        working-directory: ./handyShare/Backend
+        run: echo "Navigating to backend folder"
+
+      # Build the backend using Maven
+      - name: Build backend
+        working-directory: ./handyShare/Backend
+        run: mvn clean install
+
+      # Run backend tests
+      - name: Run backend tests
+        working-directory: ./handyShare/Backend
+        run: mvn test
+
+      # Package the application
+      - name: Package backend
+        working-directory: ./handyShare/Backend
+        run: mvn package
+
+      # (Optional) Upload backend artifacts for deployment
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-jar
+          path: ./handyShare/Backend/target/*.jar
+
+  deploy:
+    runs-on: self-hosted
+    needs: backend
+
+    steps:
+      # Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up JDK 17 for Docker image
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Build the Docker image
+      - name: Build and push Docker image
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker build -t handyshare-app-backend:${{ github.sha }} ./handyShare/Backend
+          docker tag handyshare-app-backend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/handyshare-app-backend:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/handyshare-app-backend:${{ github.sha }}
+
+      # Deploy the Docker container
+      - name: Deploy the Docker container
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/handyshare-app-backend:${{ github.sha }}
+          docker stop handyshare-app-backend || true
+          docker rm handyshare-app-backend || true
+          docker run -d --name handyshare-app-backend -p 8090:8090 ${{ secrets.DOCKER_USERNAME }}/handyshare-app-backend:${{ github.sha }}
