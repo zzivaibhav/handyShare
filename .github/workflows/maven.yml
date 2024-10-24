@@ -106,8 +106,10 @@ jobs:
       # Build and push backend Docker image
       - name: Build and push backend Docker image
         run: |
+          cd handyShare/Backend
+          mvn package
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          docker build -t handyshare-app-backend:${{ github.sha }} ./handyShare/Backend
+          docker build -t handyshare-app-backend:${{ github.sha }} .
           docker tag handyshare-app-backend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/handyshare-app-backend:${{ github.sha }}
           docker push ${{ secrets.DOCKER_USERNAME }}/handyshare-app-backend:${{ github.sha }}
 
@@ -117,7 +119,7 @@ jobs:
           docker pull ${{ secrets.DOCKER_USERNAME }}/handyshare-app-frontend:${{ github.sha }}
           docker stop handyshare-app-frontend || true
           docker rm handyshare-app-frontend || true
-          docker run -d --name handyshare-app-frontend -p 80:80 ${{ secrets.DOCKER_USERNAME }}/handyshare-app-frontend:${{ github.sha }}
+          docker run -d --name handyshare-app-frontend  ${{ secrets.DOCKER_USERNAME }}/handyshare-app-frontend:${{ github.sha }}
 
       # Deploy the backend Docker container
       - name: Deploy backend Docker container
@@ -125,4 +127,4 @@ jobs:
           docker pull ${{ secrets.DOCKER_USERNAME }}/handyshare-app-backend:${{ github.sha }}
           docker stop handyshare-app-backend || true
           docker rm handyshare-app-backend || true
-          docker run -d --name handyshare-app-backend -p 8090:8090 ${{ secrets.DOCKER_USERNAME }}/handyshare-app-backend:${{ github.sha }}
+          docker run -d --name handyshare-app-backend -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/handyshare-app-backend:${{ github.sha }}
