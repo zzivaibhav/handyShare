@@ -23,7 +23,7 @@ export default function Login() {
 
     try {
       // Axios POST request
-      const response = await axios.post('http://localhost:8080/api/v1/all/login', loginData);
+      const response = await axios.post('http://172.17.0.99:8080/api/v1/all/login', loginData);
 
       if (response.status === 200) {
         const token = response.data; // Assuming the token is returned in the response data

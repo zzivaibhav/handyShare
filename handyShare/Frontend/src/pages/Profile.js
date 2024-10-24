@@ -29,7 +29,7 @@ const Profile = () => {
       try {
         const token = localStorage.getItem('token'); // Retrieve the access token from localStorage
 
-        const response = await axios.get('http://localhost:8080/api/v1/user/getUser', {
+        const response = await axios.get('http://172.17.0.99:8080/api/v1/user/getUser', {
           headers: {
             Authorization: `Bearer ${token}`, // Pass the access token in the Authorization header
 
@@ -57,7 +57,7 @@ const Profile = () => {
   console.log(values.currentPassword)
       // Send request to the API to change the password
       const response = await axios.patch(
-        'http://localhost:8080/api/v1/user/changePassword',
+        'http://172.17.0.99:8080/api/v1/user/changePassword',
         {
           currentPassword: values.currentPassword,
           newPassword: values.newPassword,

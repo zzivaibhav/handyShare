@@ -30,7 +30,7 @@ const ProductPage = () => {
       try {
         const token = localStorage.getItem('token');
         // Fetch product details
-        const productResponse = await axios.get(`http://localhost:8080/api/v1/user/product/${id}`,{
+        const productResponse = await axios.get(`http://172.17.0.99:8080/api/v1/user/product/${id}`,{
         
           headers: {
                      
@@ -44,13 +44,13 @@ const ProductPage = () => {
         setProduct(productResponse.data);
 
         // Fetch reviews related to the product
-        // const reviewsResponse = await axios.get(`http://localhost:8080/api/v1/all/allProducts/${id}/reviews`);
+        // const reviewsResponse = await axios.get(`http://172.17.0.99:8080/api/v1/all/allProducts/${id}/reviews`);
         // console.log('Fetched Reviews:', reviewsResponse.data); // Debugging
         // setReviews(reviewsResponse.data);
 
         // Check if userId exists before making the request
         if (productResponse.data.userId) {
-          const lenderResponse = await axios.get(`http://localhost:8080/api/v1/all/users/${productResponse.data.userId}`,{
+          const lenderResponse = await axios.get(`http://172.17.0.99:8080/api/v1/all/users/${productResponse.data.userId}`,{
         
             headers: {
                        
@@ -96,7 +96,7 @@ const ProductPage = () => {
 
     // try {
     //   // Example POST request to initiate rental without userId
-    //   await axios.post('http://localhost:8080/api/v1/rentals', {
+    //   await axios.post('http://172.17.0.99:8080/api/v1/rentals', {
     //     productId: product.id,
     //     rentalDate: selectedDate,
     //   });

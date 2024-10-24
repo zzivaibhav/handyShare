@@ -38,7 +38,7 @@ public class UserService {
         user.setVerificationToken(token); // Set the token in user entity
 
         // Create verification link
-        String verificationLink = "http://localhost:8080/api/v1/all/verifyUser?token=" + token;
+        String verificationLink = "http://172.17.0.99:8080/api/v1/all/verifyUser?token=" + token;
 
         // Send the email to the user to verify
         String response = emailService.sendEmail(user.getEmail(), "Verify your email", verificationLink);
