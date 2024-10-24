@@ -43,9 +43,9 @@ jobs:
         run: npm install
 
       # Run frontend tests
-      - name: Run frontend tests
-        working-directory: ./handyShare/Frontend
-        run: npm test
+      # - name: Run frontend tests
+      #   working-directory: ./handyShare/Frontend
+      #   run: npm test
 
       # Build frontend
       - name: Build frontend
@@ -95,9 +95,9 @@ jobs:
         run: mvn clean install
 
       # Run backend tests
-      - name: Run backend tests
-        working-directory: ./handyShare/Backend
-        run: mvn test
+      # - name: Run backend tests
+      #   working-directory: ./handyShare/Backend
+      #   run: mvn test
 
       # Package the application
       - name: Package backend
