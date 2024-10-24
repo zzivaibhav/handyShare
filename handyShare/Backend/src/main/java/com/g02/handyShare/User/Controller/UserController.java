@@ -36,7 +36,7 @@ public class UserController {
     UserRepository repo;
 
 
-
+    
 
      @Autowired
     AuthenticationManager authenticationManager;
@@ -88,8 +88,14 @@ public class UserController {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getEmail());
+
             String jwt = jwtUtil.generateToken(userDetails.getUsername());
+        User existingUser = repo.findByEmail(userDetails.getUsername());
+       
+        if(existingUser.is_email_verified()){
             return  ResponseEntity.ok().body(jwt);
+        }
+        return  ResponseEntity.badRequest().body("Verify email first");   
         }catch (Exception e){
            System.out.println("Error "+ e);
             return ResponseEntity.ok().body("Bad credentials!");
