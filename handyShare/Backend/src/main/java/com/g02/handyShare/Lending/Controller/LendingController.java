@@ -37,4 +37,24 @@ public class LendingController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
+
+    @DeleteMapping("/item/{id}")
+    public ResponseEntity<Void> deleteLentItem(@PathVariable Long id) {
+        try {
+            lentItemService.deleteLentItem(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/item/{id}")
+    public ResponseEntity<LentItem> updateLentItem(@PathVariable Long id, @RequestBody LentItem lentItemDetails) {
+        try {
+            LentItem updatedItem = lentItemService.updateLentItem(id, lentItemDetails);
+            return ResponseEntity.ok(updatedItem);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
 }
