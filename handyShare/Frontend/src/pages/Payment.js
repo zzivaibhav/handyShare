@@ -16,7 +16,6 @@ const Payment = () => {
   const { amount } = location.state || {}; // Retrieve amount from RentSummaryPage
 
   const handlePaymentSuccess = () => {
-    message.success('Payment successful!');
     setPaymentComplete(true);
   };
 

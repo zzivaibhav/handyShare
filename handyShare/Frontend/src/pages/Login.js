@@ -14,45 +14,44 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Prepare login data as a JavaScript object
+  
     const loginData = {
       email: email,
       password: password,
     };
-
+  
     try {
-      // Axios POST request
       const response = await axios.post('http://localhost:8080/api/v1/all/login', loginData);
-
+  
       if (response.status === 200) {
-        const token = response.data; // Assuming the token is returned in the response data
-        console.log('Login successful. Token:', token);
-
-        // Check if the token is "Bad credentials!"
+        const { token, role } = response.data; 
+  
         if (token === "Bad credentials!") {
           setError('Invalid email or password. Please try again.');
-          return; // Do not proceed to navigate if login fails
+          return;
         }
-
-        // Save the JWT token (you can use localStorage or cookies)
+  
+        // Save the JWT token and role
         localStorage.setItem('token', token);
-       
-
-        // Redirect to the homepage after successful login
-        navigate('/homepage');
+        localStorage.setItem('role', role); // Store role
+  
+        // Redirect based on role
+        if (role === "admin") {
+          navigate('/admin');
+        } else {
+          navigate('/homepage');
+        }
       } else {
         setError('Login failed. Please check your email and password.');
       }
     } catch (error) {
-      // Handle error
       if (error.response && error.response.status === 401) {
         setError('Invalid email or password. Please try again.');
       } else {
         setError('An error occurred during login. Please try again.');
       }
     }
-  };
+  };  
 
   const handleGoogleLogin = () => {
     // Handle Google login logic here
