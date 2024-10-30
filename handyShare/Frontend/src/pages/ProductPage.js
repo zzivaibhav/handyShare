@@ -16,6 +16,8 @@ const ProductPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null); // State for selected date
+  const [selectedHours, setSelectedHours] = useState(1); // Initialize to 1 hour
+  const MAX_HOURS = 24; // Define a maximum number of selectable hours
 
   useEffect(() => {
     console.log('Product ID from URL:', id); // Debugging
@@ -31,19 +33,16 @@ const ProductPage = () => {
         const token = localStorage.getItem('token');
         // Fetch product details
         const productResponse = await axios.get(`http://localhost:8080/api/v1/user/product/${id}`,{
-        
           headers: {
-                     
             Authorization: `Bearer ${token}`
-        },
-        withCredentials: true
-
-        
+          },
+          withCredentials: true
         });
         console.log('Fetched Product:', productResponse.data); // Debugging
         setProduct(productResponse.data);
 
         // Fetch reviews related to the product
+        // Uncomment if reviews are needed
         // const reviewsResponse = await axios.get(`http://localhost:8080/api/v1/all/allProducts/${id}/reviews`);
         // console.log('Fetched Reviews:', reviewsResponse.data); // Debugging
         // setReviews(reviewsResponse.data);
@@ -51,14 +50,10 @@ const ProductPage = () => {
         // Check if userId exists before making the request
         if (productResponse.data.userId) {
           const lenderResponse = await axios.get(`http://localhost:8080/api/v1/all/users/${productResponse.data.userId}`,{
-        
             headers: {
-                       
               Authorization: `Bearer ${token}`
-          },
-          withCredentials: true
-  
-          
+            },
+            withCredentials: true
           });
           console.log('Fetched Lender:', lenderResponse.data); // Debugging
           setLender(lenderResponse.data);
@@ -83,30 +78,16 @@ const ProductPage = () => {
       message.warning('Please select a date to proceed with the rental.');
       return;
     }
-    // navigate('/rent-summary'); 
 
-      // Navigate to Rent Summary Page and pass product and other details as state
-  navigate('/rent-summary', { 
-    state: { 
-      product, 
-      hours: product.transactionTime || 2,  // You can dynamically pass hours 
-      selectedDate 
-    } 
-  });
+    console.log('Selected Hours:', selectedHours); // Debugging
 
-    // try {
-    //   // Example POST request to initiate rental without userId
-    //   await axios.post('http://localhost:8080/api/v1/rentals', {
-    //     productId: product.id,
-    //     rentalDate: selectedDate,
-    //   });
-
-    //   message.success('Rental initiated successfully!');
-    //   // Redirect or update UI as needed
-    // } catch (err) {
-    //   console.error('Error initiating rental:', err);
-    //   message.error('Failed to initiate rental. Please try again.');
-    // }
+    navigate('/rent-summary', { 
+      state: { 
+        product, 
+        hours: selectedHours,  // Pass the selected hours correctly
+        selectedDate 
+      } 
+    });
   };
 
   if (loading) return <div className="p-8 mt-16">Loading...</div>;
@@ -148,8 +129,27 @@ const ProductPage = () => {
         <div className="w-1/3 px-4">
           <h2 className="text-2xl font-bold">{product.name}</h2>
           <p className="text-lg">Price: ${product.rentalPrice}/hour</p>
-          <p>Transaction Time: {product.transactionTime || '2'} hours</p>
-          <p>Available for {product.availability} hours</p>
+          
+          {/* Hours Selector */}
+          <div className="mt-4">
+            <label className="block text-lg font-medium mb-2">Select Hours:</label>
+            <select
+              value={selectedHours}
+              onChange={(e) => setSelectedHours(Number(e.target.value))}
+              className="w-full p-2 border border-gray-300 rounded-md"
+            >
+              {[...Array(MAX_HOURS)].map((_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1} {i + 1 === 1 ? 'hour' : 'hours'}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Total Price Display */}
+          <p className="mt-2 text-lg font-semibold">
+            Total Price: ${(product.rentalPrice * selectedHours).toFixed(2)}
+          </p>
 
           {/* Date Picker for Rental Date */}
           <div className="mt-6">
@@ -160,6 +160,7 @@ const ProductPage = () => {
               dateFormat="MMMM d, yyyy"
               className="w-full p-2 border border-gray-300 rounded-md"
               placeholderText="Choose a date"
+              minDate={new Date()} // Optional: disable past dates
             />
           </div>
 
