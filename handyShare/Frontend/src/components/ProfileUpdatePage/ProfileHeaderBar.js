@@ -30,7 +30,9 @@ const ProfileHeaderBar = () => {
 
       {/* Right side buttons */}
       <Space>
-        <Button>Lendings</Button>
+        <Button
+        href='/lend'
+        >Lendings</Button>
         <Button>Borrowings</Button>
         <Link to='/profile'>
         <Button
