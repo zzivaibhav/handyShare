@@ -107,7 +107,7 @@ public class UserController {
             return ResponseEntity.ok().body(responseBody);
         } catch (Exception e) {
             System.out.println("Error: " + e);
-            return ResponseEntity.ok().body(Map.of("error", "Bad credentials!"));
+            return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body(Map.of("error", "Bad credentials!"));
         }
     }
 }

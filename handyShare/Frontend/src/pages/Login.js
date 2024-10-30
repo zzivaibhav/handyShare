@@ -8,8 +8,8 @@ import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null); // To handle login errors
-  const navigate = useNavigate(); // To redirect after login
+  const [error, setError] = useState(null); 
+  const navigate = useNavigate(); 
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -33,7 +33,7 @@ export default function Login() {
   
         // Save the JWT token and role
         localStorage.setItem('token', token);
-        localStorage.setItem('role', role); // Store role
+        localStorage.setItem('role', role); 
   
         // Redirect based on role
         if (role === "admin") {
