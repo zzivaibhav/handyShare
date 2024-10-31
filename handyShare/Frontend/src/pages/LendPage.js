@@ -4,6 +4,7 @@ import LendFormPage from '../components/LendingPage/LendFormPage.js';
 import { Layout, Menu, Table } from 'antd';
 import axios from 'axios';
 import { message } from 'antd';
+import { SERVER_URL } from '../constants.js';
 
 const { Header, Content, Sider } = Layout;
 
@@ -15,7 +16,7 @@ const LendPage = ({ onProductAdded }) => {
   useEffect(() => {
     const fetchLentItems = async () => {
       try {
-        const response = await axios.get('http://172.17.0.99:8080/api/v1/all/lending/items');
+        const response = await axios.get(SERVER_URL+"/api/v1/all/lending/items")
         setLentItems(response.data); // Add the fetched data
         setLoading(false);
       } catch (error) {

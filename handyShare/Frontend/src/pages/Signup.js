@@ -35,7 +35,7 @@ export default function Signup() {
     try {
       console.log('Sending data to API: ', payload);
   
-      const response = await fetch('http://172.17.0.99:8080/api/v1/all/register', {
+      const response = await fetch('http://localhost:8080/api/v1/all/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
