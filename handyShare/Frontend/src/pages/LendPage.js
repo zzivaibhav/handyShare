@@ -3,7 +3,6 @@ import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 import LendFormPage from '../components/LendingPage/LendFormPage.js'; 
 import { Layout, Menu, Table, Button, Modal, message } from 'antd';
 import axios from 'axios';
-import { message } from 'antd';
 import { SERVER_URL } from '../constants.js';
 
 
@@ -30,7 +29,6 @@ const LendPage = () => {
       }
     };
 
-=
     fetchLentItems();
   }, []);
 
