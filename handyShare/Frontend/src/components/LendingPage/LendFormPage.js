@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Steps, Button, Form, Input, Select, Upload, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import { SERVER_URL } from '../../constants';
 
 const { Step } = Steps;
 const { Option } = Select;
@@ -29,12 +30,16 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
     const fetchCategories = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get("http://localhost:8080/api/v1/user/allCategories", {
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-          withCredentials: true
-        });
+            const response = await axios.get(SERVER_URL+"/api/v1/user/allCategories", {
+                headers: {
+                   
+                    Authorization: `Bearer ${token}`
+                },
+                withCredentials: true
+
+            });
+
+        // const response = await axios.get(SERVER_URL+"/api/v1/all/allCategories");
 
         setCategories(response.data.map(cat => cat.name));
       } catch (error) {

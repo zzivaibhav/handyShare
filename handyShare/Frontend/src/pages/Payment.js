@@ -8,6 +8,7 @@ import { Layout, message } from 'antd';
 import { useLocation } from 'react-router-dom';
 
 const { Header, Content, Footer } = Layout;
+
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 const Payment = () => {
