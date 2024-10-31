@@ -7,20 +7,21 @@ import { SERVER_URL } from '../../constants';
 const { Step } = Steps;
 const { Option } = Select;
 
-const LendFormTabs = ({ selectedCategory }) => {
-  const [currentStep, setCurrentStep] = useState(0);
+const EditLendForm = ({ item, onUpdate, onCancel }) => {
+  const [currentStep, setCurrentStep] = useState(2); // Start at summary
   const [form] = Form.useForm();
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    category: selectedCategory || '',
-    city: '',
-    state: '',
-    pincode: '',
-    address: '',
+    id: item.id, // Include ID for updates
+    name: item.name || '',
+    description: item.description || '',
+    price: item.price || '',
+    category: item.category || '',
+    city: item.city || '',
+    state: item.state || '',
+    pincode: item.pincode || '',
+    address: item.address || '',
     image: null,
-    imageName: ''
+    imageName: item.imageName || ''
   });
   const [categories, setCategories] = useState([]);
 
@@ -39,17 +40,15 @@ const LendFormTabs = ({ selectedCategory }) => {
             });
 
         // const response = await axios.get(SERVER_URL+"/api/v1/all/allCategories");
+
         setCategories(response.data.map(cat => cat.name));
-        if (selectedCategory && !formData.category) {
-          setFormData(prevData => ({ ...prevData, category: selectedCategory }));
-        }
       } catch (error) {
         console.error('Error fetching categories:', error.response || error);
         message.error('Failed to fetch categories');
       }
     };
     fetchCategories();
-  }, [selectedCategory]);
+  }, []);
 
   const steps = [
     {
@@ -57,26 +56,39 @@ const LendFormTabs = ({ selectedCategory }) => {
       content: (
         <>
           <Form.Item label="Category" name="category" rules={[{ required: true, message: 'Please select a category' }]}>
-            <Select value={formData.category} onChange={(value) => setFormData({ ...formData, category: value })}>
+            <Select 
+              value={formData.category} 
+              onChange={(value) => setFormData({ ...formData, category: value })}
+            >
               {categories.map(category => (
                 <Option key={category} value={category}>{category}</Option>
               ))}
             </Select>
           </Form.Item>
           <Form.Item label="Item Name" name="name" rules={[{ required: true, message: 'Please enter item name' }]}>
-            <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+            <Input 
+              value={formData.name} 
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
+            />
           </Form.Item>
           <Form.Item label="Description" name="description">
-            <Input.TextArea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+            <Input.TextArea 
+              value={formData.description} 
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
+            />
           </Form.Item>
           <Form.Item label="Rental Price" name="price" rules={[{ required: true, message: 'Please enter price' }]}>
-            <Input type="number" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} />
+            <Input 
+              type="number" 
+              value={formData.price} 
+              onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })} 
+            />
           </Form.Item>
           <Form.Item
             label="Upload Image"
             name="image"
             valuePropName="file"
-            rules={[{ required: true, message: 'Please upload an image' }]}
+            rules={[{ required: false }]} // Make image optional for edit
           >
             <Upload
               beforeUpload={(file) => {
@@ -102,16 +114,28 @@ const LendFormTabs = ({ selectedCategory }) => {
       content: (
         <>
           <Form.Item label="Address" name="address" rules={[{ required: true, message: 'Please enter address' }]}>
-            <Input value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
+            <Input 
+              value={formData.address} 
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })} 
+            />
           </Form.Item>
           <Form.Item label="City" name="city" rules={[{ required: true, message: 'Please enter city' }]}>
-            <Input value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value })} />
+            <Input 
+              value={formData.city} 
+              onChange={(e) => setFormData({ ...formData, city: e.target.value })} 
+            />
           </Form.Item>
           <Form.Item label="State" name="state" rules={[{ required: true, message: 'Please enter state' }]}>
-            <Input value={formData.state} onChange={(e) => setFormData({ ...formData, state: e.target.value })} />
+            <Input 
+              value={formData.state} 
+              onChange={(e) => setFormData({ ...formData, state: e.target.value })} 
+            />
           </Form.Item>
           <Form.Item label="Pincode" name="pincode" rules={[{ required: true, message: 'Please enter pincode' }]}>
-            <Input value={formData.pincode} onChange={(e) => setFormData({ ...formData, pincode: e.target.value })} />
+            <Input 
+              value={formData.pincode} 
+              onChange={(e) => setFormData({ ...formData, pincode: e.target.value })} 
+            />
           </Form.Item>
         </>
       ),
@@ -128,14 +152,18 @@ const LendFormTabs = ({ selectedCategory }) => {
                 style={{ width: '200px', height: '200px', objectFit: 'cover', marginBottom: '20px' }}
               />
             ) : (
-              'No image selected'
+              <img
+                src={`http://localhost:8080/images/${formData.imageName}`} // Assuming images are served from /images/
+                alt={formData.name}
+                style={{ width: '200px', height: '200px', objectFit: 'cover', marginBottom: '20px' }}
+              />
             )}
           </div>
           <div className="item-details" style={{ marginBottom: '20px' }}>
             <h2 style={{ fontWeight: 'bold', fontSize: '20px' }}>Item Details</h2>
             <p><strong>Name:</strong> {formData.name}</p>
             <p><strong>Category:</strong> {formData.category}</p>
-            <p><strong>Price:</strong> {formData.price}</p>
+            <p><strong>Price:</strong> ${formData.price.toFixed(2)}</p>
             <p><strong>Description:</strong> {formData.description || 'No description provided'}</p>
             <Button type="link" onClick={() => setCurrentStep(0)}>Edit Item Details</Button>
           </div>
@@ -166,16 +194,9 @@ const LendFormTabs = ({ selectedCategory }) => {
     setCurrentStep(currentStep - 1);
   };
 
-  const handleSubmit = async () => {
-    try {
-      const response = await axios.post('http://localhost:8080/api/v1/all/lending/item', formData);
-      console.log(response.data);
-      message.success('Item listed successfully');
-      // Optionally, reset form or redirect user
-    } catch (error) {
-      console.error('Error submitting item:', error);
-      message.error('Failed to list item');
-    }
+  const handleUpdateSubmit = () => {
+    // Pass the updated formData to the parent component
+    onUpdate(formData);
   };
 
   return (
@@ -202,13 +223,16 @@ const LendFormTabs = ({ selectedCategory }) => {
           </Button>
         )}
         {currentStep === steps.length - 1 && (
-          <Button type="primary" onClick={handleSubmit}>
-            Submit
+          <Button type="primary" onClick={handleUpdateSubmit}>
+            Update
           </Button>
         )}
+        <Button style={{ marginLeft: '8px' }} onClick={onCancel}>
+          Cancel
+        </Button>
       </div>
     </div>
   );
 };
 
-export default LendFormTabs;
+export default EditLendForm;

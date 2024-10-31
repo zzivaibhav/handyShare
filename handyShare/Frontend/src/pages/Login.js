@@ -11,26 +11,53 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const loginData = { email, password };
 
+  
+    const loginData = {
+      email: email,
+      password: password,
+    };
+  
     try {
-      const response = await axios.post(SERVER_URL+"/api/v1/all/login", loginData);
-      const token = response.data;
-
-      if (response.status === 200 && token !== "Bad credentials!") {
+      const response = await axios.post('http://localhost:8080/api/v1/all/login', loginData);
+  
+      if (response.status === 200) {
+        const { token, role } = response.data; 
+  
+        if (token === "Bad credentials!") {
+          setError('Invalid email or password. Please try again.');
+          return;
+        }
+  
+        // Save the JWT token and role
         localStorage.setItem('token', token);
-        navigate('/homepage');
+        localStorage.setItem('role', role); 
+  
+        // Redirect based on role
+        if (role === "admin") {
+          navigate('/admin');
+        } else {
+          navigate('/homepage');
+        }
+
       } else {
         setError('Login failed. Please check your email and password.');
       }
     } catch (error) {
-      setError(error.response?.status === 401 ? 'Invalid email or password. Please try again.' : 'An error occurred during login. Please try again.');
+
+      if (error.response && error.response.status === 401) {
+        setError('Invalid email or password. Please try again.');
+      } else {
+        setError('An error occurred during login. Please try again.');
+      }
     }
-  };
+  };  
 
   const handleGoogleLogin = () => {
     // Redirect the user to the Google OAuth2 login directly in the current window
