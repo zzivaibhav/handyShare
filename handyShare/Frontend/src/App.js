@@ -15,8 +15,12 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import Feedback from './pages/Feedback.js';
 import RentSummaryPage from './pages/RentSummaryPage.js';
 import OAuth2RedirectHandler from "../src/components/ProfileUpdatePage/OAuth2RedirectHandler.js"
+
 import ProtectedRoute from './components/ProtectedRoute.js';
 import { AuthProvider } from './context/AuthContext.js';
+
+import BorrowingPage from './pages/BorrowingPage.js';
+
 
 function App() {
   return (
@@ -30,13 +34,15 @@ function App() {
       <Route path="/profile" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
       <Route path = "/profile-update" element={<ProtectedRoute><ProfileUpdate/></ProtectedRoute>}/>
       <Route path="/admin" element={<AdminDashboard/>} />
+
       <Route path="/product/:id" element={<ProtectedRoute><ProductPage /></ProtectedRoute>} />
       <Route path="/lend" element={<ProtectedRoute><LendPage /></ProtectedRoute>} />
       <Route path="/products" element={<ProtectedRoute><ProductsListPage /></ProtectedRoute>} />
       <Route path="/payment" element={<ProtectedRoute><Payment/></ProtectedRoute>} />
       <Route path="/feedback" element={<ProtectedRoute><Feedback/></ProtectedRoute>} />
       <Route path="/rent-summary" element={<ProtectedRoute><RentSummaryPage/></ProtectedRoute>} />
-      <Route path="/oauth2/redirect" element={<ProtectedRoute><OAuth2RedirectHandler/></ProtectedRoute>}/>
+      
+      <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler/>}/>
 
     </Routes>
     </AuthProvider>
