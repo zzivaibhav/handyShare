@@ -44,6 +44,8 @@ function App() {
       
       <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler/>}/>
 
+      <Route path="/borrow" element={<ProtectedRoute><BorrowingPage/></ProtectedRoute>} />
+
     </Routes>
     </AuthProvider>
   );
