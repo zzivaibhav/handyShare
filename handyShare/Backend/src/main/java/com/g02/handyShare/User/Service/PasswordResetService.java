@@ -34,7 +34,6 @@ public class PasswordResetService {
         user.setResetTokenExpiry(new Date(System.currentTimeMillis() + 3600000)); // 1 hour expiry
         userRepository.save(user);
 
-        // String resetLink = constants.FRONT_END_HOST+"/api/v1/all/reset-password?token=" + token;
         String resetLink = constants.FRONT_END_HOST + "/change-password?token=" + token;
         emailService.sendEmailToResetPassword(user.getEmail(), "Password Reset", resetLink);
         
