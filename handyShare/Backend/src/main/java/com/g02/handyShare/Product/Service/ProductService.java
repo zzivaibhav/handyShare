@@ -53,7 +53,7 @@ public class ProductService {
             tobeSaved.setProductImage(imageUrl);
             tobeSaved.setRentalPrice(product.getRentalPrice());
             tobeSaved.setName(product.getName());
-            tobeSaved.setUserId(owner);
+            tobeSaved.setLender(owner);
             Product saved = productRepository.save(tobeSaved);
             return ResponseEntity.ok().body(saved);
         } catch (IOException e) {
