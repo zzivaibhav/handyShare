@@ -39,8 +39,114 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@Configuration
+// @Configuration
 
+// public class SecurityConfig {
+
+//     @Autowired
+//     private Constants constant;
+
+//     @Autowired
+//     private UserDetailsService userDetailsService;
+
+//     @Autowired
+//     UserRepository userRepo;
+
+//     @Autowired
+//     private JwtFilter jwtFilter;
+
+//     @Autowired
+//     private JwtUtil jwtUtil;
+
+//     @Bean
+//     public PasswordEncoder passwordEncoder() {
+//         return new BCryptPasswordEncoder(12);
+//     }
+
+//     @Bean
+//     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//         final Logger logger = LoggerFactory.getLogger(SecurityConfig.class); // Logger initialization
+
+
+//         http
+//                 .authorizeHttpRequests(auth -> auth
+//                         .requestMatchers("/signup", "/api/v1/all/**", "/genToken").permitAll()
+//                         .requestMatchers("api/v1/admin/**").hasAnyAuthority("admin")  // Only accessible by users with ADMIN role
+//                         .requestMatchers("api/v1/user/**").hasAnyAuthority("user", "admin")  // Only accessible by users with USER or ADMIN roles
+//                         .anyRequest().authenticated()  // All other endpoints need authentication
+//                 )
+//                 .oauth2Login(oauth2 -> oauth2
+//                 .defaultSuccessUrl("/homepage", true) // Redirect to homepage on success
+            
+//                 .successHandler(new AuthenticationSuccessHandler() {
+//                     @Override
+//                     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+
+//                         OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
+//                        OAuth2User user =  authToken.getPrincipal();
+//                        String email = user.getAttribute("email");
+//                        User existingUser = userRepo.findByEmail(email);
+
+//                   if(existingUser == null){
+//                     User newUser = new User();
+
+//                     newUser.setEmail(email);
+//                    newUser.setPassword(passwordEncoder().encode("admin@123"));
+//                     newUser.setImageData(user.getAttribute("picture"));
+//                     newUser.setName(user.getAttribute("name"));
+//                     userRepo.save(newUser);
+                    
+                       
+//                   }
+
+                
+                   
+                  
+//                   String token = jwtUtil.generateToken(email);
+//                   logger.info("User email after successful OAuth2 login: {}-------------------------------------------------------", email+"token -----------------------------------------------"+ token);
+
+//                   response.sendRedirect(constant.FRONT_END_HOST + "/homepage?token=" + token);
+                   
+                
+             
+                      
+//                     }
+//                 })
+            
+//             )
+//                 .sessionManagement(session -> session
+//                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                 )
+//                 .csrf(csrf -> csrf.disable())
+                
+//                 .formLogin(formlogin -> formlogin.disable())
+//                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+//                 .addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class);
+
+
+                
+//         return http.build();
+//     }
+
+//     @Bean
+//     public AuthenticationProvider authenticationProvider() {
+//         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+//         provider.setPasswordEncoder(passwordEncoder());
+//         provider.setUserDetailsService(userDetailsService);
+//         return provider;
+//     }
+
+//     @Bean
+//     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+//         return authenticationConfiguration.getAuthenticationManager();
+//     }
+
+   
+    
+// }
+
+
+@Configuration
 public class SecurityConfig {
 
     @Autowired
@@ -65,66 +171,49 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        final Logger logger = LoggerFactory.getLogger(SecurityConfig.class); // Logger initialization
-
+        final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/signup", "/api/v1/all/**", "/genToken").permitAll()
-                        .requestMatchers("api/v1/admin/**").hasAnyAuthority("admin")  // Only accessible by users with ADMIN role
-                        .requestMatchers("api/v1/user/**").hasAnyAuthority("user", "admin")  // Only accessible by users with USER or ADMIN roles
-                        .anyRequest().authenticated()  // All other endpoints need authentication
+                        .requestMatchers("/signup", "/api/v1/all/forgot-password/**", "/api/v1/all/reset-password/**", "/api/v1/all/**").permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasAnyAuthority("admin")
+                        .requestMatchers("/api/v1/user/**").hasAnyAuthority("user", "admin")
+                        .anyRequest().authenticated()
                 )
-                .oauth2Login(oauth2 -> oauth2
-                .defaultSuccessUrl("/homepage", true) // Redirect to homepage on success
-            
-                .successHandler(new AuthenticationSuccessHandler() {
-                    @Override
-                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                // .oauth2Login(oauth2 -> oauth2
+                //         .loginPage("/oauth2/authorization/google") // Specify OAuth2 login page
+                //         .defaultSuccessUrl("/homepage", true)
+                //         .successHandler(new AuthenticationSuccessHandler() {
+                //             @Override
+                //             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+                //                 OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
+                //                 OAuth2User user = authToken.getPrincipal();
+                //                 String email = user.getAttribute("email");
 
-                        OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
-                       OAuth2User user =  authToken.getPrincipal();
-                       String email = user.getAttribute("email");
-                       User existingUser = userRepo.findByEmail(email);
+                //                 User existingUser = userRepo.findByEmail(email);
+                //                 if (existingUser == null) {
+                //                     User newUser = new User();
+                //                     newUser.setEmail(email);
+                //                     newUser.setPassword(passwordEncoder().encode("admin@123"));
+                //                     newUser.setImageData(user.getAttribute("picture"));
+                //                     newUser.setName(user.getAttribute("name"));
+                //                     userRepo.save(newUser);
+                //                 }
 
-                  if(existingUser == null){
-                    User newUser = new User();
-
-                    newUser.setEmail(email);
-                   newUser.setPassword(passwordEncoder().encode("admin@123"));
-                    newUser.setImageData(user.getAttribute("picture"));
-                    newUser.setName(user.getAttribute("name"));
-                    userRepo.save(newUser);
-                    
-                       
-                  }
-
-                
-                   
-                  
-                  String token = jwtUtil.generateToken(email);
-                  logger.info("User email after successful OAuth2 login: {}-------------------------------------------------------", email+"token -----------------------------------------------"+ token);
-
-                  response.sendRedirect(constant.FRONT_END_HOST + "/homepage?token=" + token);
-                   
-                
-             
-                      
-                    }
-                })
-            
-            )
+                //                 String token = jwtUtil.generateToken(email);
+                //                 logger.info("User email after successful OAuth2 login: {}", email);
+                //                 response.sendRedirect(constant.FRONT_END_HOST + "/homepage?token=" + token);
+                //             }
+                //         })
+                // )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .csrf(csrf -> csrf.disable())
-                
-                .formLogin(formlogin -> formlogin.disable())
+                .formLogin(formLogin -> formLogin.disable())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class);
 
-
-                
         return http.build();
     }
 
@@ -140,9 +229,4 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
-   
-    
 }
-
-
