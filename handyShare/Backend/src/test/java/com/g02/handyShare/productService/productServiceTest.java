@@ -98,5 +98,7 @@ public class productServiceTest {
 
         // Assert
         assertEquals(product, response.getBody());
+        Product object = (Product) response.getBody();
+        assertEquals(owner, object.getLender()); //This will make sure that lender that we attached is the same that service return.
     }
 }
