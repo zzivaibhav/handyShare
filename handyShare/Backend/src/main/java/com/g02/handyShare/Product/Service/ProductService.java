@@ -10,7 +10,6 @@ import com.g02.handyShare.User.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,22 +38,16 @@ public class ProductService {
     public ResponseEntity<?> addProduct(Product product, MultipartFile file) {
 
         try {
-           
-            Product tobeSaved = new Product();
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             System.out.println(authentication.getName());
+            System.out.println(authentication.getPrincipal());
             
             User owner = userRepository.findByEmail(authentication.getName());
             String imageUrl = firebaseService.uploadFile(file, "product_images");
             System.out.println("------------------------------------------------------------" + imageUrl);
-            // tobeSaved.setAvailable(true);
-            tobeSaved.setCategory(product.getCategory());
-            tobeSaved.setDescription(product.getDescription());
-            tobeSaved.setProductImage(imageUrl);
-            tobeSaved.setRentalPrice(product.getRentalPrice());
-            tobeSaved.setName(product.getName());
-            tobeSaved.setLender(owner);
-            Product saved = productRepository.save(tobeSaved);
+            product.setLender(owner);
+            product.setProductImage(imageUrl);
+            Product saved = productRepository.save(product);
             return ResponseEntity.ok().body(saved);
         } catch (IOException e) {
             return ResponseEntity.internalServerError()
