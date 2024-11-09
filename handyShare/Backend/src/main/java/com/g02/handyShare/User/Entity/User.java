@@ -1,6 +1,10 @@
 package com.g02.handyShare.User.Entity;
 
 
+import java.util.List;
+
+import com.g02.handyShare.Product.Entity.Product;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -46,6 +50,6 @@ public class User {
     private String phone;
     //variables for storing image data.
     
-  
+
     private String imageData;
 }

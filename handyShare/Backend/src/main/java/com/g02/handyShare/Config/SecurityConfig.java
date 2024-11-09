@@ -94,6 +94,7 @@ public class SecurityConfig {
                    newUser.setPassword(passwordEncoder().encode("admin@123"));
                     newUser.setImageData(user.getAttribute("picture"));
                     newUser.setName(user.getAttribute("name"));
+                    newUser.set_email_verified(true);
                     userRepo.save(newUser);
                     
                        
