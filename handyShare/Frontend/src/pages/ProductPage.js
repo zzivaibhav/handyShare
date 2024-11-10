@@ -5,6 +5,7 @@ import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { message } from 'antd';
+import { MailOutlined, PhoneOutlined, StarFilled } from '@ant-design/icons';
 
 const ProductPage = () => {
   const navigate = useNavigate();
@@ -136,30 +137,48 @@ const ProductPage = () => {
         </div>
 
         {/* Right Section: Lender Information */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
+        <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
           {product.lender ? (
-            <>
-              <h3 className="heading-lg mb-2">Lender Information</h3>
-              <p><strong>Name:</strong> {product.lender.name}</p>
-              <p><strong>Email:</strong> {product.lender.email}</p>
-              {product.lender.imageData ? (
-                <img
-                  src={product.lender.imageData}
-                  alt={product.lender.name}
-                  className="w-24 h-24 rounded-full object-cover mt-4"
-                />
+            <div className="w-full">
+              <h3 className="text-2xl font-semibold text-gray-800 mb-4 text-center">Lender Information</h3>
               
-              ) : (
-                <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center mt-4">
-                  <span className="text-gray-500">No Image Available</span>
-                </div>
-              )}
-            </>
+              {/* Lender Profile Picture */}
+              <div className="flex justify-center">
+                {product.lender.imageData ? (
+                  <img
+                    src={product.lender.imageData}
+                    alt={product.lender.name}
+                    className="w-24 h-24 rounded-full object-cover mb-4 shadow-lg"
+                  />
+                ) : (
+                  <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center mb-4">
+                    <span className="text-gray-500">No Image Available</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Lender Details */}
+              <div className="text-center space-y-2">
+                <p className="text-lg flex items-center justify-center"><MailOutlined className="mr-2" /> {product.lender.email}</p>
+                {product.lender.phone && (
+                  <p className="text-lg flex items-center justify-center"><PhoneOutlined className="mr-2" /> {product.lender.phone}</p>
+                )}
+                {product.lender.rating && (
+                  <p className="text-lg flex items-center justify-center">
+                    <StarFilled className="text-yellow-500 mr-2" /> {product.lender.rating} ★
+                  </p>
+                )}
+              </div>
+
+              {/* Lender's Location */}
+              <h3 className="text-2xl font-semibold text-gray-800 mt-6 mb-2 text-center">Lender's Location</h3>
+              <div className="w-full h-48 bg-gray-200 rounded-md flex items-center justify-center">
+                <span className="text-gray-500">Map Placeholder</span>
+              </div>
+            </div>
           ) : (
             <p>Loading lender information...</p>
           )}
-          <h3 className="heading-lg mt-4">Lender's Location</h3>
-          <p>Google map location goes here.</p>
         </div>
       </main>
     </div>
