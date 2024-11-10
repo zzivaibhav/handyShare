@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import LendFormPage from '../components/LendingPage/LendFormPage.js'; 
 import EditLendForm from '../components/LendingPage/EditLendForm.js'; 
-import { Layout, Menu, Table, Button, Modal, message } from 'antd';
+import LendPageHeader from '../components/LendingPage/LendPageHeader.js';
+import { Layout, Menu, Table, Button, Modal, message, Switch } from 'antd';
 import axios from 'axios';
 import { SERVER_URL } from '../constants.js';
 
@@ -29,8 +30,29 @@ const LendPage = () => {
     },
     {
       title: 'Availability',
-      dataIndex: 'availability',
-      key: 'availability',
+      dataIndex: 'available',
+      key: 'available',
+      render: (available, record) => (
+        <Switch
+          checked={available}
+          onChange={async (checked) => {
+            try {
+              const token = localStorage.getItem('token');
+              await axios.put(`${SERVER_URL}/api/v1/user/product/changeAvailability/${record.id}`, null, {
+                headers: {
+                  Authorization: `Bearer ${token}`
+                },
+                withCredentials: true
+              });
+              message.success(`Product is now ${checked ? 'available' : 'unavailable'}`);
+              fetchLentItemsRefresh(); // Refresh the list after changing availability
+            } catch (error) {
+              console.error('Error updating availability:', error);
+              message.error('Failed to update availability');
+            }
+          }}
+        />
+      ),
     },
     {
       title: 'Actions',
@@ -106,7 +128,8 @@ const LendPage = () => {
   };
 
   return (
-    <div>
+    <Layout>
+      <LendPageHeader />
       <Layout>
         <Sider>
           <Menu selectedKeys={[view]} onClick={(e) => setView(e.key)}>
@@ -153,7 +176,7 @@ const LendPage = () => {
           />
         )}
       </Modal>
-    </div>
+    </Layout>
   );
 };
 

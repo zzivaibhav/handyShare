@@ -21,6 +21,7 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
     pincode: '',
     address: '',
     image: null,
+    existingImage: '',
     available: true,
   });
 
@@ -30,7 +31,7 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
     const fetchCategories = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${SERVER_URL}/api/v1/user/allProducts`, {
+        const response = await axios.get(`${SERVER_URL}/api/v1/user/allCategories`, {
           headers: {
             Authorization: `Bearer ${token}`
           },
@@ -56,25 +57,23 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
     setFormData({
       name: item.name || '',
       description: item.description || '',
-      price: item.price || 0,
+      rentalPrice: item.rentalPrice || 0,
       category: item.category || '',
       city: item.city || '',
       state: item.state || '',
       pincode: item.pincode || '',
       address: item.address || '',
       image: null,
-      imageName: item.imageName || '',
-      available: item.available || true,
+      existingImage: item.productImage || '',
+      available: item.available !== null ? item.available : true,
     });
     
-    // Reset to first step whenever a new item is loaded
     setCurrentStep(0);
     
-    // Update form fields
     form.setFieldsValue({
       name: item.name,
       description: item.description,
-      price: item.price,
+      rentalPrice: item.rentalPrice,
       category: item.category,
       city: item.city,
       state: item.state,
@@ -202,39 +201,48 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
       content: (
         <>
           <Form.Item
-            label="Upload Image"
+            label="Product Image"
             name="image"
-            rules={[{ required: false }]} // Image is optional in edit
           >
-            <Upload
-              beforeUpload={(file) => {
-                setFormData({ ...formData, image: file, imageName: file.name });
-                setFileList([file]);
-                return false; // Prevent automatic upload
-              }}
-              fileList={fileList}
-              onRemove={() => {
-                setFormData({ ...formData, image: null, imageName: '' });
-                setFileList([]);
-              }}
-              listType="picture"
-              maxCount={1}
-            >
-              <Button icon={<UploadOutlined />}>Click to Upload</Button>
-            </Upload>
-          </Form.Item>
+            <div>
+              {/* Show existing image preview */}
+              {formData.existingImage && !formData.image && (
+                <div style={{ marginBottom: '16px' }}>
+                  <p>Current Image:</p>
+                  <img 
+                    src={formData.existingImage} 
+                    alt="Current product" 
+                    style={{ maxWidth: '200px', marginBottom: '8px' }} 
+                  />
+                </div>
+              )}
+              
+              {/* Show new image preview if selected */}
+              {formData.image && (
+                <div style={{ marginBottom: '16px' }}>
+                  <p>New Image:</p>
+                  <img 
+                    src={URL.createObjectURL(formData.image)} 
+                    alt="New product" 
+                    style={{ maxWidth: '200px', marginBottom: '8px' }} 
+                  />
+                </div>
+              )}
 
-          {formData.image && (
-            <div style={{ marginBottom: '16px' }}>
-              <strong>Image Preview:</strong>
-              <br />
-              <img 
-                src={URL.createObjectURL(formData.image)} 
-                alt={formData.imageName} 
-                style={{ maxWidth: '200px', marginTop: '10px' }} 
-              />
+              <Upload
+                beforeUpload={(file) => {
+                  setFormData({ ...formData, image: file });
+                  return false;
+                }}
+                onRemove={() => setFormData({ ...formData, image: null })}
+                fileList={formData.image ? [formData.image] : []}
+              >
+                <Button icon={<UploadOutlined />}>
+                  {formData.existingImage ? 'Change Image' : 'Upload Image'}
+                </Button>
+              </Upload>
             </div>
-          )}
+          </Form.Item>
 
           <Form.Item 
             label="Availability" 
@@ -265,11 +273,15 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
           <p><strong>Pincode:</strong> {formData.pincode}</p>
           <p><strong>Address:</strong> {formData.address}</p>
           <p><strong>Availability:</strong> {formData.available ? 'Available' : 'Unavailable'}</p>
-          {formData.image && (
+          {(formData.image || formData.existingImage) && (
             <div>
               <strong>Image:</strong>
               <br />
-              <img src={URL.createObjectURL(formData.image)} alt={formData.imageName} style={{ maxWidth: '200px', marginTop: '10px' }} />
+              <img 
+                src={formData.image ? URL.createObjectURL(formData.image) : formData.existingImage} 
+                alt="Product" 
+                style={{ maxWidth: '200px', marginTop: '10px' }} 
+              />
             </div>
           )}
         </Card>
