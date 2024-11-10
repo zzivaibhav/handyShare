@@ -15,12 +15,7 @@ const LendFormPage = ({ onUpdate }) => {
     description: '',
     rentalPrice: 0,
     category: '',
-    city: '',
-    state: '',
-    pincode: '',
-    address: '',
-    image: null,
-    availability: 'Available'
+    image: null
   });
   const [categories, setCategories] = useState([]);
   const [fileList, setFileList] = useState([]);
@@ -155,56 +150,6 @@ const LendFormPage = ({ onUpdate }) => {
       )
     },
     {
-      title: 'Location & Address',
-      content: (
-        <>
-          <Form.Item
-            label="City"
-            name="city"
-            rules={[{ required: true, message: 'Please enter the city' }]}
-          >
-            <Input 
-              value={formData.city} 
-              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="State"
-            name="state"
-            rules={[{ required: true, message: 'Please enter the state' }]}
-          >
-            <Input 
-              value={formData.state} 
-              onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Pincode"
-            name="pincode"
-            rules={[{ required: true, message: 'Please enter the pincode' }]}
-          >
-            <Input 
-              value={formData.pincode} 
-              onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Address"
-            name="address"
-            rules={[{ required: true, message: 'Please enter the address' }]}
-          >
-            <Input 
-              value={formData.address} 
-              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-            />
-          </Form.Item>
-        </>
-      )
-    },
-    {
       title: 'Summary',
       content: (
         <Card title="Item Summary">
@@ -212,7 +157,6 @@ const LendFormPage = ({ onUpdate }) => {
           <p><strong>Name:</strong> {formData.name}</p>
           <p><strong>Description:</strong> {formData.description}</p>
           <p><strong>Price:</strong> ${formData.rentalPrice?.toFixed(2)}</p>
-          <p><strong>Location:</strong> {formData.address}, {formData.city}, {formData.state} - {formData.pincode}</p>
           {fileList.length > 0 && formData.image && (
             <div style={{ marginTop: '16px' }}>
               <p><strong>Image Preview:</strong></p>
@@ -265,11 +209,6 @@ const LendFormPage = ({ onUpdate }) => {
       formToSend.append('description', formData.description);
       formToSend.append('rentalPrice', formData.rentalPrice.toFixed(2)); // Format price to 2 decimal places
       formToSend.append('category', formData.category);
-      formToSend.append('city', formData.city);
-      formToSend.append('state', formData.state);
-      formToSend.append('pincode', formData.pincode);
-      formToSend.append('address', formData.address);
-      formToSend.append('availability', formData.availability); // Ensure availability is sent
       formToSend.append('image', formData.image);
 
       const token = localStorage.getItem('token');
@@ -294,12 +233,7 @@ const LendFormPage = ({ onUpdate }) => {
         description: '',
         rentalPrice: 0,
         category: '',
-        city: '',
-        state: '',
-        pincode: '',
-        address: '',
-        image: null,
-        availability: 'Available'
+        image: null
       });
       setFileList([]);
     } catch (error) {
@@ -355,12 +289,7 @@ const LendFormPage = ({ onUpdate }) => {
             description: '',
             rentalPrice: 0,
             category: '',
-            city: '',
-            state: '',
-            pincode: '',
-            address: '',
-            image: null,
-            availability: 'Available'
+            image: null
           }); 
           setFileList([]);
         }}>

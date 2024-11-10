@@ -41,12 +41,12 @@ public class Product {
 
     private String productImage;
 
-    @NotNull(message = "Rental Price is required.")  // Use @NotNull for Double
+    @NotNull(message = "Rental Price is required.")
     @Min(value = 0, message = "Rental Price should be positive.")
     private Double rentalPrice;
  
     @ManyToOne
-    @JoinColumn(name="lender",referencedColumnName = "id")
+    @JoinColumn(name="lender", referencedColumnName = "id")
     private User lender; 
 
     @Column(name = "created_date", nullable = false, updatable = false)
@@ -54,11 +54,9 @@ public class Product {
 
     @PrePersist
     protected void onCreate() {
-    this.createdDate = LocalDateTime.now();
-
-    
-}
+        this.createdDate = LocalDateTime.now();
+    }
 
     @Column(nullable = true)
-    private Boolean available;
+    private Boolean available = true;
 }

@@ -38,12 +38,13 @@ const LendPage = () => {
           onChange={async (checked) => {
             try {
               const token = localStorage.getItem('token');
-              await axios.put(`${SERVER_URL}/api/v1/user/product/changeAvailability/${record.id}`, null, {
-                headers: {
-                  Authorization: `Bearer ${token}`
-                },
-                withCredentials: true
-              });
+              await axios.put(`${SERVER_URL}/api/v1/user/product/changeAvailability/${record.id}`, 
+                { status: checked },  // Send JSON with status key
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                  withCredentials: true
+                }
+              );
               message.success(`Product is now ${checked ? 'available' : 'unavailable'}`);
               fetchLentItemsRefresh(); // Refresh the list after changing availability
             } catch (error) {
@@ -86,9 +87,7 @@ const LendPage = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${SERVER_URL}/api/v1/user/listUserItems`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
+        headers: { Authorization: `Bearer ${token}` },
         withCredentials: true
       });
       setLentItems(response.data);
@@ -109,9 +108,7 @@ const LendPage = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.delete(`${SERVER_URL}/api/v1/user/product/delete/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
       message.success('Item deleted successfully');
@@ -180,4 +177,4 @@ const LendPage = () => {
   );
 };
 
-export default LendPage;
+export default LendPage;

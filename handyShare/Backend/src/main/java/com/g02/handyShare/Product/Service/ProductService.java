@@ -48,6 +48,7 @@ public class ProductService {
             System.out.println("------------------------------------------------------------" + imageUrl);
             product.setLender(owner);
             product.setProductImage(imageUrl);
+            product.setAvailable(true);
             Product saved = productRepository.save(product);
             return ResponseEntity.ok().body(saved);
         } catch (IOException e) {

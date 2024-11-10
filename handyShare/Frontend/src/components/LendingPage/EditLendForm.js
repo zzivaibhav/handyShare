@@ -16,13 +16,8 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
     description: '',
     rentalPrice: 0,
     category: '',
-    city: '',
-    state: '',
-    pincode: '',
-    address: '',
     image: null,
     existingImage: '',
-    available: true,
   });
 
   const [fileList, setFileList] = useState([]);
@@ -59,13 +54,8 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
       description: item.description || '',
       rentalPrice: item.rentalPrice || 0,
       category: item.category || '',
-      city: item.city || '',
-      state: item.state || '',
-      pincode: item.pincode || '',
-      address: item.address || '',
       image: null,
       existingImage: item.productImage || '',
-      available: item.available !== null ? item.available : true,
     });
     
     setCurrentStep(0);
@@ -74,12 +64,7 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
       name: item.name,
       description: item.description,
       rentalPrice: item.rentalPrice,
-      category: item.category,
-      city: item.city,
-      state: item.state,
-      pincode: item.pincode,
-      address: item.address,
-      available: item.available
+      category: item.category
     });
   }, [item, form]);
 
@@ -138,8 +123,8 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
               min={0.01} 
               step={0.01}
               precision={2}
-              value={formData.price} 
-              onChange={(value) => setFormData({ ...formData, price: value })}
+              value={formData.rentalPrice} 
+              onChange={(value) => setFormData({ ...formData, rentalPrice: value })}
               style={{ width: '100%' }}
             />
           </Form.Item>
@@ -147,57 +132,7 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
       ),
     },
     {
-      title: 'Location Details',
-      content: (
-        <>
-          <Form.Item
-            label="City"
-            name="city"
-            rules={[{ required: true, message: 'Please enter the city' }]}
-          >
-            <Input 
-              value={formData.city} 
-              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="State"
-            name="state"
-            rules={[{ required: true, message: 'Please enter the state' }]}
-          >
-            <Input 
-              value={formData.state} 
-              onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Pincode"
-            name="pincode"
-            rules={[{ required: true, message: 'Please enter the pincode' }]}
-          >
-            <Input 
-              value={formData.pincode} 
-              onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Address"
-            name="address"
-            rules={[{ required: true, message: 'Please enter the address' }]}
-          >
-            <Input 
-              value={formData.address} 
-              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-            />
-          </Form.Item>
-        </>
-      ),
-    },
-    {
-      title: 'Image & Availability',
+      title: 'Image',
       content: (
         <>
           <Form.Item
@@ -243,20 +178,6 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
               </Upload>
             </div>
           </Form.Item>
-
-          <Form.Item 
-            label="Availability" 
-            name="available" 
-            rules={[{ required: true, message: 'Please select availability status' }]}
-          >
-            <Select 
-              value={formData.available}
-              onChange={(value) => setFormData({ ...formData, available: value })}
-            >
-              <Option value="true">Available</Option>
-              <Option value="false">Unavailable</Option>
-            </Select>
-          </Form.Item>
         </>
       ),
     },
@@ -266,13 +187,8 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
         <Card title="Summary" bordered={false}>
           <p><strong>Name:</strong> {formData.name}</p>
           <p><strong>Description:</strong> {formData.description}</p>
-          <p><strong>Price:</strong> ${formData.price}</p>
+          <p><strong>Price:</strong> ${formData.rentalPrice}</p>
           <p><strong>Category:</strong> {formData.category}</p>
-          <p><strong>City:</strong> {formData.city}</p>
-          <p><strong>State:</strong> {formData.state}</p>
-          <p><strong>Pincode:</strong> {formData.pincode}</p>
-          <p><strong>Address:</strong> {formData.address}</p>
-          <p><strong>Availability:</strong> {formData.available ? 'Available' : 'Unavailable'}</p>
           {(formData.image || formData.existingImage) && (
             <div>
               <strong>Image:</strong>
@@ -306,13 +222,8 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
       const formToSend = new FormData();
       formToSend.append('name', formData.name);
       formToSend.append('description', formData.description);
-      formToSend.append('rentalPrice', formData.price);
+      formToSend.append('rentalPrice', formData.rentalPrice);
       formToSend.append('category', formData.category);
-      formToSend.append('city', formData.city);
-      formToSend.append('state', formData.state);
-      formToSend.append('pincode', formData.pincode);
-      formToSend.append('address', formData.address);
-      formToSend.append('available', formData.available);
       
       if (formData.image) {
         formToSend.append('image', formData.image);
@@ -334,7 +245,7 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
       }
     } catch (error) {
       console.error('Error updating product:', error);
-      message.error('Failed to update product: ' + error.response?.data || error.message);
+      message.error('Failed to update product: ' + (error.response?.data || error.message));
     }
   };
 
@@ -373,15 +284,10 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
           setFormData({
             name: '',
             description: '',
-            price: 0,
+            rentalPrice: 0,
             category: '',
-            city: '',
-            state: '',
-            pincode: '',
-            address: '',
             image: null,
-            imageName: '',
-            available: true
+            existingImage: ''
           }); 
           setFileList([]);
         }}>

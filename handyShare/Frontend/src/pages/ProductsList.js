@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 import { Link, useNavigate } from 'react-router-dom';
+import { message } from 'antd';
 
 const ProductsList = () => {
   const navigate = useNavigate(); // useNavigate for navigation
@@ -53,7 +54,7 @@ const ProductsList = () => {
     setCurrentPage(1); // Reset to first page when search query changes
   };
 
-  const sortedProducts = products.sort((a, b) => {
+  const sortedProducts = [...products].sort((a, b) => {
     if (sortOption === 'newest') {
       return b.id - a.id;
     } else if (sortOption === 'highest') {
@@ -65,8 +66,8 @@ const ProductsList = () => {
 
   const filteredProducts = sortedProducts.filter(product => {
     return (
-      (!filters.priceRange || product.rentalPrice <= filters.priceRange) &&
-      (!filters.availability || product.availability >= filters.availability) &&
+      (!filters.priceRange || product.rentalPrice <= parseFloat(filters.priceRange)) &&
+      (!filters.availability || product.available === (filters.availability === 'true')) &&
       (!filters.category || product.category === filters.category) &&
       (product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
        product.category.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -100,34 +101,11 @@ const ProductsList = () => {
       <HeaderBar />
       <div className="max-w-7xl mx-auto p-6">
         <h2 className="text-2xl font-semibold text-center mb-5">Items</h2>
-
-        {/* Back Button */}
-        <button
-          onClick={() => navigate(-1)} // navigate back
-          className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
-        >
-          Back
-        </button>
-
         <div className="flex">
-          {/* Sidebar for Filters and Sorting */}
-          <div className="w-1/4 bg-gray-100 p-4 rounded-lg shadow-md">
-            <h3 className="text-lg font-semibold mb-4">Filters</h3>
-
+          {/* Filters Section */}
+          <div className="w-1/4">
             <div className="mb-4">
-              <label htmlFor="search" className="block text-md font-medium">Search</label>
-              <input
-                type="text"
-                id="search"
-                className="w-full mt-1 p-2 border rounded-md"
-                placeholder="Search by name or category"
-                value={searchQuery}
-                onChange={handleSearchChange}
-              />
-            </div>
-
-            <div className="mb-4">
-              <label htmlFor="priceRange" className="block text-md font-medium">Max Price</label>
+              <label htmlFor="priceRange" className="block text-md font-medium">Price Range</label>
               <input
                 type="number"
                 name="priceRange"
@@ -140,16 +118,18 @@ const ProductsList = () => {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="availability" className="block text-md font-medium">Min Availability (hours)</label>
-              <input
-                type="number"
+              <label htmlFor="availability" className="block text-md font-medium">Availability</label>
+              <select
                 name="availability"
                 id="availability"
                 className="w-full mt-1 p-2 border rounded-md"
-                placeholder="Min Hours"
                 value={filters.availability}
                 onChange={handleFilterChange}
-              />
+              >
+                <option value="">All</option>
+                <option value="true">Available</option>
+                <option value="false">Unavailable</option>
+              </select>
             </div>
 
             <div className="mb-4">
@@ -195,27 +175,55 @@ const ProductsList = () => {
 
           {/* Product Grid */}
           <div className="w-3/4 grid grid-cols-3 gap-6 ml-6">
-            {currentProducts.map((product) => (
-              <Link to={`/product/${product.id}`} key={product.id}>  
-                <div className="bg-white shadow-md rounded-lg p-4">
-                  {product.productImage ? (
-                    <img
-                      src={product.productImage} 
-                      alt={product.name}
-                      className="w-full h-48 object-cover rounded-md mb-4"
-                    />
+            {currentProducts.map((product) => {
+              const isAvailable = product.available;
+              return (
+                <div
+                  key={product.id}
+                  className={`bg-white shadow-md rounded-lg p-4 ${
+                    !isAvailable ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {isAvailable ? (
+                    <Link to={`/product/${product.id}`}>
+                      {product.productImage ? (
+                        <img
+                          src={product.productImage} 
+                          alt={product.name}
+                          className="w-full h-48 object-cover rounded-md mb-4"
+                        />
+                      ) : (
+                        <div className="w-full h-48 bg-gray-300 rounded-md mb-4 flex items-center justify-center">
+                          <span>No Image Available</span>
+                        </div>
+                      )}
+                      <h3 className="text-xl font-semibold">{product.name}</h3>
+                      <p className="mt-2">{product.description || 'No description available.'}</p>
+                      <p className="mt-2 text-lg font-medium">Hourly Price: ${product.rentalPrice}</p>
+                      <p className="mt-1 text-gray-500">Available for {product.available ? 'Yes' : 'No'}</p>
+                    </Link>
                   ) : (
-                    <div className="w-full h-48 bg-gray-300 rounded-md mb-4 flex items-center justify-center">
-                      <span>No Image Available</span>
-                    </div>
+                    <>
+                      {product.productImage ? (
+                        <img
+                          src={product.productImage} 
+                          alt={product.name}
+                          className="w-full h-48 object-cover rounded-md mb-4"
+                        />
+                      ) : (
+                        <div className="w-full h-48 bg-gray-300 rounded-md mb-4 flex items-center justify-center">
+                          <span>No Image Available</span>
+                        </div>
+                      )}
+                      <h3 className="text-xl font-semibold">{product.name}</h3>
+                      <p className="mt-2">{product.description || 'No description available.'}</p>
+                      <p className="mt-2 text-lg font-medium">Hourly Price: ${product.rentalPrice}</p>
+                      <p className="mt-1 text-gray-500">Unavailable</p>
+                    </>
                   )}
-                  <h3 className="text-xl font-semibold">{product.name}</h3>
-                  <p className="mt-2">{product.description || 'No description available.'}</p>
-                  <p className="mt-2 text-lg font-medium">Hourly Price: ${product.rentalPrice}</p>
-                  <p className="mt-1 text-gray-500">Available for {product.availability} hours</p>
                 </div>
-              </Link>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -224,14 +232,18 @@ const ProductsList = () => {
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
-            className={`px-4 py-2 mr-2 ${currentPage === 1 ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700'} text-white rounded-lg`}
+            className={`px-4 py-2 mr-2 ${
+              currentPage === 1 ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700'
+            } text-white rounded-lg`}
           >
             Previous
           </button>
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            className={`px-4 py-2 ${currentPage === totalPages ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700'} text-white rounded-lg`}
+            className={`px-4 py-2 ${
+              currentPage === totalPages ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700'
+            } text-white rounded-lg`}
           >
             Next
           </button>
