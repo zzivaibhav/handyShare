@@ -59,4 +59,6 @@ public class Product {
     
 }
 
+    @Column(nullable = true)
+    private Boolean available;
 }

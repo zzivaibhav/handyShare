@@ -5,6 +5,7 @@ import com.g02.handyShare.Config.Firebase.FirebaseService;
  
 import com.g02.handyShare.Product.Entity.Product;
 import com.g02.handyShare.Product.Repository.ProductRepository;
+import com.g02.handyShare.Product.Service.CustomException;
 import com.g02.handyShare.Product.Service.ProductService;
 import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
@@ -106,9 +107,20 @@ public class ProductController {
       List<Product> response =   productService.listProductsForUser();
         return ResponseEntity.ok(response);
     }
-    //    @PutMapping("/update/{id}")
-//    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product){
-//        Product updatedProduct=productService.updateProduct(id, product);
-//        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
-//    }
+    
+    @PutMapping("/user/product/update/{id}")
+    public ResponseEntity<?> updateProduct(
+            @PathVariable Long id,
+            @ModelAttribute Product updatedProduct,
+            @RequestParam(value = "image", required = false) MultipartFile file) {
+        try {
+            ResponseEntity<?> response = productService.updateProduct(id, updatedProduct, file);
+            return ResponseEntity.ok(response.getBody());
+        } catch (CustomException ce) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ce.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error while updating the product.");
+        }
+    }
 }

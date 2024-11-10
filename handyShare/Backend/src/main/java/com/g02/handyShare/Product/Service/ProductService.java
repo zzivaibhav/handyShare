@@ -8,6 +8,7 @@ import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -63,7 +64,7 @@ public class ProductService {
 
     public Product getProductById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not Found!"));
+                .orElseThrow(() -> new CustomException("Product not Found!"));
     }
 
     public List<Product> getAllProducts() {
@@ -93,23 +94,59 @@ public class ProductService {
         return response;
     }
 
-    // update product entries
-    // public Product updateProduct(Long id, Product updatedProduct){
-    // Optional<Product> existingProductOptional=productRepository.findById(id);
-    //
-    // if (existingProductOptional.isPresent()){
-    // Product existingProduct=existingProductOptional.get();
-    // //update fields
-    // existingProduct.setName(updatedProduct.getName());
-    // existingProduct.setDescription(updatedProduct.getDescription());
-    // existingProduct.setCategory(updatedProduct.getCategory());
-    // existingProduct.setRentalPrice(updatedProduct.getRentalPrice());
-    // existingProduct.setAvailable(updatedProduct.getAvailable());
-    //
-    // return productRepository.save(existingProduct);
-    // }else{
-    // throw new CustomException("Product not found with id: "+ id);
-    // }
-    // }
+    // New Update Method
+    public ResponseEntity<?> updateProduct(Long id, Product updatedProduct, MultipartFile file) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String userEmail = authentication.getName();
+            User owner = userRepository.findByEmail(userEmail);
 
+            Product existingProduct = productRepository.findById(id)
+                    .orElseThrow(() -> new CustomException("Product not found with id: " + id));
+
+            // Check if the authenticated user is the owner of the product
+            if (!existingProduct.getLender().getId().equals(owner.getId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("You are not authorized to update this product.");
+            }
+
+            // If a new image is provided, upload it and update the image URL
+            if (file != null && !file.isEmpty()) {
+                String imageUrl = firebaseService.uploadFile(file, "product_images");
+                existingProduct.setProductImage(imageUrl);
+            }
+
+            // Update the product fields
+            existingProduct.setName(updatedProduct.getName());
+            existingProduct.setDescription(updatedProduct.getDescription());
+            existingProduct.setCategory(updatedProduct.getCategory());
+            existingProduct.setRentalPrice(updatedProduct.getRentalPrice());
+            existingProduct.setAvailable(updatedProduct.getAvailable());
+
+            // Save the updated product
+            Product savedProduct = productRepository.save(existingProduct);
+
+            return ResponseEntity.ok(savedProduct);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error while updating the product. Please try again later.");
+        }
+    }
+
+  //  public Product updateProduct(Long id, Product updatedProduct) {
+  //      Optional<Product> existingProductOptional = productRepository.findById(id);
+
+  //       if (existingProductOptional.isPresent()){
+  //            Product existingProduct = existingProductOptional.get();
+             //update fields
+  //           existingProduct.setName(updatedProduct.getName());
+  //           existingProduct.setDescription(updatedProduct.getDescription());
+  //           existingProduct.setCategory(updatedProduct.getCategory());
+  //           existingProduct.setRentalPrice(updatedProduct.getRentalPrice());
+  //           existingProduct.setAvailable(updatedProduct.getAvailable());
+  //           return productRepository.save(existingProduct);
+  //       } else {
+  //           throw new CustomException("Product not found with id: "+ id);
+  //       }
+  //  }
 }
