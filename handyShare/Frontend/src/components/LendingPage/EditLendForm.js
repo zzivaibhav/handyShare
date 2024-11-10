@@ -112,20 +112,15 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
           </Form.Item>
 
           <Form.Item
-            label="Price"
-            name="price"
-            rules={[
-              { required: true, message: 'Please enter the price' },
-              { type: 'number', min: 0.01, message: 'Price must be greater than 0' }
-            ]}
+            label="Rental Price"
+            name="rentalPrice"
+            rules={[{ required: true, message: 'Please enter the rental price' }]}
           >
-            <InputNumber 
-              min={0.01} 
-              step={0.01}
-              precision={2}
-              value={formData.rentalPrice} 
-              onChange={(value) => setFormData({ ...formData, rentalPrice: value })}
+            <InputNumber
               style={{ width: '100%' }}
+              min={0}
+              value={formData.rentalPrice}
+              onChange={(value) => setFormData({ ...formData, rentalPrice: value })}
             />
           </Form.Item>
         </>

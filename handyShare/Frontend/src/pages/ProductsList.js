@@ -200,7 +200,6 @@ const ProductsList = () => {
                       <h3 className="text-xl font-semibold">{product.name}</h3>
                       <p className="mt-2">{product.description || 'No description available.'}</p>
                       <p className="mt-2 text-lg font-medium">Hourly Price: ${product.rentalPrice}</p>
-                      <p className="mt-1 text-gray-500">Available for {product.available ? 'Yes' : 'No'}</p>
                     </Link>
                   ) : (
                     <>
