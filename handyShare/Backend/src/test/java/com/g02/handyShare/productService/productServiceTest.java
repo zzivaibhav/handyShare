@@ -1,11 +1,14 @@
 package com.g02.handyShare.productService;
 
 import static org.junit.Assert.assertEquals;
+
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -81,7 +84,9 @@ public class productServiceTest {
     public void addProductWithUserTest() throws IOException {
         // Arrange
         String email = "john@gmail.com";
-        User owner = new User(1L, "John", email, "password123", "user", false, null, "123 Main St", "123456", "1234567890", null);
+        User owner = new User();
+        owner.setId(1L);
+        owner.setEmail(email);
 
         when(authentication.getName()).thenReturn(owner.getEmail());
         when(userRepository.findByEmail(email)).thenReturn(owner);
@@ -100,5 +105,30 @@ public class productServiceTest {
         assertEquals(product, response.getBody());
         Product object = (Product) response.getBody();
         assertEquals(owner, object.getLender()); //This will make sure that lender that we attached is the same that service return.
+    }
+
+
+    @Test
+    public void listProductsForUserTest(){
+         // Arrange
+         String email = "john@gmail.com";
+         User owner = new User();
+         owner.setId(1L);
+         owner.setEmail(email);
+
+         Product product = new Product();
+         product.setCategory("Electronics");
+         product.setName("Laptop");
+         product.setRentalPrice(15.0);
+         product.setLender(owner);
+List<Product> expected = new ArrayList<>();
+expected.add(product);
+         when(authentication.getName()).thenReturn(owner.getEmail());
+         when(productRepository.findByLenderEmail(email)).thenReturn(expected);
+
+        List<Product> actual = productService.listProductsForUser();
+
+        assertEquals(expected, actual);
+
     }
 }
