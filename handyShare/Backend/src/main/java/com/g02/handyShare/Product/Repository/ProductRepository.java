@@ -12,4 +12,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.category = :category AND p.createdDate >= :oneWeekAgo")
     List<Product> findNewlyAddedProductsByCategory(@Param("category") String category, @Param("oneWeekAgo") LocalDateTime oneWeekAgo);
 
+    @Query("SELECT p FROM Product p WHERE p.lender.email = :lenderEmail")
+List<Product> findByLenderEmail(@Param("lenderEmail") String lenderEmail);
+
+
 }

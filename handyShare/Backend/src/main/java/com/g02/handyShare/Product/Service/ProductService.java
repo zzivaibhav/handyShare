@@ -85,6 +85,14 @@ public class ProductService {
         return productRepository.findNewlyAddedProductsByCategory(category, oneWeekAgo);
     }
 
+    public List<Product> listProductsForUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(authentication.getName());
+        String email = authentication.getName();
+        List<Product> response = productRepository.findByLenderEmail(email);
+        return response;
+    }
+
     // update product entries
     // public Product updateProduct(Long id, Product updatedProduct){
     // Optional<Product> existingProductOptional=productRepository.findById(id);

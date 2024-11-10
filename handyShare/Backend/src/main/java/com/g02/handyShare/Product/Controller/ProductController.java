@@ -101,6 +101,11 @@ public class ProductController {
         return ResponseEntity.ok().body(products);
     }
 
+    @GetMapping("/user/listUserItems")
+    public ResponseEntity<List<Product>> listProducts(){
+      List<Product> response =   productService.listProductsForUser();
+        return ResponseEntity.ok(response);
+    }
     //    @PutMapping("/update/{id}")
 //    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product){
 //        Product updatedProduct=productService.updateProduct(id, product);
