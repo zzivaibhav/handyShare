@@ -1,7 +1,6 @@
 package com.g02.handyShare.productService;
 
 import static org.junit.Assert.assertEquals;
-
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -109,26 +108,35 @@ public class productServiceTest {
 
 
     @Test
-    public void listProductsForUserTest(){
-         // Arrange
-         String email = "john@gmail.com";
-         User owner = new User();
-         owner.setId(1L);
-         owner.setEmail(email);
+    public void testChangeAvailability() {
+        // Arrange
+        String email = "john@gmail.com";
+        User owner = new User();
+        owner.setId(1L);
+        owner.setEmail(email);
 
-         Product product = new Product();
-         product.setCategory("Electronics");
-         product.setName("Laptop");
-         product.setRentalPrice(15.0);
-         product.setLender(owner);
-List<Product> expected = new ArrayList<>();
-expected.add(product);
-         when(authentication.getName()).thenReturn(owner.getEmail());
-         when(productRepository.findByLenderEmail(email)).thenReturn(expected);
+        Product product = new Product();
+        product.setCategory("Electronics");
+        product.setId(10L);
+        product.setName("Laptop");
+        product.setRentalPrice(15.0);
+        product.setAvailable(true); // Initial status
+        product.setLender(owner);
 
-        List<Product> actual = productService.listProductsForUser();
+        Boolean newStatus = false; // New availability status
 
-        assertEquals(expected, actual);
+        // Mock behavior
+        when(authentication.getName()).thenReturn(owner.getEmail());
+        when(userRepository.findByEmail(email)).thenReturn(owner);
+        when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
+        when(productRepository.save(product)).thenReturn(product);
 
+        // Act
+        ResponseEntity<?> response = productService.changeAvailability(product.getId(), newStatus);
+
+        // Assert
+        assertEquals("Product availability updated successfully.", response.getBody());
+        assertEquals(newStatus, product.getAvailable()); // Verify that the status was updated
     }
+
 }
