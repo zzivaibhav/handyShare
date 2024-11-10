@@ -133,6 +133,31 @@ public class ProductService {
         }
     }
 
+
+    public ResponseEntity<?> changeAvailability(Long id, Boolean status) {
+        // Get the authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        User owner = userRepository.findByEmail(userEmail);
+    
+        // Retrieve the product by ID
+        Product item = productRepository.findById(id)
+                .orElseThrow(() -> new CustomException("Product not found with id: " + id));
+    
+        // Check if the authenticated user is the owner of the product
+        if (!owner.getId().equals(item.getLender().getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You are not authorized to update this product.");
+        }
+    
+        // Update the available status and save the product
+        item.setAvailable(status);
+        productRepository.save(item);  // Save the updated product to the database
+    
+        return ResponseEntity.ok("Product availability updated successfully.");
+    }
+    
+    
   //  public Product updateProduct(Long id, Product updatedProduct) {
   //      Optional<Product> existingProductOptional = productRepository.findById(id);
 

@@ -27,7 +27,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1")
 
-@CrossOrigin(origins = "http://172.17.0.99:3000", allowCredentials = "true" )
+//@CrossOrigin(origins = "http://172.17.0.99:3000", allowCredentials = "true" )
 
 public class ProductController {
     @Autowired
@@ -123,4 +123,20 @@ public class ProductController {
                     .body("Error while updating the product.");
         }
     }
+
+    // @PatchMapping("/user/product/changeAvailibility/{id}")
+    // public ResponseEntity<?> changeAvailibility(@RequestParam Long id , @RequestBody Boolean status) {
+    //     if ((productService.changeAvailibility(id, status)).getBody().equals("success")) {
+    //         return ResponseEntity.ok("Chaged");
+    //     }
+    //     return  ResponseEntity.ok("cannot change");
+    // }
+
+    @PutMapping("/user/product/changeAvailability/{id}")
+    public ResponseEntity<?> changeAvailability(@PathVariable Long id, @RequestBody Map<String, Boolean> statusMap) {
+        Boolean status = statusMap.get("status");
+        return productService.changeAvailability(id, status);
+    }
+    
+
 }
