@@ -63,7 +63,7 @@ const LendPage = () => {
   const fetchLentItemsRefresh = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${SERVER_URL}/api/v1/user/allProducts`, {
+      const response = await axios.get(`${SERVER_URL}/api/v1/user/listUserItems`, {
         headers: {
           Authorization: `Bearer ${token}`
         },

@@ -294,20 +294,20 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
       const formToSend = new FormData();
       formToSend.append('name', formData.name);
       formToSend.append('description', formData.description);
-      formToSend.append('price', formData.price.toFixed(2));
+      formToSend.append('rentalPrice', formData.price);
       formToSend.append('category', formData.category);
       formToSend.append('city', formData.city);
       formToSend.append('state', formData.state);
       formToSend.append('pincode', formData.pincode);
       formToSend.append('address', formData.address);
-      formToSend.append('available', formData.available.toString());
+      formToSend.append('available', formData.available);
       
       if (formData.image) {
         formToSend.append('image', formData.image);
       }
 
       const token = localStorage.getItem('token');
-      await axios.put(`${SERVER_URL}/api/v1/user/lending/item/${item.id}`, formToSend, {
+      const response = await axios.put(`${SERVER_URL}/api/v1/user/product/update/${item.id}`, formToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`
@@ -315,22 +315,14 @@ const EditLendForm = ({ item, onUpdate, onCancel }) => {
         withCredentials: true
       });
 
-      message.success('Item updated successfully!');
-      onUpdate();
-      onCancel();
-    } catch (error) {
-      console.error('Error updating product:', error.response || error);
-      if (error.response && error.response.data) {
-        if (typeof error.response.data === 'object') {
-          Object.values(error.response.data).forEach(errMsg => {
-            message.error(errMsg);
-          });
-        } else {
-          message.error(error.response.data);
-        }
-      } else {
-        message.error('Failed to update product');
+      if (response.data) {
+        message.success('Item updated successfully!');
+        onUpdate();
+        onCancel();
       }
+    } catch (error) {
+      console.error('Error updating product:', error);
+      message.error('Failed to update product: ' + error.response?.data || error.message);
     }
   };
 
