@@ -5,6 +5,7 @@ import com.g02.handyShare.Config.Firebase.FirebaseService;
  
 import com.g02.handyShare.Product.Entity.Product;
 import com.g02.handyShare.Product.Repository.ProductRepository;
+import com.g02.handyShare.Product.Service.CustomException;
 import com.g02.handyShare.Product.Service.ProductService;
 import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
@@ -26,7 +27,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1")
 
-@CrossOrigin(origins = "http://172.17.0.99:3000", allowCredentials = "true" )
+//@CrossOrigin(origins = "http://172.17.0.99:3000", allowCredentials = "true" )
 
 public class ProductController {
     @Autowired
@@ -101,9 +102,41 @@ public class ProductController {
         return ResponseEntity.ok().body(products);
     }
 
-    //    @PutMapping("/update/{id}")
-//    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product){
-//        Product updatedProduct=productService.updateProduct(id, product);
-//        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
-//    }
+    @GetMapping("/user/listUserItems")
+    public ResponseEntity<List<Product>> listProducts(){
+      List<Product> response =   productService.listProductsForUser();
+        return ResponseEntity.ok(response);
+    }
+    
+    @PutMapping("/user/product/update/{id}")
+    public ResponseEntity<?> updateProduct(
+            @PathVariable Long id,
+            @ModelAttribute Product updatedProduct,
+            @RequestParam(value = "image", required = false) MultipartFile file) {
+        try {
+            ResponseEntity<?> response = productService.updateProduct(id, updatedProduct, file);
+            return ResponseEntity.ok(response.getBody());
+        } catch (CustomException ce) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ce.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error while updating the product.");
+        }
+    }
+
+    // @PatchMapping("/user/product/changeAvailibility/{id}")
+    // public ResponseEntity<?> changeAvailibility(@RequestParam Long id , @RequestBody Boolean status) {
+    //     if ((productService.changeAvailibility(id, status)).getBody().equals("success")) {
+    //         return ResponseEntity.ok("Chaged");
+    //     }
+    //     return  ResponseEntity.ok("cannot change");
+    // }
+
+    @PutMapping("/user/product/changeAvailability/{id}")
+    public ResponseEntity<?> changeAvailability(@PathVariable Long id, @RequestBody Map<String, Boolean> statusMap) {
+        Boolean status = statusMap.get("status");
+        return productService.changeAvailability(id, status);
+    }
+    
+
 }
