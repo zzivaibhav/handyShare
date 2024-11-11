@@ -96,14 +96,10 @@ const BorrowingPage = () => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-
   };
-  if (loading) return <div className="p-8 mt-16 animate-pulse text-blue-600">Loading...</div>;
-  if (error) return <div className="p-8 mt-16 text-red-500 font-semibold">{error}</div>;
-  if (!product) return <div className="p-8 mt-16">Product not found.</div>;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div>
       <HeaderBar />
       <Layout>
         <Sider width={200}>
@@ -137,62 +133,7 @@ const BorrowingPage = () => {
                 onChange={handleSearchChange}
                 style={{ marginBottom: '8px', width: '300px', marginTop: '10px' }}
               />
-
             </div>
-          )}
-          <h3 className="heading-lg mb-2">Description</h3>
-          <p className="text-gray-600">{product.description}</p>
-          <h3 className="heading-lg mt-6">Reviews</h3>
-          {reviews.length > 0 ? (
-            reviews.map((review, index) => (
-              <div key={index} className="mt-2 text-gray-600">
-                <p><strong>{review.user}:</strong> {review.comment}</p>
-              </div>
-            ))
-          ) : (
-            <p>No reviews available.</p>
-          )}
-        </div>
-
-        {/* Middle Section: Product Details */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="heading-lg text-gray-800">{product.name}</h2>
-          <p className="text-lg text-gray-600 mb-4">Price: <span className="font-semibold">${product.rentalPrice}/hour</span></p>
-          <p className="text-gray-600">Transaction Time: <span className="font-semibold">{product.transactionTime || '2'}</span> hours</p>
-
-          {/* Hours Selector */}
-          <div className="mt-4">
-            <label className="block text-lg font-medium mb-2">Select Hours:</label>
-            <select
-              value={product.transactionTime}
-              onChange={(e) => setProduct({ ...product, transactionTime: Number(e.target.value) })}
-              className="w-full p-2 border border-gray-300 rounded-md"
-            >
-              {[...Array(MAX_HOURS)].map((_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {i + 1} {i + 1 === 1 ? 'hour' : 'hours'}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Total Price Display */}
-          <p className="mt-2 text-lg font-semibold">
-            Total Price: ${(product.rentalPrice * (product.transactionTime || 1)).toFixed(2)}
-          </p>
-
-          {/* Date Picker for Rental Date */}
-          <div className="mt-6">
-            <label className="block text-lg font-medium mb-2">Select Rental Date:</label>
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
-              dateFormat="MMMM d, yyyy"
-              className="w-full p-2 border border-gray-300 rounded-md"
-              placeholderText="Choose a date"
-              minDate={new Date()}
-            />
-          </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {currentItems.map((borrowing) => (
@@ -251,29 +192,9 @@ const BorrowingPage = () => {
                       <p style={{ fontSize: '14px', fontWeight: 'bold' }}>{borrowing.product.lender.name}</p>
                       <p style={{ fontSize: '12px', color: '#888' }}>{borrowing.product.lender.email}</p>
                     </div>
-
                   </div>
-                )}
-              </div>
-
-              {/* Lender Details */}
-              <div className="text-center space-y-2">
-                <p className="text-lg flex items-center justify-center"><MailOutlined className="mr-2" /> {product.lender.email}</p>
-                {product.lender.phone && (
-                  <p className="text-lg flex items-center justify-center"><PhoneOutlined className="mr-2" /> {product.lender.phone}</p>
-                )}
-                {product.lender.rating && (
-                  <p className="text-lg flex items-center justify-center">
-                    <StarFilled className="text-yellow-500 mr-2" /> {product.lender.rating} ★
-                  </p>
-                )}
-              </div>
-
-              {/* Lender's Location */}
-              <h3 className="text-2xl font-semibold text-gray-800 mt-6 mb-2 text-center">Lender's Location</h3>
-              <div className="w-full h-48 bg-gray-200 rounded-md flex items-center justify-center">
-                <span className="text-gray-500">Map Placeholder</span>
-              </div>
+                </Card>
+              ))}
             </div>
 
             <Pagination
@@ -286,10 +207,8 @@ const BorrowingPage = () => {
           </Content>
         </Layout>
       </Layout>
-
     </div>
   );
 };
 
 export default BorrowingPage;
-
