@@ -1,145 +1,7 @@
-// import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
-// import { useParams, useNavigate } from 'react-router-dom';
-// import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar';  
-// import DatePicker from 'react-datepicker';
-// import 'react-datepicker/dist/react-datepicker.css';
-// import { message } from 'antd';
-
-// const BorrowingPage = () => {
-//   const navigate = useNavigate(); 
-//   const { id } = useParams();
-//   const [product, setProduct] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-//   const [selectedDate, setSelectedDate] = useState(null); 
-//   const [selectedHours, setSelectedHours] = useState(1); 
-//   const MAX_HOURS = 24;
-
-//   useEffect(() => {
-//     const fetchProductDetails = async () => {
-//       if (!id || id === 'null') {
-//         setError('Invalid product ID.');
-//         setLoading(false);
-//         return;
-//       }
-
-//       try {
-//         const token = localStorage.getItem('token');
-//         const response = await axios.get(`http://localhost:8080/api/v1/user/product/${id}`, {
-//           headers: {
-//             Authorization: `Bearer ${token}`
-//           },
-//           withCredentials: true
-//         });
-
-//         setProduct(response.data);
-//         setLoading(false);
-//       } catch (err) {
-//         console.error('Error fetching product details:', err);
-//         setError('Error fetching product details.');
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchProductDetails();
-//   }, [id]);
-
-//   const handleBorrowNow = async () => {
-//     if (!selectedDate) {
-//       message.warning('Please select a date to proceed with the borrowing.');
-//       return;
-//     }
-
-//     navigate('/borrow-summary', { 
-//       state: { 
-//         product, 
-//         hours: selectedHours,
-//         selectedDate 
-//       } 
-//     });
-//   };
-
-//   if (loading) return <div className="p-8 mt-16">Loading...</div>;
-//   if (error) return <div className="p-8 mt-16 text-red-500">{error}</div>;
-//   if (!product) return <div className="p-8 mt-16">Product not found.</div>;
-
-//   return (
-//     <div className="min-h-screen flex flex-col">
-//       <HeaderBar />
-//       <main className="flex-grow p-8 mt-16 flex">
-
-//         <div className="w-1/3 bg-gray-100 p-4 mr-6 rounded-lg shadow-md">
-//           {product.productImage ? (
-//             <img src={product.productImage} alt={product.name} className="w-full h-64 object-cover rounded-md mb-4" />
-//           ) : (
-//             <div className="w-full h-64 bg-gray-300 rounded-md mb-4 flex items-center justify-center">
-//               <span>No Image Available</span>
-//             </div>
-//           )}
-//           <div>
-//             <h3 className="text-lg font-semibold">Description</h3>
-//             <p>{product.description}</p>
-//           </div>
-//         </div>
-
-//         {/* Middle Section: Product Details */}
-//         <div className="w-1/3 px-4">
-//           <h2 className="text-2xl font-bold">{product.name}</h2>
-//           <p className="text-lg">Price: ${product.rentalPrice}/hour</p>
-          
-//           {/* Hours Selector */}
-//           <div className="mt-4">
-//             <label className="block text-lg font-medium mb-2">Select Hours:</label>
-//             <select
-//               value={selectedHours}
-//               onChange={(e) => setSelectedHours(Number(e.target.value))}
-//               className="w-full p-2 border border-gray-300 rounded-md"
-//             >
-//               {[...Array(MAX_HOURS)].map((_, i) => (
-//                 <option key={i + 1} value={i + 1}>
-//                   {i + 1} {i + 1 === 1 ? 'hour' : 'hours'}
-//                 </option>
-//               ))}
-//             </select>
-//           </div>
-
-//           {/* Total Price Display */}
-//           <p className="mt-2 text-lg font-semibold">
-//             Total Price: ${(product.rentalPrice * selectedHours).toFixed(2)}
-//           </p>
-
-//           {/* Date Picker for Rental Date */}
-//           <div className="mt-6">
-//             <label className="block text-lg font-medium mb-2">Select Rental Date:</label>
-//             <DatePicker
-//               selected={selectedDate}
-//               onChange={(date) => setSelectedDate(date)}
-//               dateFormat="MMMM d, yyyy"
-//               className="w-full p-2 border border-gray-300 rounded-md"
-//               placeholderText="Choose a date"
-//               minDate={new Date()} // Disable past dates
-//             />
-//           </div>
-
-//           {/* Borrow Now Button */}
-//           <button
-//             onClick={handleBorrowNow}
-//             className="mt-4 w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-//           >
-//             Borrow Now
-//           </button>
-//         </div>
-//       </main>
-//     </div>
-//   );
-// };
-
-// export default BorrowingPage;
-
 import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Card, Select, Input, Pagination } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
+import axios from 'axios';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
@@ -150,76 +12,36 @@ const { Content, Sider } = Layout;
 const { Option } = Select;
 
 const BorrowingPage = () => {
+  const [borrowings, setBorrowings] = useState([]);
   const [view, setView] = useState('borrowings');
   const [sortOrder, setSortOrder] = useState('Newest');
   const [searchText, setSearchText] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
-  // Static data for design purposes
-  const borrowings = [
-    {
-      id: 1,
-      product: {
-        name: "Full Frame Mirrorless Camera",
-        imageUrl: "https://via.placeholder.com/100",
-      },
-      borrowStartDate: "14-November-2024",
-      borrowEndDate: "15-November-2024",
-      pricePerDay: 150,
-      orderNumber: 248,
-    },
-    {
-      id: 2,
-      product: {
-        name: "DSLR Camera",
-        imageUrl: "https://via.placeholder.com/100",
-      },
-      borrowStartDate: "12-November-2024",
-      borrowEndDate: "14-November-2024",
-      pricePerDay: 100,
-      orderNumber: 249,
-    },
-    {
-      id: 3,
-      product: {
-        name: "Tripod Stand",
-        imageUrl: "https://via.placeholder.com/100",
-      },
-      borrowStartDate: "10-November-2024",
-      borrowEndDate: "12-November-2024",
-      pricePerDay: 25,
-      orderNumber: 250,
-    },
-    {
-      id: 4,
-      product: {
-        name: "External Flash",
-        imageUrl: "https://via.placeholder.com/100",
-      },
-      borrowStartDate: "09-November-2024",
-      borrowEndDate: "10-November-2024",
-      pricePerDay: 30,
-      orderNumber: 251,
-    },
-    {
-      id: 5,
-      product: {
-        name: "Drone",
-        imageUrl: "https://via.placeholder.com/100",
-      },
-      borrowStartDate: "01-November-2024",
-      borrowEndDate: "05-November-2024",
-      pricePerDay: 200,
-      orderNumber: 252,
-    },
-  ];
+  useEffect(() => {
+    const fetchBorrowedProducts = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:8080/api/v1/user/borrowedProducts', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
+        setBorrowings(response.data);
+      } catch (err) {
+        console.error('Error fetching borrowed products:', err);
+      }
+    };
 
-  // Timer Component
-  const Timer = ({ endDate }) => {
+    fetchBorrowedProducts();
+  }, []);
+
+  const AnalogTimer = ({ endDate }) => {
     const calculateTimeLeft = () => {
       const now = dayjs();
-      const end = dayjs(endDate, "DD-MMMM-YYYY");
+      const end = dayjs(endDate);
       const timeLeft = dayjs.duration(end.diff(now));
       return {
         days: timeLeft.days(),
@@ -246,18 +68,16 @@ const BorrowingPage = () => {
     );
   };
 
-  // Filtering and sorting borrowed items
-  const filteredBorrowings = borrowings.filter(borrowing =>
+  const filteredBorrowings = borrowings.filter((borrowing) =>
     borrowing.product.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const sortedBorrowings = [...filteredBorrowings].sort((a, b) => {
     return sortOrder === 'Newest'
-      ? new Date(b.borrowStartDate) - new Date(a.borrowStartDate)
-      : new Date(a.borrowStartDate) - new Date(b.borrowStartDate);
+      ? new Date(b.timerStart) - new Date(a.timerStart)
+      : new Date(a.timerStart) - new Date(b.timerStart);
   });
 
-  // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sortedBorrowings.slice(indexOfFirstItem, indexOfLastItem);
@@ -296,7 +116,6 @@ const BorrowingPage = () => {
           <Content style={{ padding: '20px', background: '#fff' }}>
             <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '10px' }}>Your Borrowed Items</h1>
             
-            {/* Sort and Search Bar */}
             <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center' }}>
               <span style={{ marginRight: '10px' }}>Sort:</span>
               <Select
@@ -316,33 +135,68 @@ const BorrowingPage = () => {
               />
             </div>
 
-            {/* Borrowed Items List */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {currentItems.map(borrowing => (
-                <Card
-                  key={borrowing.id}
-                  style={{ display: 'flex', alignItems: 'center', padding: '20px', position: 'relative' }}
-                >
-                  <img
-                    src={borrowing.product.imageUrl}
-                    alt="product"
-                    style={{ width: '100px', height: '100px', marginRight: '20px' }}
-                  />
-                  <div style={{ flex: 1 }}>
-                    <h3 style={{ margin: 0 }}>{borrowing.product.name}</h3>
-                    <p style={{ margin: '5px 0' }}>Borrow Period: {borrowing.borrowStartDate} - {borrowing.borrowEndDate}</p>
-                    <p style={{ margin: '5px 0' }}>Order Number: {borrowing.orderNumber}</p>
-                    <p style={{ margin: '5px 0' }}>Borrowed for: {borrowing.pricePerDay} AED/day</p>
-                  </div>
-                  {/* Timer */}
-                  <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
-                    <Timer endDate={borrowing.borrowEndDate} />
+              {currentItems.map((borrowing) => (
+                <Card key={borrowing.id} style={{ padding: '20px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    {/* Product section */}
+                    <div style={{ flex: 2, display: 'flex', alignItems: 'center' }}>
+                      <img
+                        src={borrowing.product.productImage}
+                        alt="product"
+                        style={{ width: '100px', height: '100px', marginRight: '20px', borderRadius: '5px' }}
+                      />
+                      <div>
+                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>{borrowing.product.name}</h3>
+                        <p style={{ margin: '5px 0', fontSize: '14px' }}>{borrowing.product.description}</p>
+                        <p style={{ margin: '5px 0', fontSize: '14px' }}>Price: {borrowing.product.rentalPrice} AED/day</p>
+                        <p style={{ margin: '5px 0', fontSize: '14px' }}>
+                          Duration: {dayjs(borrowing.timerEnd).diff(dayjs(borrowing.timerStart), 'days')} days
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Timer section */}
+                    <div style={{ flex: 1, textAlign: 'center' }}>
+                      <div style={{ 
+                        display: 'inline-block',
+                        padding: '10px',
+                        borderRadius: '50%',
+                        border: '2px solid #e0e0e0',
+                        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)'
+                      }}>
+                        <AnalogTimer endDate={borrowing.timerEnd} />
+                      </div>
+                    </div>
+
+                    {/* Lender section */}
+                    <div style={{
+                      flex: 1,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      background: '#f0f0f0',
+                      borderRadius: '8px',
+                      padding: '15px'
+                    }}>
+                      <img
+                        src={borrowing.product.lender.imageData}
+                        alt="Lender"
+                        style={{
+                          width: '50px',
+                          height: '50px',
+                          borderRadius: '50%',
+                          marginBottom: '10px'
+                        }}
+                      />
+                      <p style={{ fontSize: '14px', fontWeight: 'bold' }}>{borrowing.product.lender.name}</p>
+                      <p style={{ fontSize: '12px', color: '#888' }}>{borrowing.product.lender.email}</p>
+                    </div>
                   </div>
                 </Card>
               ))}
             </div>
 
-            {/* Pagination */}
             <Pagination
               current={currentPage}
               pageSize={itemsPerPage}
