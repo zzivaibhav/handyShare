@@ -40,19 +40,22 @@ public class BorrowService {
         product.setAvailable(false);
         borrowInstance.setProduct(product);
 
-        // Set the start_timer to the current time
-        borrowInstance.setTimerStart(LocalDateTime.now());
+        // Set timerStart using the passed date and time
+        LocalDateTime timerStart = borrowInstance.getTimerStart();
+
+        if (timerStart == null) {
+            throw new CustomException("Start time is required.");
+        }
 
         // Calculate the end_timer based on the duration
         int durationInHours = borrowInstance.getDuration();
-        LocalDateTime endTimer = borrowInstance.getTimerStart().plusHours(durationInHours);
+        LocalDateTime endTimer = timerStart.plusHours(durationInHours);
         borrowInstance.setTimerEnd(endTimer);
 
         borrowRepository.save(borrowInstance);
         return borrowRepository.save(borrowInstance);
     }
 
-    
     public List<Borrow> getBorrowedItems() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -61,5 +64,18 @@ public class BorrowService {
         // Fetch all Borrow records for the authenticated user
         return borrowRepository.findAllByBorrowerId(borrower.getId());
     }
+
+
+    public List<Borrow> getLendedItems() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User lender = userRepository.findByEmail(email);
+        System.out.println("Authenticated User ID: " + lender.getId());
+
+
+        // Fetch all Borrow records for the authenticated user
+        return borrowRepository.findAllByLenderId(lender.getId());
+    }
+
 
 }

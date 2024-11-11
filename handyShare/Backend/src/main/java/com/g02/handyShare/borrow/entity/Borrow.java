@@ -48,9 +48,5 @@ public class Borrow {
     // Penalty amount if applicable
     private int penalty;
 
-    @PrePersist
-    protected void onCreate() {
-        timerStart = LocalDateTime.now();
-       
-    }
+    
 }

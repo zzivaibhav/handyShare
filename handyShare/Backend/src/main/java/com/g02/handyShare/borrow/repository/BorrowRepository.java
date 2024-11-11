@@ -14,4 +14,8 @@ public interface BorrowRepository extends JpaRepository<Borrow, Long> {
     // Custom query to find all Borrow records for a specific borrower ID
     @Query("SELECT b FROM Borrow b WHERE b.borrower.id = :borrowerId")
     List<Borrow> findAllByBorrowerId(@Param("borrowerId") Long borrowerId);
+// Add this method to your BorrowRepository interface
+@Query("SELECT b FROM Borrow b WHERE b.product.lender.id = :lenderId")
+List<Borrow> findAllByLenderId(@Param("lenderId") Long lenderId);
+
 }

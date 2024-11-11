@@ -37,4 +37,9 @@ BorrowService borrowService;
         return  response;
     }
 
+    @GetMapping("/user/lendedProducts")
+    public  List<Borrow> getLendedItems(){
+        List<Borrow> response = borrowService.getLendedItems();
+        return  response;
+    }
 }
