@@ -57,7 +57,7 @@ const HeaderBar = () => {
 
       {/* Right side buttons and dropdown */}
       <Space>
-        <Button href='/lend'>Products management</Button>
+        <Button href='/lend'>Lendings</Button>
         <Button>Borrowings</Button>
         <Dropdown overlay={menu} trigger={['click']}>
           <Button

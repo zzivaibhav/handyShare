@@ -46,15 +46,49 @@ const ProductPage = () => {
       message.warning('Please select a date to proceed with the rental.');
       return;
     }
-    navigate('/rent-summary', {
-      state: {
-        product,
-        hours: product.transactionTime || 2,
-        selectedDate
+  
+    try {
+      const token = localStorage.getItem('token');
+      const hours = product.transactionTime || 2;
+      const totalAmount = product.rentalPrice * hours;
+  
+      const borrowData = {
+        product: {
+          id: parseInt(id)
+        },
+        duration: hours,
+        amount: totalAmount,
+        penalty: Math.ceil(totalAmount * 0.5) // 50% of total amount as penalty
+      };
+  
+      const response = await axios.post(
+        'http://localhost:8080/api/v1/user/borrowProduct',
+        borrowData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          withCredentials: true
+        }
+      );
+  
+      if (response.status === 200 || response.status === 201) {
+        message.success('Rental request processed successfully!');
+        navigate('/rent-summary', {
+          state: {
+            product,
+            hours: hours,
+            selectedDate,
+            borrowDetails: response.data
+          }
+        });
       }
-    });
+    } catch (error) {
+      console.error('Rental error:', error);
+      message.error(error.response?.data?.message || 'Failed to process rental request. Please try again.');
+    }
   };
-
   if (loading) return <div className="p-8 mt-16 animate-pulse text-blue-600">Loading...</div>;
   if (error) return <div className="p-8 mt-16 text-red-500 font-semibold">{error}</div>;
   if (!product) return <div className="p-8 mt-16">Product not found.</div>;
