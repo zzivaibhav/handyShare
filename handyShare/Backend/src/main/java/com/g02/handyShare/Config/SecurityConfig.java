@@ -1,4 +1,4 @@
- package com.g02.handyShare.Config;
+package com.g02.handyShare.Config;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -73,6 +73,7 @@ public class SecurityConfig {
                         .requestMatchers("/signup", "/api/v1/all/**", "/api/v1/all/forgot-password/**", "/api/v1/all/change-password/**" , "/genToken").permitAll()
                         .requestMatchers("api/v1/admin/**").hasAnyAuthority("admin")  // Only accessible by users with ADMIN role
                         .requestMatchers("api/v1/user/**").hasAnyAuthority("user", "admin")  // Only accessible by users with USER or ADMIN roles
+                        .requestMatchers("/api/v1/user/lender/**").authenticated()
                         .anyRequest().authenticated()  // All other endpoints need authentication
                 )
                 .oauth2Login(oauth2 -> oauth2

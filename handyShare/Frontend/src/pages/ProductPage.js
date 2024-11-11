@@ -2,26 +2,32 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
-import { message } from 'antd';
+import { message, Modal, List } from 'antd';
 import { MailOutlined, PhoneOutlined, StarFilled } from '@ant-design/icons';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import lenderService from '../services/lenderService.js'; // Import the service
 
 const ProductPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [lenderDetails, setLenderDetails] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState("");  // Store the selected time for the rental
-  const [selectedHours, setSelectedHours] = useState(1);  // Default selected hours
-  const [showTimeSelector, setShowTimeSelector] = useState(false);  // Show time selector based on hours
-  const [timeValid, setTimeValid] = useState(true);  // To check if the selected time is within valid range
+  const [selectedTime, setSelectedTime] = useState("");
+  const [selectedHours, setSelectedHours] = useState(1);
+  const [showTimeSelector, setShowTimeSelector] = useState(false);
+  const [timeValid, setTimeValid] = useState(true);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [lenderProducts, setLenderProducts] = useState([]);
+  const [modalLoading, setModalLoading] = useState(false);
+  const [modalError, setModalError] = useState(null);
 
   const MAX_HOURS = 24;
-  const MAX_DAYS_IN_ADVANCE = 3; // Maximum days user can book in advance
+  const MAX_DAYS_IN_ADVANCE = 3;
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -47,6 +53,29 @@ const ProductPage = () => {
     fetchProductDetails();
   }, [id]);
 
+  const handleLenderClick = async () => {
+    if (!product || !product.lender || !product.lender.id) {
+      message.error('Lender information is unavailable.');
+      return;
+    }
+
+    setModalLoading(true);
+    setModalError(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const lenderData = await lenderService.getLenderDetails(product.lender.id, token);
+      setLenderDetails(lenderData);
+      setLenderProducts(lenderData.products);
+      setIsModalVisible(true);
+    } catch (errorMsg) {
+      setModalError(errorMsg);
+      message.error(errorMsg);
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
   // Handle rent now
   const handleRentNow = async () => {
     if (!selectedDate || !selectedTime) {
@@ -57,7 +86,7 @@ const ProductPage = () => {
     try {
       const token = localStorage.getItem('token');
       const totalAmount = product.rentalPrice * selectedHours;
-  
+
       // Format the date-time string as requested
       const formattedDateTime = `${selectedDate.toISOString().split('T')[0]}T${selectedTime}:00`;
   
@@ -66,7 +95,7 @@ const ProductPage = () => {
         duration: selectedHours,
         amount: totalAmount,
         penalty: Math.ceil(totalAmount * 0.5),
-        timerStart: formattedDateTime  // Corrected field name and format
+        timerStart: formattedDateTime
       };
       
 
@@ -154,7 +183,7 @@ const ProductPage = () => {
               onChange={(e) => {
                 const hours = Number(e.target.value);
                 setSelectedHours(hours);
-                setShowTimeSelector(hours > 0);  // Show the time selector only if hours is greater than 0
+                setShowTimeSelector(hours > 0);
               }}
               className="w-full p-2 border border-gray-300 rounded-md"
             >
@@ -174,13 +203,13 @@ const ProductPage = () => {
                 selected={selectedDate}
                 onChange={(date) => {
                   setSelectedDate(date);
-                  setTimeValid(isValidDate(date));  // Validate date selection
+                  setTimeValid(isValidDate(date));
                 }}
                 dateFormat="MMMM d, yyyy"
                 className="w-full p-2 border border-gray-300 rounded-md"
                 placeholderText="Choose a date"
-                minDate={new Date()} // Prevent past date selection
-                maxDate={new Date(new Date().setDate(new Date().getDate() + MAX_DAYS_IN_ADVANCE))} // Allow up to 3 days in advance
+                minDate={new Date()}
+                maxDate={new Date(new Date().setDate(new Date().getDate() + MAX_DAYS_IN_ADVANCE))}
               />
             </div>
           )}
@@ -222,8 +251,8 @@ const ProductPage = () => {
           {product.lender ? (
             <div className="w-full">
               <h3 className="text-2xl font-semibold text-gray-800 mb-4 text-center">Lender Information</h3>
-              {/* Lender Profile Picture */}
-              <div className="flex justify-center">
+              {/* Lender Profile Picture with Click Handler */}
+              <div className="flex justify-center cursor-pointer" onClick={handleLenderClick}>
                 {product.lender.imageData ? (
                   <img
                     src={product.lender.imageData}
@@ -261,6 +290,61 @@ const ProductPage = () => {
           )}
         </div>
       </main>
+
+      {/* Lender Details Modal */}
+      <Modal
+        title="Lender Details"
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+      >
+        {modalLoading ? (
+          <div className="text-center">Loading...</div>
+        ) : modalError ? (
+          <div className="text-center text-red-500">{modalError}</div>
+        ) : lenderDetails ? (
+          <div>
+            <div className="flex items-center mb-4">
+              {lenderDetails.imageData ? (
+                <img src={lenderDetails.imageData} alt={lenderDetails.name} className="w-24 h-24 rounded-full object-cover mr-4" />
+              ) : (
+                <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center mr-4">
+                  <span className="text-gray-500">No Image</span>
+                </div>
+              )}
+              <div>
+                <h2 className="text-xl font-semibold">{lenderDetails.name}</h2>
+                <p><MailOutlined className="mr-2" /> {lenderDetails.email}</p>
+                {lenderDetails.phone && <p><PhoneOutlined className="mr-2" /> {lenderDetails.phone}</p>}
+              </div>
+            </div>
+            <div className="mb-4">
+              <h3 className="font-semibold">Address:</h3>
+              <p>{lenderDetails.address || 'N/A'}</p>
+              <p>Pincode: {lenderDetails.pincode || 'N/A'}</p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-2">Products by {lenderDetails.name}:</h3>
+              {lenderProducts.length > 0 ? (
+                <List
+                  itemLayout="horizontal"
+                  dataSource={lenderProducts}
+                  renderItem={item => (
+                    <List.Item>
+                      <List.Item.Meta
+                        title={<a href={`/product/${item.id}`}>{item.name}</a>}
+                        description={`Price: $${item.rentalPrice}/hour`}
+                      />
+                    </List.Item>
+                  )}
+                />
+              ) : (
+                <p>No products listed by this lender.</p>
+              )}
+            </div>
+          </div>
+        ) : null}
+      </Modal>
     </div>
   );
 };
