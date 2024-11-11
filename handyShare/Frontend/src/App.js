@@ -38,7 +38,7 @@ function App() {
       <Route path="/admin" element={<AdminDashboard/>} />
 
       <Route path="/product/:id" element={<ProtectedRoute><ProductPage /></ProtectedRoute>} />
-      <Route path="/lend" element={<ProtectedRoute><LendPage /></ProtectedRoute>} />
+      <Route path="/lendings" element={<ProtectedRoute><LendPage /></ProtectedRoute>} />
       <Route path="/products" element={<ProtectedRoute><ProductsListPage /></ProtectedRoute>} />
       <Route path="/payment" element={<ProtectedRoute><Payment/></ProtectedRoute>} />
       <Route path="/feedback" element={<ProtectedRoute><Feedback/></ProtectedRoute>} />

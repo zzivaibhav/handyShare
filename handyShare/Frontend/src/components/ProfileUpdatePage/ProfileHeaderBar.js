@@ -52,7 +52,7 @@ const ProfileHeaderBar = () => {
 
       {/* Right side buttons */}
       <Space>
-        <Button href='/lend'>Lendings</Button>
+        <Button href='/lendings'>Lendings</Button>
         <Button href='/borrow'>Borrowings</Button>
         
         {/* Dropdown for Profile and Sign Out */}

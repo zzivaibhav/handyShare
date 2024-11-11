@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import LendFormPage from '../components/LendingPage/LendFormPage.js'; 
-import EditLendForm from '../components/LendingPage/EditLendForm.js'; 
-import LendPageHeader from '../components/LendingPage/LendPageHeader.js';
-import { Layout, Menu, Table, Button, Modal, message, Switch } from 'antd';
+import { Layout, Menu, Card, Button, Modal, message, Row, Col, Switch } from 'antd';
 import axios from 'axios';
 import { SERVER_URL } from '../constants.js';
+import LendPageHeader from '../components/LendingPage/LendPageHeader.js';
+import { Link } from 'react-router-dom';
 
 const { Content, Sider } = Layout;
 
@@ -12,71 +11,7 @@ const LendPage = () => {
   const [view, setView] = useState('lendings');
   const [loading, setLoading] = useState(true);
   const [lentItems, setLentItems] = useState([]);
-  const [editingItem, setEditingItem] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  // Define the columns for the Table
-  const columns = [
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-    },
-    {
-      title: 'Price',
-      dataIndex: 'rentalPrice',
-      key: 'rentalPrice',
-      render: (price) => `$${price.toFixed(2)}`,
-    },
-    {
-      title: 'Availability',
-      dataIndex: 'available',
-      key: 'available',
-      render: (available, record) => (
-        <Switch
-          checked={available}
-          onChange={async (checked) => {
-            try {
-              const token = localStorage.getItem('token');
-              await axios.put(`${SERVER_URL}/api/v1/user/product/changeAvailability/${record.id}`, 
-                { status: checked },  // Send JSON with status key
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                  withCredentials: true
-                }
-              );
-              message.success(`Product is now ${checked ? 'available' : 'unavailable'}`);
-              fetchLentItemsRefresh(); // Refresh the list after changing availability
-            } catch (error) {
-              console.error('Error updating availability:', error);
-              message.error('Failed to update availability');
-            }
-          }}
-        />
-      ),
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (text, record) => (
-        <>
-          <Button
-            type="link"
-            onClick={() => handleEdit(record)}
-          >
-            Edit
-          </Button>
-          <Button
-            type="link"
-            danger
-            onClick={() => handleDelete(record.id)}
-          >
-            Delete
-          </Button>
-        </>
-      ),
-    },
-  ];
 
   useEffect(() => {
     // Fetch lent items when component mounts
@@ -86,7 +21,7 @@ const LendPage = () => {
   const fetchLentItemsRefresh = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${SERVER_URL}/api/v1/user/listUserItems`, {
+      const response = await axios.get(`${SERVER_URL}/api/v1/user/lendedProducts`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true
       });
@@ -96,26 +31,6 @@ const LendPage = () => {
       console.error('Error fetching lent items:', error);
       message.error('Failed to refresh lent items');
       setLoading(false);
-    }
-  };
-
-  const handleEdit = (item) => {
-    setEditingItem(item);
-    setIsModalVisible(true);
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${SERVER_URL}/api/v1/user/product/delete/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      });
-      message.success('Item deleted successfully');
-      fetchLentItemsRefresh(); // Refresh the list after deletion
-    } catch (error) {
-      console.error('Error deleting item:', error);
-      message.error('Failed to delete the item');
     }
   };
 
@@ -130,8 +45,8 @@ const LendPage = () => {
       <Layout>
         <Sider>
           <Menu selectedKeys={[view]} onClick={(e) => setView(e.key)}>
-            <Menu.Item key="lendings">Lendings</Menu.Item>
-            <Menu.Item key="add">Add New Lending</Menu.Item>
+            <Menu.Item key="lendings">Rented Products</Menu.Item>
+            <Menu.Item key="add">Add New Product</Menu.Item>
           </Menu>
         </Sider>
         <Layout style={{ padding: '0 24px 24px' }}>
@@ -144,37 +59,75 @@ const LendPage = () => {
             }}
           >
             {view === 'lendings' && (
-              <Table 
-                columns={columns} 
-                dataSource={lentItems} 
-                rowKey="id" 
-                loading={loading} 
-              />
+              <Row gutter={16}>
+                {lentItems.map((item) => (
+                  <Col span={8} key={item.product.id}>
+                    <Card
+                      hoverable
+                      cover={<img alt="product" src={item.product.productImage} />}
+                      actions={[
+                        <Button type="link">
+                          Borrower: {item.borrower.name}
+                        </Button>,
+                        <Button type="link" danger>
+                          Return Item
+                        </Button>,
+                        <Switch
+                          checked={item.product.available}
+                          onChange={async (checked) => {
+                            try {
+                              const token = localStorage.getItem('token');
+                              await axios.put(`${SERVER_URL}/api/v1/user/product/changeAvailability/${item.product.id}`, 
+                                { status: checked },
+                                {
+                                  headers: { Authorization: `Bearer ${token}` },
+                                  withCredentials: true
+                                }
+                              );
+                              message.success(`Product is now ${checked ? 'available' : 'unavailable'}`);
+                              fetchLentItemsRefresh(); // Refresh the list after changing availability
+                            } catch (error) {
+                              console.error('Error updating availability:', error);
+                              message.error('Failed to update availability');
+                            }
+                          }}
+                        />
+                      ]}
+                    >
+                      <Card.Meta
+                        title={item.product.name}
+                        description={
+                          <>
+                            <p>{`Rental Price: $${item.product.rentalPrice.toFixed(2)}`}</p>
+                            <p>{`Available: ${item.product.available ? 'Yes' : 'No'}`}</p>
+                            <p>{`Duration: ${item.duration} hours`}</p>
+                            <p>{`Total Amount: $${item.amount}`}</p>
+                          </>
+                        }
+                      />
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
             )}
             {view === 'add' && (
-              <LendFormPage onUpdate={fetchLentItemsRefresh} />
+              <div>Add New Product Form Here</div> // Replace with your component for adding new products
             )}
           </Content>
         </Layout>
       </Layout>
 
-      {/* Edit Modal */}
+      {/* Edit Modal for Updates */}
       <Modal
-        title="Edit Lent Item"
+        title="Update Lent Item"
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}
       >
-        {editingItem && (
-          <EditLendForm 
-            item={editingItem} 
-            onUpdate={handleUpdate} 
-            onCancel={() => setIsModalVisible(false)} 
-          />
-        )}
+        {/* Your form for editing the lent product */}
       </Modal>
     </Layout>
   );
 };
 
-export default LendPage;
+export default LendPage;

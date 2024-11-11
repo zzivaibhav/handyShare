@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { message } from 'antd';
 import { MailOutlined, PhoneOutlined, StarFilled } from '@ant-design/icons';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const ProductPage = () => {
   const navigate = useNavigate();
@@ -15,7 +15,13 @@ const ProductPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState("");  // Store the selected time for the rental
+  const [selectedHours, setSelectedHours] = useState(1);  // Default selected hours
+  const [showTimeSelector, setShowTimeSelector] = useState(false);  // Show time selector based on hours
+  const [timeValid, setTimeValid] = useState(true);  // To check if the selected time is within valid range
+
   const MAX_HOURS = 24;
+  const MAX_DAYS_IN_ADVANCE = 3; // Maximum days user can book in advance
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -41,18 +47,65 @@ const ProductPage = () => {
     fetchProductDetails();
   }, [id]);
 
+  // Handle rent now
   const handleRentNow = async () => {
-    if (!selectedDate) {
-      message.warning('Please select a date to proceed with the rental.');
+    if (!selectedDate || !selectedTime) {
+      message.warning('Please select both date and time to proceed with the rental.');
       return;
     }
-    navigate('/rent-summary', {
-      state: {
-        product,
-        hours: product.transactionTime || 2,
-        selectedDate
+  
+    try {
+      const token = localStorage.getItem('token');
+      const totalAmount = product.rentalPrice * selectedHours;
+  
+      // Format the date-time string as requested
+      const formattedDateTime = `${selectedDate.toISOString().split('T')[0]}T${selectedTime}:00`;
+  
+      const borrowData = {
+        product: { id: parseInt(id) },
+        duration: selectedHours,
+        amount: totalAmount,
+        penalty: Math.ceil(totalAmount * 0.5),
+        timerStart: formattedDateTime  // Corrected field name and format
+      };
+      
+
+      const response = await axios.post(
+        'http://localhost:8080/api/v1/user/borrowProduct',
+        borrowData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          withCredentials: true
+        }
+      );
+  
+      if (response.status === 200 || response.status === 201) {
+        message.success('Rental request processed successfully!');
+        navigate('/rent-summary', {
+          state: {
+            product,
+            hours: selectedHours,
+            selectedDate,
+            selectedTime,
+            borrowDetails: response.data
+          }
+        });
       }
-    });
+    } catch (error) {
+      console.error('Rental error:', error);
+      message.error(error.response?.data?.message || 'Failed to process rental request. Please try again.');
+    }
+  };
+
+  // Check if selected date is within allowed range
+  const isValidDate = (date) => {
+    const today = new Date();
+    const maxDate = new Date(today);
+    maxDate.setDate(today.getDate() + MAX_DAYS_IN_ADVANCE);
+    return date <= maxDate;
   };
 
   if (loading) return <div className="p-8 mt-16 animate-pulse text-blue-600">Loading...</div>;
@@ -97,8 +150,12 @@ const ProductPage = () => {
           <div className="mt-4">
             <label className="block text-lg font-medium mb-2">Select Hours:</label>
             <select
-              value={product.transactionTime}
-              onChange={(e) => setProduct({ ...product, transactionTime: Number(e.target.value) })}
+              value={selectedHours}
+              onChange={(e) => {
+                const hours = Number(e.target.value);
+                setSelectedHours(hours);
+                setShowTimeSelector(hours > 0);  // Show the time selector only if hours is greater than 0
+              }}
               className="w-full p-2 border border-gray-300 rounded-md"
             >
               {[...Array(MAX_HOURS)].map((_, i) => (
@@ -109,23 +166,47 @@ const ProductPage = () => {
             </select>
           </div>
 
+          {/* Time Selector */}
+          {showTimeSelector && (
+            <div className="mt-4">
+              <label className="block text-lg font-medium mb-2">Select Date:</label>
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => {
+                  setSelectedDate(date);
+                  setTimeValid(isValidDate(date));  // Validate date selection
+                }}
+                dateFormat="MMMM d, yyyy"
+                className="w-full p-2 border border-gray-300 rounded-md"
+                placeholderText="Choose a date"
+                minDate={new Date()} // Prevent past date selection
+                maxDate={new Date(new Date().setDate(new Date().getDate() + MAX_DAYS_IN_ADVANCE))} // Allow up to 3 days in advance
+              />
+            </div>
+          )}
+
+          {/* Time of Day Selection */}
+          {showTimeSelector && selectedDate && timeValid && (
+            <div className="mt-4">
+              <label className="block text-lg font-medium mb-2">Select Time:</label>
+              <input
+                type="time"
+                value={selectedTime}
+                onChange={(e) => setSelectedTime(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md"
+              />
+            </div>
+          )}
+
+          {/* Display validation message */}
+          {!timeValid && selectedDate && (
+            <p className="text-red-500 text-sm mt-2">You can only book up to 3 days in advance.</p>
+          )}
+
           {/* Total Price Display */}
           <p className="mt-2 text-lg font-semibold">
-            Total Price: ${(product.rentalPrice * (product.transactionTime || 1)).toFixed(2)}
+            Total Price: ${(product.rentalPrice * selectedHours).toFixed(2)}
           </p>
-
-          {/* Date Picker for Rental Date */}
-          <div className="mt-6">
-            <label className="block text-lg font-medium mb-2">Select Rental Date:</label>
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
-              dateFormat="MMMM d, yyyy"
-              className="w-full p-2 border border-gray-300 rounded-md"
-              placeholderText="Choose a date"
-              minDate={new Date()}
-            />
-          </div>
 
           {/* Rent Now Button */}
           <button
@@ -141,7 +222,6 @@ const ProductPage = () => {
           {product.lender ? (
             <div className="w-full">
               <h3 className="text-2xl font-semibold text-gray-800 mb-4 text-center">Lender Information</h3>
-              
               {/* Lender Profile Picture */}
               <div className="flex justify-center">
                 {product.lender.imageData ? (
