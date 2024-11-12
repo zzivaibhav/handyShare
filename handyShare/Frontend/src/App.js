@@ -23,6 +23,7 @@ import BorrowingPage from './pages/BorrowingPage.js';
 
 import ChangePasswordPage from './pages/ChangePassword.js';
 
+import 'leaflet/dist/leaflet.css';
 
 function App() {
   return (
