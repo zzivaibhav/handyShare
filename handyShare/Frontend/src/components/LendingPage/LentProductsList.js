@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button, Switch, Row, Col, message, Tag, Typography, Space, Avatar } from 'antd';
+import { Card, Button, Row, Col, message, Tag, Typography, Space, Avatar } from 'antd';
 import { DollarCircleOutlined, ClockCircleOutlined, UserOutlined, CheckCircleOutlined, StopOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { SERVER_URL } from '../../constants.js';
@@ -7,22 +7,22 @@ import { SERVER_URL } from '../../constants.js';
 const { Text, Title } = Typography;
 
 const LentProductsList = ({ lentItems, onRefresh }) => {
-  const handleAvailabilityChange = async (productId, checked) => {
+  const handleReturnItem = async (productId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(
-        `${SERVER_URL}/api/v1/user/product/changeAvailability/${productId}`,
-        { status: checked },
+      await axios.post(
+        `${SERVER_URL}/api/v1/user/product/return/${productId}`,
+        {},
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true
         }
       );
-      message.success(`Product is now ${checked ? 'available' : 'unavailable'}`);
+      message.success('Item returned successfully');
       onRefresh();
     } catch (error) {
-      console.error('Error updating availability:', error);
-      message.error('Failed to update availability');
+      console.error('Error returning item:', error);
+      message.error('Failed to return item');
     }
   };
 
@@ -79,19 +79,11 @@ const LentProductsList = ({ lentItems, onRefresh }) => {
                 </div>
               }
               actions={[
-                <Space direction="vertical" size={0}>
-                  <Switch
-                    checked={item.product.available}
-                    onChange={(checked) => handleAvailabilityChange(item.product.id, checked)}
-                    checkedChildren={<CheckCircleOutlined />}
-                    unCheckedChildren={<StopOutlined />}
-                  />
-                  <Text type="secondary" style={{ fontSize: '12px' }}>Availability</Text>
-                </Space>,
                 <Button 
                   type="link" 
                   danger
                   style={{ height: 'auto', padding: '4px' }}
+                  onClick={() => handleReturnItem(item.product.id)}
                 >
                   <Space direction="vertical" size={0}>
                     <span>Return Item</span>
@@ -154,4 +146,4 @@ const LentProductsList = ({ lentItems, onRefresh }) => {
   );
 };
 
-export default LentProductsList; 
+export default LentProductsList;
