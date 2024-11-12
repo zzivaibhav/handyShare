@@ -70,7 +70,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/signup", "/api/v1/all/**", "/api/v1/all/forgot-password/**", "/api/v1/all/change-password/**" , "/genToken").permitAll()
+                        .requestMatchers("/signup", "/api/v1/all/**", "/api/v1/all/payment/checkout-session", "/api/v1/all/forgot-password/**", "/api/v1/all/change-password/**" , "/genToken").permitAll()
                         .requestMatchers("api/v1/admin/**").hasAnyAuthority("admin")  // Only accessible by users with ADMIN role
                         .requestMatchers("api/v1/user/**").hasAnyAuthority("user", "admin")  // Only accessible by users with USER or ADMIN roles
                         .requestMatchers("/api/v1/user/lender/**").authenticated()
