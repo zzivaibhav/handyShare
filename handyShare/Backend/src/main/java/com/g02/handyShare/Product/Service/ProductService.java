@@ -175,4 +175,8 @@ public class ProductService {
   //           throw new CustomException("Product not found with id: "+ id);
   //       }
   //  }
+
+    public List<Product> getProductsByLenderEmail(String email) {
+        return productRepository.findByLenderEmail(email);
+    }
 }
