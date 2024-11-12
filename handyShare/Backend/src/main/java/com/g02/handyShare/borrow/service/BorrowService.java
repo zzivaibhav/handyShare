@@ -91,8 +91,7 @@ public class BorrowService {
     }
 
     // Save the borrow instance
-    product.setAvailable(false); // Set product as unavailable
-    productRepository.save(product);
+     productRepository.save(product);
     return borrowRepository.save(borrowInstance);
 }
 
