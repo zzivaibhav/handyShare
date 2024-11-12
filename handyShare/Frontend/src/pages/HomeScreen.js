@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import HeaderBar from '../components/Homepage/HeaderBar.js';
 import { Layout, Button, theme } from 'antd'; 
@@ -15,6 +15,25 @@ const HomeScreen = () => {
   const headerHeight = 70; 
   const [selectedCategory, setSelectedCategory] = useState(''); 
   const navigate = useNavigate(); 
+
+  useEffect(() => {
+    // Extract token and role from URL if present
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const role = urlParams.get('role');
+    
+    // Save token and role to localStorage if they exist in the URL
+    if (token) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', role);
+      
+      // Clean up the URL by removing the token and role query parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (!localStorage.getItem('token')) {
+      // Redirect to login if no token is present in the URL or localStorage
+      navigate('/login');
+    }
+  }, [navigate]);
 
   // Function to handle category selection
   const handleCategorySelect = (category) => {

@@ -1,31 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function OAuth2RedirectHandler() {
+const OAuth2RedirectHandler = () => {
   const navigate = useNavigate();
-  const [isTokenStored, setIsTokenStored] = useState(false);
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const token = searchParams.get('token');
+    // Extract token and role from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const role = urlParams.get('role');
 
     if (token) {
-      // Store the JWT token in localStorage
+      // Save the token and role to localStorage
       localStorage.setItem('token', token);
+      localStorage.setItem('role', role || 'user'); // Default to 'user' if role is not provided
 
-      if (localStorage.getItem('token')) {
-        setIsTokenStored(true);  // Set state after storing the token
-      }
+      // Navigate to the appropriate page based on role
+      const targetPath = role === 'admin' ? '/admin' : '/homepage';
+      
+      // Clean up the URL and navigate
+      window.history.replaceState({}, document.title, targetPath);
+      navigate(targetPath, { replace: true });
     } else {
-      navigate('/login');  // Redirect to login page if no token is found
+      // If no token is found, redirect to login
+      navigate('/login');
     }
   }, [navigate]);
 
-  useEffect(() => {
-    if (isTokenStored) {
-      navigate('/homepage');  // Navigate to homepage after storing the token
-    }
-  }, [isTokenStored, navigate]);
+  // Show a loading state while processing
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p>Processing login...</p>
+    </div>
+  );
+};
 
-  return <div>Redirecting...</div>;
-}
+export default OAuth2RedirectHandler;
