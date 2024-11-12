@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Button, Space, Layout, Dropdown, Menu, message } from 'antd';
+import { Layout, Input, Button, Space, Menu, Dropdown, message } from 'antd';
 import { SearchOutlined, UserOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,14 +8,11 @@ const { Header } = Layout;
 const HeaderBar = () => {
   const navigate = useNavigate();
 
-  // Function to handle sign out
   const handleSignOut = () => {
-    // Clear user session data
     localStorage.removeItem('token');
-    localStorage.removeItem('role'); 
-
+    localStorage.removeItem('role');
     message.success('Successfully signed out');
-    navigate('/login'); 
+    navigate('/login');
   };
 
   const menu = (
@@ -40,7 +37,15 @@ const HeaderBar = () => {
         flex: 1,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div 
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          cursor: 'pointer'
+        }}
+        onClick={() => navigate('/homepage')}
+      >
         <img
           src="/Assets/Logo.png"
           alt="App logo"
@@ -48,17 +53,15 @@ const HeaderBar = () => {
         />
       </div>
 
-      {/* Search Bar */}
       <Input
         placeholder="Search items"
         prefix={<SearchOutlined />}
         style={{ width: '400px' }}
       />
 
-      {/* Right side buttons and dropdown */}
       <Space>
-        <Button href='/lend'>Lendings</Button>
-        <Button>Borrowings</Button>
+        <Button onClick={() => navigate('/lendings')}>Lendings</Button>
+        <Button onClick={() => navigate('/borrow')}>Borrowings</Button>
         <Dropdown overlay={menu} trigger={['click']}>
           <Button
             type="primary"

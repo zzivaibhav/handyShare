@@ -60,8 +60,8 @@ const LendPageHeader = () => {
       />
 
       <Space>
-        <Button href='/lendings'>Lendings</Button>
-        <Button href='/borrow'>Borrowings</Button>
+        <Button onClick={() => navigate('/lendings')}>Lendings</Button>
+        <Button onClick={() => navigate('/borrow')}>Borrowings</Button>
         <Dropdown overlay={menu} trigger={['click']}>
           <Button
             type="primary"

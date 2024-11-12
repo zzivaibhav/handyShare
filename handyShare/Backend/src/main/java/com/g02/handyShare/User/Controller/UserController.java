@@ -5,6 +5,7 @@ import com.g02.handyShare.Config.Jwt.JwtUtil;
 import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
 import com.g02.handyShare.User.Service.UserService;
+import com.g02.handyShare.User.DTO.LenderDetailsDTO;
 
 import io.jsonwebtoken.lang.Arrays;
 
@@ -114,6 +115,16 @@ public class UserController {
         } catch (Exception e) {
             System.out.println("Error: " + e);
             return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body(Map.of("error", "Bad credentials!"));
+        }
+    }
+
+    @GetMapping("/user/lender/{id}")
+    public ResponseEntity<?> getLenderDetails(@PathVariable Long id) {
+        try {
+            LenderDetailsDTO lenderDetails = userService.getLenderDetails(id);
+            return ResponseEntity.ok().body(lenderDetails);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(e.getMessage());
         }
     }
 

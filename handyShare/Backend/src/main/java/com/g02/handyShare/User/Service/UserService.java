@@ -3,6 +3,9 @@ package com.g02.handyShare.User.Service;
 import com.g02.handyShare.Constants;
 import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
+import com.g02.handyShare.Product.Entity.Product;
+import com.g02.handyShare.Product.Service.ProductService;
+import com.g02.handyShare.User.DTO.LenderDetailsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +29,9 @@ public class UserService {
 
     @Autowired
     private Constants constants;
+
+    @Autowired
+    private ProductService productService;
 
     public String registerUser(User user) {
         // Check if email already exists
@@ -82,5 +88,22 @@ public class UserService {
           
            Optional<User> owner = userRepository.findById(UserId);
 return  owner;
+    }
+
+    public LenderDetailsDTO getLenderDetails(Long lenderId) {
+        User lender = userRepository.findById(lenderId)
+                .orElseThrow(() -> new RuntimeException("Lender not found with id: " + lenderId));
+        List<Product> products = productService.getProductsByLenderEmail(lender.getEmail());
+
+        return new LenderDetailsDTO(
+                lender.getId(),
+                lender.getName(),
+                lender.getEmail(),
+                lender.getAddress(),
+                lender.getPhone(),
+                lender.getPincode(),
+                lender.getImageData(),
+                products
+        );
     }
 }
