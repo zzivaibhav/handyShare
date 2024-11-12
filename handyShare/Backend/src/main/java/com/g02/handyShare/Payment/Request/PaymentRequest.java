@@ -1,45 +1,58 @@
 package com.g02.handyShare.Payment.Request;
 
 public class PaymentRequest {
-    private String paymentMethodId; // Payment method ID from Stripe
-    private Long amount;             // Amount in cents
-    private String currency;         // Currency code (e.g., "usd")
+    private String name;
+    private String email;
+    private String customerId;
+    private String paymentMethodId;
+    private Long amount;
+    private String currency;
 
-    // Default constructor
-    public PaymentRequest() {}
-
-    // Constructor to initialize amount and currency
-    public PaymentRequest(int amount, String currency) {
-        this.amount = (long) amount;  // Convert int to Long
-        this.currency = currency;
+    // Getters and setters
+    public String getName() {
+        return name;
     }
 
-    // Getter for paymentMethodId
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
     public String getPaymentMethodId() {
         return paymentMethodId;
     }
 
-    // Setter for paymentMethodId
     public void setPaymentMethodId(String paymentMethodId) {
         this.paymentMethodId = paymentMethodId;
     }
 
-    // Getter for amount
     public Long getAmount() {
         return amount;
     }
 
-    // Setter for amount
     public void setAmount(Long amount) {
         this.amount = amount;
     }
 
-    // Getter for currency
     public String getCurrency() {
         return currency;
     }
 
-    // Setter for currency
     public void setCurrency(String currency) {
         this.currency = currency;
     }
