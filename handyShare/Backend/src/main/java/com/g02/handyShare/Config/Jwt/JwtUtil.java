@@ -1,6 +1,8 @@
 package com.g02.handyShare.Config.Jwt;
 
 import io.jsonwebtoken.SignatureAlgorithm;
+
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -58,7 +60,11 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Boolean validateToken(String token) {
-        return !isTokenExpired(token);
+    // public Boolean validateToken(String token) {
+    //     return !isTokenExpired(token);
+    // }
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 }
