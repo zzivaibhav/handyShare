@@ -38,10 +38,16 @@ const BorrowingPage = () => {
     fetchBorrowedProducts();
   }, []);
 
-  const AnalogTimer = ({ endDate }) => {
+  const AnalogTimer = ({ startDate, endDate }) => {
     const calculateTimeLeft = () => {
       const now = dayjs();
+      const start = dayjs(startDate);
       const end = dayjs(endDate);
+
+      if (now.isBefore(start) || now.isAfter(end)) {
+        return null;
+      }
+
       const timeLeft = dayjs.duration(end.diff(now));
       return {
         days: timeLeft.days(),
@@ -59,7 +65,9 @@ const BorrowingPage = () => {
       }, 1000);
 
       return () => clearInterval(timer);
-    }, [endDate]);
+    }, [startDate, endDate]);
+
+    if (!timeLeft) return null;
 
     return (
       <div>
@@ -165,7 +173,7 @@ const BorrowingPage = () => {
                         border: '2px solid #e0e0e0',
                         boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)'
                       }}>
-                        <AnalogTimer endDate={borrowing.timerEnd} />
+                        <AnalogTimer startDate={borrowing.timerStart} endDate={borrowing.timerEnd} />
                       </div>
                     </div>
 
