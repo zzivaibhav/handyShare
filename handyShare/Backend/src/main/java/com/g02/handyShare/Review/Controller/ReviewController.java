@@ -13,53 +13,33 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.g02.handyShare.Review.Dto.ReviewRequest; // Updated import to ReviewRequest
+import com.g02.handyShare.Review.Dto.ReviewRequest; 
 import com.g02.handyShare.Review.Dto.ReviewResponse;
-import com.g02.handyShare.Review.Entity.Review; // Updated to use Review entity
-import com.g02.handyShare.Review.Service.ReviewService; // Updated to use ReviewService
+import com.g02.handyShare.Review.Entity.Review; 
+import com.g02.handyShare.Review.Service.ReviewService; 
 
 @RestController
-@RequestMapping("/api/v1/all/review")  // Path changed to reflect 'review'
+@RequestMapping("/api/v1/user")  
 @CrossOrigin(origins = "*")
 public class ReviewController {
 
     @Autowired
-    private ReviewService reviewService;  // Autowire ReviewService
+    private ReviewService reviewService;  
 
     // Endpoint to get reviews for a product
-    @GetMapping("/product/{productId}")
+    @GetMapping("/review-product/{productId}")
     public List<Review> getReviewsForProduct(@PathVariable Long productId) {
-        return reviewService.getReviewsForProduct(productId);  // Calls ReviewService
+        return reviewService.getReviewsForProduct(productId);  
     }
 
-        // Endpoint to get reviews for a product
-        @GetMapping("/product")
-        public String getReviewsForProduct1(@PathVariable Long productId) {
-            return "Boom";
-        }
-
     // Endpoint to get reviews given by a user
-    @GetMapping("/user/{userId}")
+    @GetMapping("/review-user/{userId}")
     public List<Review> getReviewsForUser(@PathVariable Long userId) {
-        return reviewService.getReviewsForUser(userId);  // Calls ReviewService
+        return reviewService.getReviewsForUser(userId);  
     }
 
     // Endpoint to create new review
-    // @PostMapping("/create")
-    // public ResponseEntity<Review> createReview(@RequestBody ReviewRequest reviewRequest) {
-    //     // Using ReviewService to create the review
-    //     Review review = reviewService.createReview(
-    //             reviewRequest.getUserId(),
-    //             reviewRequest.getProductId(),
-    //             reviewRequest.getReviewText(),
-    //             reviewRequest.getRating(),
-    //             reviewRequest.getImage()  // Assuming reviewRequest includes image
-    //     );
-
-    //     // Return created review with 201 HTTP status
-    //     return new ResponseEntity<>(review, HttpStatus.CREATED);
-    // }
-    @PostMapping("/create")
+    @PostMapping("/review-create")
     public ResponseEntity<ReviewResponse> createReview(@RequestBody ReviewRequest reviewRequest) {
         // Using ReviewService to create the review
         Review review = reviewService.createReview(
@@ -67,13 +47,12 @@ public class ReviewController {
                 reviewRequest.getProductId(),
                 reviewRequest.getReviewText(),
                 reviewRequest.getRating(),
-                reviewRequest.getImage()  // Assuming reviewRequest includes image
+                reviewRequest.getImage()  
         );
 
-        // Create a response object with a success message
         ReviewResponse response = new ReviewResponse("Review created successfully", review);
 
-        // Return the response with 201 HTTP status
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return new ResponseEntity<ReviewResponse>(response, HttpStatus.CREATED);
     }
+    
 }

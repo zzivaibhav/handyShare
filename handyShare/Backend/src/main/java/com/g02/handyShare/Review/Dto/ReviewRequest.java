@@ -3,9 +3,17 @@ package com.g02.handyShare.Review.Dto;
 public class ReviewRequest {
     private Long userId;
     private Long productId;
-    private String reviewText;  // Updated to reflect 'review'
+    private String reviewText;  
     private int rating;
     private String image;  // Optional image URL or path
+
+    public ReviewRequest(Long userId, Long productId, String reviewText, int rating, String image) {
+        this.userId = userId;
+        this.productId = productId;
+        this.reviewText = reviewText;
+        this.rating = rating;
+        this.image = image;
+    }
 
     // Getters and setters
     public Long getUserId() {
@@ -25,11 +33,11 @@ public class ReviewRequest {
     }
 
     public String getReviewText() {
-        return reviewText;  // Updated to reflect 'review'
+        return reviewText;  
     }
 
     public void setReviewText(String reviewText) {
-        this.reviewText = reviewText;  // Updated to reflect 'review'
+        this.reviewText = reviewText;  
     }
 
     public int getRating() {

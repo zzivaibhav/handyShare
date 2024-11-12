@@ -12,15 +12,19 @@ public class Review {
     private Long id;
     private Long userId;
     private Long productId;
-    private String reviewText;  // Updated to reflect 'review'
+    private String reviewText;  
     private int rating;
     private String image;  // Optional image field
 
-    // Constructor, getters, and setters
+
+    public Review() {
+        // Default constructor for JPA
+    }    
+
     public Review(Long userId, Long productId, String reviewText, int rating, String image) {
         this.userId = userId;
         this.productId = productId;
-        this.reviewText = reviewText;  // Updated to reflect 'review'
+        this.reviewText = reviewText;  
         this.rating = rating;
         this.image = image;
     }
@@ -51,11 +55,11 @@ public class Review {
     }
 
     public String getReviewText() {
-        return reviewText;  // Updated to reflect 'review'
+        return reviewText;  
     }
 
     public void setReviewText(String reviewText) {
-        this.reviewText = reviewText;  // Updated to reflect 'review'
+        this.reviewText = reviewText;  
     }
 
     public int getRating() {
