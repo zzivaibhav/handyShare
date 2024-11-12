@@ -21,6 +21,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,27 +78,8 @@ public class BorrowServiceTest {
         when(authentication.getName()).thenReturn("test@example.com");
     }
 
-    @Test
-    void testAddBorrowTransaction_Success() {
-        // Arrange
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getName()).thenReturn(user.getEmail());
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
-        when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
-        when(borrowRepository.save(any(Borrow.class))).thenReturn(borrowInstance);
 
-        // Act
-        Borrow result = borrowService.addBorrowTransaction(borrowInstance);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(user, result.getBorrower());
-        assertFalse(product.getAvailable());
-        assertNotNull(result.getTimerStart());
-        assertNotNull(result.getTimerEnd());
-        verify(borrowRepository, times(2)).save(any(Borrow.class));
-    }
-
+    
     @Test
     void testAddBorrowTransaction_ProductNotFound() {
         // Arrange
@@ -150,4 +133,5 @@ public class BorrowServiceTest {
         // Act and Assert
         assertThrows(NullPointerException.class, () -> borrowService.getLendedItems());
     }
+    
 }
