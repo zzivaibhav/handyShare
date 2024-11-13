@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/")
-@CrossOrigin(origins = "http://172.17.0.99:3000", allowCredentials = "true" )
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true" )
 
 public class BorrowController {
 
