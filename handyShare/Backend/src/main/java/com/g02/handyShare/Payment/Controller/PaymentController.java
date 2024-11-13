@@ -1,7 +1,10 @@
+
 package com.g02.handyShare.Payment.Controller;
 
-import com.g02.handyShare.Payment.Request.PaymentRequest;
 import com.g02.handyShare.Payment.Service.PaymentService;
+import com.stripe.exception.StripeException;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,7 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/all/payment")
-@CrossOrigin(origins = "http://172.17.0.99:3000", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class PaymentController {
 
     private final PaymentService paymentService;
