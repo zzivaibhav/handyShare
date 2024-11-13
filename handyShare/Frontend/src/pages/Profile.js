@@ -27,6 +27,14 @@ const Profile = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // State for dynamic customer and card details
+  const [customerId, setCustomerId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  // States for onboarding and card details form
+  const [accountDetailsFormVisible, setAccountDetailsFormVisible] = useState(true);
+  const [cardDetailsFormVisible, setCardDetailsFormVisible] = useState(false);
+
+
   // State to handle current view
   const [view, setView] = useState('profile');
 
@@ -124,8 +132,8 @@ const Profile = () => {
           onChange={async (checked) => {
             try {
               const token = localStorage.getItem('token');
-              await axios.put(`${SERVER_URL}/api/v1/user/product/changeAvailability/${record.id}`, 
-                { status: checked }, 
+              await axios.put(`${SERVER_URL}/api/v1/user/product/changeAvailability/${record.id}`,
+                { status: checked },
                 {
                   headers: { Authorization: `Bearer ${token}` },
                   withCredentials: true,
@@ -174,6 +182,56 @@ const Profile = () => {
     }
   };
 
+  // Handle onboarding customer
+  const handleOnboardCustomer = async (values) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        `${SERVER_URL}/api/v1/all/payment/onboard`,
+        {
+          name: values.name,
+          email: values.email,
+        },
+      );
+      setCustomerId(response.data.customerId);
+      message.success('Customer onboarded successfully');
+      setAccountDetailsFormVisible(false);  // Hide the onboarding form
+      setCardDetailsFormVisible(true);      // Show the card details form
+    } catch (error) {
+      console.error('Error onboarding customer:', error);
+      message.error('Failed to onboard customer');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle saving card details
+  const handleSaveCard = async (values) => {
+    if (!customerId) {
+      message.error('Please onboard as a customer first!');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await axios.post(
+        `${SERVER_URL}/api/v1/all/payment/save-card`,
+        {
+          customerId,
+          cardNumber: values.cardNumber,
+          expiryMonth: values.expiryMonth,
+          expiryYear: values.expiryYear,
+          cvc: values.cvc,
+        },
+      );
+      message.success('Card details saved successfully');
+    } catch (error) {
+      console.error('Error saving card details:', error);
+      message.error('Failed to save card details');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div>
       <ProfileHeaderBar />
@@ -189,6 +247,7 @@ const Profile = () => {
             <Menu.Item key="changePassword">Change Password</Menu.Item>
             <Menu.Item key="products">Products</Menu.Item>
             <Menu.Item key="addProduct">Add New Product</Menu.Item>
+            <Menu.Item key="getAccountDetails">Account Details</Menu.Item>
           </Menu>
         </Sider>
         <Layout style={{ padding: '20px' }}>
@@ -259,6 +318,72 @@ const Profile = () => {
             )}
             {view === 'addProduct' && (
               <LendFormPage onUpdate={fetchLentItemsRefresh} />
+            )}
+            {view === 'getAccountDetails' && (
+              <>
+                <h1 style={{ fontSize: '24px', fontWeight: 'bold' }}>Account Details</h1>
+                {!customerId ? (
+                  // Form to onboard customer if not onboarded yet
+                  <Form layout="vertical" onFinish={handleOnboardCustomer}>
+                    <Form.Item
+                      name="name"
+                      label="Name"
+                      rules={[{ required: true, message: 'Please input your name!' }]}
+                    >
+                      <Input placeholder="Enter your full name" />
+                    </Form.Item>
+                    <Form.Item
+                      name="email"
+                      label="Email"
+                      rules={[{ required: true, message: 'Please input your email!' }]}
+                    >
+                      <Input placeholder="Enter your email" />
+                    </Form.Item>
+                    <Form.Item>
+                      <Button type="primary" htmlType="submit" loading={isLoading}>
+                        Onboard as Customer
+                      </Button>
+                    </Form.Item>
+                  </Form>
+                ) : (
+                  // Form to save card details after customer is onboarded
+                  <Form layout="vertical" onFinish={handleSaveCard}>
+                    <Form.Item
+                      name="cardNumber"
+                      label="Card Number"
+                      rules={[{ required: true, message: 'Please input your card number!' }]}
+                    >
+                      <Input placeholder="Enter your card number" />
+                    </Form.Item>
+                    <Form.Item
+                      name="expiryMonth"
+                      label="Expiry Month"
+                      rules={[{ required: true, message: 'Please input your card expiry month!' }]}
+                    >
+                      <Input placeholder="MM" />
+                    </Form.Item>
+                    <Form.Item
+                      name="expiryYear"
+                      label="Expiry Year"
+                      rules={[{ required: true, message: 'Please input your card expiry year!' }]}
+                    >
+                      <Input placeholder="YY" />
+                    </Form.Item>
+                    <Form.Item
+                      name="cvc"
+                      label="CVC"
+                      rules={[{ required: true, message: 'Please input your card CVC!' }]}
+                    >
+                      <Input placeholder="Enter CVC" />
+                    </Form.Item>
+                    <Form.Item>
+                      <Button type="primary" htmlType="submit" loading={isLoading}>
+                        Save Card Details
+                      </Button>
+                    </Form.Item>
+                  </Form>
+                )}
+              </>
             )}
           </Content>
         </Layout>
