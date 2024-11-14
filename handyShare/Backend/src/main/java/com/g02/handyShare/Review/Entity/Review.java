@@ -1,5 +1,9 @@
 package com.g02.handyShare.Review.Entity;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,11 +19,21 @@ public class Review {
     private String reviewText;  
     private int rating;
     private String image;  // Optional image field
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    public LocalDateTime getCreatedAt(){
+        return createdAt;
+    }
+    public void setCreateedAt(LocalDateTime createdAt){
+        this.createdAt=createdAt;
+    }
 
 
     public Review() {
         // Default constructor for JPA
     }    
+
 
     public Review(Long userId, Long productId, String reviewText, int rating, String image) {
         this.userId = userId;

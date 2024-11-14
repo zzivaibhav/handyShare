@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 import { message, Modal, List } from 'antd';
-import { MailOutlined, PhoneOutlined, StarFilled } from '@ant-design/icons';
+import { MailOutlined, PhoneOutlined, ProductFilled, StarFilled } from '@ant-design/icons';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import lenderService from '../services/lenderService.js'; 
@@ -37,14 +37,24 @@ const ProductPage = () => {
         setLoading(false);
         return;
       }
-
+  
       try {
         const token = localStorage.getItem('token');
+        
+        // Fetch product details
         const productResponse = await axios.get(`http://localhost:8080/api/v1/user/product/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true
         });
         setProduct(productResponse.data);
+  
+        // Fetch reviews for the product
+        const reviewsResponse = await axios.get(`http://localhost:8080/api/v1/user/review-product/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true
+        });
+        setReviews(reviewsResponse.data);  // Assuming reviews data is directly returned
+  
         setLoading(false);
       } catch (err) {
         setError('Error loading product details.');
@@ -53,6 +63,7 @@ const ProductPage = () => {
     };
     fetchProductDetails();
   }, [id]);
+  
 
   const handleLenderClick = async () => {
     if (!product || !product.lender || !product.lender.id) {
@@ -76,6 +87,7 @@ const ProductPage = () => {
       setModalLoading(false);
     }
   };
+  
 
   // Handle rent now
   const handleRentNow = async () => {
@@ -159,15 +171,19 @@ const ProductPage = () => {
           <h3 className="heading-lg mb-2">Description</h3>
           <p className="text-gray-600">{product.description}</p>
           <h3 className="heading-lg mt-6">Reviews</h3>
-          {reviews.length > 0 ? (
-            reviews.map((review, index) => (
-              <div key={index} className="mt-2 text-gray-600">
-                <p><strong>{review.user}:</strong> {review.comment}</p>
-              </div>
-            ))
-          ) : (
-            <p>No reviews available.</p>
-          )}
+{reviews.length > 0 ? (
+  reviews.map((review, index) => (
+    <div key={index} className="mt-2 text-gray-600">
+      <p><strong>User ID {review.userId}:</strong> <span className='text-yellow-500'>{"★".repeat(review.rating)}</span></p>
+      <p>{review.reviewText}</p>
+      {review.image && (
+        <img src={review.image} alt="Review" className="mt-2" />
+      )}
+    </div>
+  ))
+) : (
+  <p>No reviews available.</p>
+)}
         </div>
 
         {/* Middle Section: Product Details */}

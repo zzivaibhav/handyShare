@@ -12,7 +12,18 @@ const FeedbackPage = ({ productId, userId }) => {
   // Fetch feedback data for the product
   const fetchFeedbacks = async () => {
     try {
-      const response = await axios.get(`/api/v1/all/feedback/product/${productId}`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`/api/v1/user/feedback/product/${productId}`,{
+       
+        headers: {
+                   
+          Authorization: `Bearer ${token}`
+      },
+      withCredentials: true
+
+
+      }
+    );   
       setFeedbacks(response.data);
     } catch (error) {
       console.error("Error fetching feedbacks:", error);
@@ -20,8 +31,32 @@ const FeedbackPage = ({ productId, userId }) => {
   };
 
   // Submit new feedback and refresh the feedback list
-  const handleSubmitFeedback = (newFeedback) => {
-    setFeedbacks([...feedbacks, newFeedback]);
+  const handleSubmitFeedback = async (newFeedback) => {
+    try{
+      const token=localStorage.getItem('token');
+      const response= await axios.post(
+        '/api/v1/user/review-create',
+        {
+          userId: userId,
+          productId: productId,
+          reviewText: newFeedback.reviewText,
+          rating: newFeedback.rating,
+          image: newFeedback.image,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ${token}',
+          },
+          withCredentials: true,
+        }
+      );
+      const{data}=response;
+      if(data){
+        setFeedbacks([...feedbacks, data.review]);
+      }
+    }catch(error){
+      console.error("Error submitting feedback:", error);
+    }
   };
 
   useEffect(() => {
@@ -74,7 +109,7 @@ const FeedbackPage = ({ productId, userId }) => {
                     <div className="text-sm font-medium text-gray-900">{feedback.userId}</div>
                     <div className="ml-2 text-sm text-gray-600">Rating: {feedback.rating}</div>
                   </div>
-                  <p className="mt-2">{feedback.feedbackText}</p>
+                  <p className="mt-2">{feedback.reviewText}</p>
                   {feedback.image && (
                     <img
                       src={`/path/to/images/${feedback.image}`} // Adjust image path

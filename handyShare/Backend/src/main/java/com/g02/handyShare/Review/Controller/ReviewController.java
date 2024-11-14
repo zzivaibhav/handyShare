@@ -33,9 +33,9 @@ public class ReviewController {
     }
 
     // Endpoint to get reviews given by a user
-    @GetMapping("/review-user/{userId}")
-    public List<Review> getReviewsForUser(@PathVariable Long userId) {
-        return reviewService.getReviewsForUser(userId);  
+    @GetMapping("/review-user/{user}")
+    public List<Review> getReviewsForUser(@PathVariable Long user) {
+        return reviewService.getReviewsForUser(user);  
     }
 
     // Endpoint to create new review
