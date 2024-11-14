@@ -224,6 +224,7 @@ const Profile = () => {
         },
       );
       message.success('Card details saved successfully');
+      navigate('/profile');
     } catch (error) {
       console.error('Error saving card details:', error);
       message.error('Failed to save card details');
@@ -351,30 +352,80 @@ const Profile = () => {
                     <Form.Item
                       name="cardNumber"
                       label="Card Number"
-                      rules={[{ required: true, message: 'Please input your card number!' }]}
+                      rules={[
+                        { required: true, message: 'Please input your card number!' },
+                        { len: 16, message: 'Card number must be exactly 16 digits!' },
+                        {
+                          pattern: /^[0-9]+$/,
+                          message: 'Card number must contain only digits!',
+                        },
+                      ]}
                     >
-                      <Input placeholder="Enter your card number" />
+                      <Input placeholder="Enter your card number" maxLength={16}/>
                     </Form.Item>
                     <Form.Item
                       name="expiryMonth"
                       label="Expiry Month"
-                      rules={[{ required: true, message: 'Please input your card expiry month!' }]}
+                      rules={[
+                        { required: true, message: 'Please input your card expiry month!' },
+                        {
+                          pattern: /^(0[1-9]|1[0-2])$/,
+                          message: 'Expiry month must be between 01 and 12!',
+                        },
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            const currentMonth = new Date().getMonth() + 1;
+                            const currentYear = new Date().getFullYear() % 100; // Last two digits of the year
+                            const expiryYear = getFieldValue('expiryYear');
+                            if (
+                              !value ||
+                              !expiryYear ||
+                              parseInt(expiryYear) > currentYear ||
+                              (parseInt(expiryYear) === currentYear && parseInt(value) >= currentMonth)
+                            ) {
+                              return Promise.resolve();
+                            }
+                            return Promise.reject(new Error('Expiry month and year must be in the future!'));
+                          },
+                        }),
+                      ]}
                     >
                       <Input placeholder="MM" />
                     </Form.Item>
                     <Form.Item
                       name="expiryYear"
                       label="Expiry Year"
-                      rules={[{ required: true, message: 'Please input your card expiry year!' }]}
+                      rules={[
+                        { required: true, message: 'Please input your card expiry year!' },
+                        {
+                          pattern: /^[0-9]{2}$/,
+                          message: 'Expiry year must be a two-digit number!',
+                        },
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            const currentYear = new Date().getFullYear() % 100; // Last two digits of the year
+                            if (!value || parseInt(value) >= currentYear) {
+                              return Promise.resolve();
+                            }
+                            return Promise.reject(new Error('Expiry year must be greater than or equal to the current year!'));
+                          },
+                        }),
+                      ]}
                     >
                       <Input placeholder="YY" />
                     </Form.Item>
                     <Form.Item
                       name="cvc"
                       label="CVC"
-                      rules={[{ required: true, message: 'Please input your card CVC!' }]}
+                      rules={[
+                        { required: true, message: 'Please input your card CVC!' },
+                        {
+                          pattern: /^[0-9]{3}$/,
+                          message: 'CVC must be exactly 3 digits!',
+                        },
+                      ]}
                     >
-                      <Input placeholder="Enter CVC" />
+                      <Input placeholder="Enter CVC" maxLength={3}/>
                     </Form.Item>
                     <Form.Item>
                       <Button type="primary" htmlType="submit" loading={isLoading}>
