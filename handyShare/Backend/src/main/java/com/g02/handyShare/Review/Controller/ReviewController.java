@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.g02.handyShare.Review.Dto.ReviewRequest; 
 import com.g02.handyShare.Review.Dto.ReviewResponse;
+import com.g02.handyShare.Review.Dto.ReviewWithUserDTO;
 import com.g02.handyShare.Review.Entity.Review; 
 import com.g02.handyShare.Review.Service.ReviewService; 
 
@@ -28,8 +29,8 @@ public class ReviewController {
 
     // Endpoint to get reviews for a product
     @GetMapping("/review-product/{productId}")
-    public List<Review> getReviewsForProduct(@PathVariable Long productId) {
-        return reviewService.getReviewsForProduct(productId);  
+    public List<ReviewWithUserDTO> getReviewsForProduct(@PathVariable Long productId) {
+        return reviewService.getReviewsForProduct(productId);
     }
 
     // Endpoint to get reviews given by a user

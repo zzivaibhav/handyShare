@@ -53,7 +53,7 @@ const ProductPage = () => {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true
         });
-        setReviews(reviewsResponse.data);  // Assuming reviews data is directly returned
+        setReviews(reviewsResponse.data);  
   
         setLoading(false);
       } catch (err) {
@@ -174,7 +174,7 @@ const ProductPage = () => {
 {reviews.length > 0 ? (
   reviews.map((review, index) => (
     <div key={index} className="mt-2 text-gray-600">
-      <p><strong>User ID {review.userId}:</strong> <span className='text-yellow-500'>{"★".repeat(review.rating)}</span></p>
+      <p><strong>{review.username}:</strong>{' '} <span className='text-yellow-500'>{"★".repeat(review.rating)}</span></p>
       <p>{review.reviewText}</p>
       {review.image && (
         <img src={review.image} alt="Review" className="mt-2" />
