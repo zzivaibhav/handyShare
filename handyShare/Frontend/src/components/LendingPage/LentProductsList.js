@@ -7,24 +7,36 @@ import { SERVER_URL } from '../../constants.js';
 const { Text, Title } = Typography;
 
 const LentProductsList = ({ lentItems, onRefresh }) => {
-  const handleReturnItem = async (productId) => {
+  const handleReturnItem = async (borrowId) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token'); // Retrieve token from local storage
+      if (!token) {
+        message.error("Authorization token not found. Please log in again.");
+        return;
+      }
+  
+      // API call to return the product
       await axios.post(
-        `${SERVER_URL}/api/v1/user/product/return/${productId}`,
-        {},
+        `${SERVER_URL}/api/v1/user/productReturned`, // Update to the correct API endpoint
+        {borrowId}, // Pass borrowId in the request body
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` }, // Include the Bearer token
+           'Content-Type': 'application/json', // Explicitly set Content-Type
           withCredentials: true
         }
       );
+  
+      // Success notification
       message.success('Item returned successfully');
-      onRefresh();
+      onRefresh(); // Refresh the product list after successful return
     } catch (error) {
       console.error('Error returning item:', error);
-      message.error('Failed to return item');
+      message.error(
+        error.response?.data?.message || 'Failed to return item. Please try again.'
+      );
     }
   };
+  
 
   return (
     <div style={{ padding: '20px' }}>
@@ -83,10 +95,10 @@ const LentProductsList = ({ lentItems, onRefresh }) => {
                   type="link" 
                   danger
                   style={{ height: 'auto', padding: '4px' }}
-                  onClick={() => handleReturnItem(item.product.id)}
+                  onClick={() => handleReturnItem(item.id)}
                 >
                   <Space direction="vertical" size={0}>
-                    <span>Return Item</span>
+                    <span>Got product back</span>
                     <Text type="secondary" style={{ fontSize: '12px' }}>Action</Text>
                   </Space>
                 </Button>
