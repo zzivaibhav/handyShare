@@ -32,32 +32,42 @@ const FeedbackForm = ({ productId, userId, onSubmit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validate feedback input
     if (!feedbackText || !rating) {
       setErrorMessage("Please provide feedback and a rating.");
       return;
     }
 
+    // Prepare the form data to be sent to the backend
     const formData = new FormData();
     formData.append("userId", userId);  // User ID passed as prop or dynamically fetched
     formData.append("productId", productId);  // Product ID passed as prop
-    formData.append("feedbackText", feedbackText);
+    formData.append("reviewText", feedbackText);
     formData.append("rating", rating);
     if (image) {
       formData.append("image", image);
     }
 
     try {
-      await axios.post("/api/v1/all/feedback/create", formData, {
+      // Make POST request to submit the review
+      const response = await axios.post("/api/v1/all/feedback/create", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "multipart/form-data",  // Content type for file upload
         },
       });
-      onSubmit(); // Callback function to refresh feedback data after submission
-      setFeedbackText("");
-      setRating(0);  // Reset rating after submission
-      setImage(null);
-      setErrorMessage(""); // Clear any error message
+      
+      // Handle successful submission
+      if (response.status === 200) {
+        onSubmit(); // Callback function to refresh feedback data after submission
+        setFeedbackText("");
+        setRating(0);  // Reset rating after submission
+        setImage(null);
+        setErrorMessage(""); // Clear any error message
+      } else {
+        setErrorMessage("Failed to submit feedback. Please try again later.");
+      }
     } catch (error) {
+      console.error("Error submitting feedback:", error);
       setErrorMessage("Failed to submit feedback. Please try again later.");
     }
   };

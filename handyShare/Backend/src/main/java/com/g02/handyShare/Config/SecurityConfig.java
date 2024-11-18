@@ -6,7 +6,6 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.checkerframework.checker.units.qual.s;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +75,6 @@ public class SecurityConfig {
                         .requestMatchers("api/v1/user/**").hasAnyAuthority("user", "admin")  // Only accessible by users with USER or ADMIN roles
                         .requestMatchers("/api/v1/user/lender/**").authenticated()
                         .anyRequest().authenticated()  // All other endpoints need authentication
-                        .requestMatchers(HttpMethod.POST, "/api/v1/user/review-create").authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
                 .defaultSuccessUrl("/homepage", true) // Redirect to homepage on success

@@ -87,7 +87,6 @@ const ProductPage = () => {
       setModalLoading(false);
     }
   };
-  
 
   // Handle rent now
   const handleRentNow = async () => {
@@ -111,6 +110,7 @@ const ProductPage = () => {
         timerStart: formattedDateTime
       };
       
+
 
       const response = await axios.post(
         'http://localhost:8080/api/v1/user/borrowProduct',
@@ -366,3 +366,4 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
+

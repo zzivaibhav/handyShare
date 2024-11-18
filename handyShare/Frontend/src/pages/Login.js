@@ -23,15 +23,17 @@ export default function Login() {
       const response = await axios.post(`${SERVER_URL}/api/v1/all/login`, loginData);
 
       if (response.status === 200) {
-        const { token, role } = response.data;
+        const { token, role, userId } = response.data; // Extract userId
 
         if (token === "Bad credentials!") {
           setError('Invalid email or password. Please try again.');
           return;
         }
 
+        // Save token, role, and userId to localStorage
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
+        localStorage.setItem('userId', userId);
 
         navigate(role === "admin" ? '/admin' : '/homepage');
       } else {
