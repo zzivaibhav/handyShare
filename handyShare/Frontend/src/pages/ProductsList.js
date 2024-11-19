@@ -198,9 +198,15 @@ const ProductsList = () => {
 
           {/* Product Grid */}
           <div className="w-3/4 grid grid-cols-3 gap-6 ml-6">
-            {currentProducts.map((product) => (
-              <Link to={`/product/${product.id}`} key={product.id}>  
-                <div className="bg-white shadow-md rounded-lg p-4">
+            {currentProducts.map((product) => (  
+                <div 
+                  key={product.id}
+                  onClick={() => {
+                    localStorage.setItem('productId', product.id);
+                    navigate(`/product/${product.id}`);
+                  }}
+                  className="bg-white shadow-md rounded-lg p-4"
+                >
                   {product.productImage ? (
                     <img
                       src={product.productImage} 
@@ -217,7 +223,6 @@ const ProductsList = () => {
                   <p className="mt-2 text-lg font-medium">Hourly Price: ${product.rentalPrice}</p>
                   <p className="mt-1 text-gray-500">Available for {product.availability} hours</p>
                 </div>
-              </Link>
             ))}
           </div>
         </div>
