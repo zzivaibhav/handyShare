@@ -11,6 +11,7 @@ const CartoonCloud = ({ className }) => (
             stroke="currentColor"
             strokeWidth="4"
             strokeLinecap="round"
+            style={{zIndex:-3}}
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
             transition={{ duration: 2, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' }}
