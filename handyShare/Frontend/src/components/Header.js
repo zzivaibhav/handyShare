@@ -5,15 +5,15 @@ import { useNavigate } from 'react-router-dom';
 import { message } from 'antd';
 
 const CartoonCloud = ({ className }) => (
-    <svg className={className} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg className={className} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" >
         <motion.path
             d="M25 60C25 71.0457 33.9543 80 45 80H70C81.0457 80 90 71.0457 90 60C90 48.9543 81.0457 40 70 40C70 28.9543 61.0457 20 50 20C38.9543 20 30 28.9543 30 40C18.9543 40 10 48.9543 10 60C10 71.0457 18.9543 80 30 80H45"
             stroke="currentColor"
             strokeWidth="4"
             strokeLinecap="round"
-            style={{zIndex:-3}}
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
+            
             transition={{ duration: 2, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' }}
         />
     </svg>
@@ -173,7 +173,7 @@ function AnimatedHeader() {
             </div>
 
 
-            <CartoonCloud className="absolute top-0 left-0 w-32 h-32 text-white opacity-20" style={{ zIndex: 0 }} />
+            <CartoonCloud className="absolute top-(-5) left-0 w-40 h-32 text-white opacity-20" style={{ zIndex: 0 }} />
             <CartoonCloud className="absolute bottom-0 right-0 w-40 h-40 text-white opacity-20" style={{ zIndex: 0 }} />
             <CartoonSun className="absolute top-4 right-4 w-16 h-16 text-yellow-300 opacity-70" style={{ zIndex: 0 }} />
         </motion.header>
