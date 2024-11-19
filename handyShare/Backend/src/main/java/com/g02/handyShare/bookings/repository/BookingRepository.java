@@ -46,10 +46,10 @@ public interface BookingRepository extends JpaRepository<Bookings, Long> {
 @Query("SELECT CASE WHEN COUNT(b) > 0 THEN TRUE ELSE FALSE END " +
         "FROM Bookings b " +
         "WHERE b.product = :product " +
-        "AND b.borrower = :borrower " +
+         
         "AND (b.returnDateTime IS NULL AND b.timerEnd > :timerStart AND b.timerStart < :timerEnd)")
 boolean existsByBorrowerAndProductAndOverlappingTime(
-        @Param("borrower") User borrower,
+        
         @Param("product") Product product,
         @Param("timerStart") LocalDateTime timerStart,
         @Param("timerEnd") LocalDateTime timerEnd
