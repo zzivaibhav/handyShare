@@ -1,4 +1,4 @@
-package com.g02.handyShare.bookings;
+package com.g02.handyShare.bookings.bookingService;
 
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
@@ -26,7 +26,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BookingServiceTest {
+public class AddBorrowTransactionTest {
 
     @InjectMocks
     private BookingService bookingService;
