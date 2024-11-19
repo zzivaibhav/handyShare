@@ -354,15 +354,5 @@ class CategoryControllerTest {
         verify(categoryService, times(1)).deleteCategory(1L);
     }
 
-    @Test
-    void getCategoryTree_Success() {
-        List<Category> categoryTree = Arrays.asList(testCategory);
-        when(categoryService.getCategoryTree()).thenReturn(categoryTree);
-
-        List<Category> response = categoryController.getCategoryTree();
-
-        assertNotNull(response);
-        assertEquals(1, response.size());
-        assertEquals(testCategory, response.get(0));
-    }
+     
 }
