@@ -6,7 +6,8 @@ import { message, Modal, List } from 'antd';
 import { MailOutlined, PhoneOutlined, StarFilled } from '@ant-design/icons';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import lenderService from '../services/lenderService.js'; // Import the service
+import lenderService from '../services/lenderService.js'; 
+import LenderMap from '../components/LendingPage/LenderMap'; 
 
 const ProductPage = () => {
   const navigate = useNavigate();
@@ -281,8 +282,8 @@ const ProductPage = () => {
 
               {/* Lender's Location */}
               <h3 className="text-2xl font-semibold text-gray-800 mt-6 mb-2 text-center">Lender's Location</h3>
-              <div className="w-full h-48 bg-gray-200 rounded-md flex items-center justify-center">
-                <span className="text-gray-500">Map Placeholder</span>
+              <div className="w-full h-48 rounded-md overflow-hidden">
+                <LenderMap address={lenderDetails?.address || product.lender.address} />
               </div>
             </div>
           ) : (

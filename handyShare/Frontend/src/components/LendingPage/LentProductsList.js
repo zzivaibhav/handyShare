@@ -7,24 +7,37 @@ import { SERVER_URL } from '../../constants.js';
 const { Text, Title } = Typography;
 
 const LentProductsList = ({ lentItems, onRefresh }) => {
-  const handleReturnItem = async (id) => {
+   const handleReturnItem = async (id) => {
+ 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token'); // Retrieve token from local storage
+      if (!token) {
+        message.error("Authorization token not found. Please log in again.");
+        return;
+      }
+  
+      // API call to return the product
       await axios.post(
-        `${SERVER_URL}/api/v1/user/product/ReturnedLender`,
+         `${SERVER_URL}/api/v1/user/product/ReturnedLender`,
         {borrowId : id },
         { 
           headers: { Authorization: `Bearer ${token}` },
+ 
           withCredentials: true
         }
       );
+  
+      // Success notification
       message.success('Item returned successfully');
-      onRefresh();
+      onRefresh(); // Refresh the product list after successful return
     } catch (error) {
       console.error('Error returning item:', error);
-      message.error('Failed to return item');
+      message.error(
+        error.response?.data?.message || 'Failed to return item. Please try again.'
+      );
     }
   };
+  
 
   return (
     <div style={{ padding: '20px' }}>
@@ -86,7 +99,7 @@ const LentProductsList = ({ lentItems, onRefresh }) => {
                   onClick={() => handleReturnItem(item.id)}
                 >
                   <Space direction="vertical" size={0}>
-                    <span>Return Item</span>
+                    <span>Got product back</span>
                     <Text type="secondary" style={{ fontSize: '12px' }}>Action</Text>
                   </Space>
                 </Button>
