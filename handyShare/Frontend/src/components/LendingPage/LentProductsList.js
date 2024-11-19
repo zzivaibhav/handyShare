@@ -7,13 +7,13 @@ import { SERVER_URL } from '../../constants.js';
 const { Text, Title } = Typography;
 
 const LentProductsList = ({ lentItems, onRefresh }) => {
-  const handleReturnItem = async (productId) => {
+  const handleReturnItem = async (id) => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        `${SERVER_URL}/api/v1/user/product/return/${productId}`,
-        {},
-        {
+        `${SERVER_URL}/api/v1/user/product/ReturnedLender`,
+        {borrowId : id },
+        { 
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true
         }
@@ -83,7 +83,7 @@ const LentProductsList = ({ lentItems, onRefresh }) => {
                   type="link" 
                   danger
                   style={{ height: 'auto', padding: '4px' }}
-                  onClick={() => handleReturnItem(item.product.id)}
+                  onClick={() => handleReturnItem(item.id)}
                 >
                   <Space direction="vertical" size={0}>
                     <span>Return Item</span>
