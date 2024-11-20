@@ -71,6 +71,19 @@ jobs:
         working-directory: ./handyShare/Backend
         run: mvn clean install
 
+      - name: Download DesigniteJava
+        run: wget "https://www.designite-tools.com/assets/DesigniteJava.jar"
+
+      - name: Analyze backend with DesigniteJava
+        run: |
+          java -jar DesigniteJava.jar -ci -repo ${{ github.repository }} -pat ${{ secrets.PAT }} -k ${{ secrets.D_KEY }} -o ./handyShare/Backend/designite_output
+
+      - name: Upload DesigniteJava output
+        uses: actions/upload-artifact@v3
+        with:
+          name: designite-output
+          path: ./handyShare/Backend/designite_output
+
       - name: Package backend
         working-directory: ./handyShare/Backend
         run: mvn package
