@@ -1,94 +1,79 @@
-// package com.g02.handyShare.Config.Firebase;
+package com.g02.handyShare.Config.Firebase;
 
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.junit.jupiter.api.extension.ExtendWith;
-// import org.mockito.*;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-// import org.springframework.test.context.junit.jupiter.SpringExtension;
-// import org.springframework.test.web.servlet.MockMvc;
-// import org.springframework.http.HttpStatus;
-// import org.springframework.http.MediaType;
-// import org.springframework.web.multipart.MultipartFile;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 
-// import static org.mockito.ArgumentMatchers.any;
-// import static org.mockito.Mockito.*;
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.io.IOException;
 
-// @ExtendWith(SpringExtension.class)  // Ensures Spring context is used
-// @WebMvcTest(Controller.class)  // Only test the Controller class
-// class ControllerTest {
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-//     @Autowired
-//     private MockMvc mockMvc;  // MockMvc to simulate HTTP requests
+class ControllerTest {
 
-//     @Mock
-//     private FirebaseService firebaseService;  // Mock FirebaseService
+    @InjectMocks
+    private Controller controller;
 
-//     @InjectMocks
-//     private Controller controller;  // Inject mocks into the Controller
+    @Mock
+    private FirebaseService firebaseService;
 
-//     @BeforeEach
-//     void setUp() {
-//         MockitoAnnotations.openMocks(this);  // Initialize mocks before each test
-//     }
+    public ControllerTest() {
+        MockitoAnnotations.openMocks(this);
+    }
 
-//     @Test
-//     void testUploadFile_Success() throws Exception {
-//         // Mock successful file upload
-//         when(firebaseService.uploadFile(any(MultipartFile.class), any(String.class)))
-//                 .thenReturn("File uploaded successfully");
+    @Test
+    void uploadFile_Success() throws IOException {
+        MockMultipartFile mockFile = new MockMultipartFile("file", "test.txt", "text/plain", "Sample Content".getBytes());
+        String path = "uploads";
+        String expectedUrl = "https://storage.googleapis.com/handyshare-firebase.appspot.com/uploads/test.txt";
 
-//         // Simulate a file upload request
-//         mockMvc.perform(multipart("/api/v1/all/upload")
-//                         .file("file", "test content".getBytes())  // Mock file data
-//                         .param("path", "product_images"))
-//                 .andExpect(status().isOk())
-//                 .andExpect(content().string("File uploaded successfully"));
-//     }
+        when(firebaseService.uploadFile(mockFile, path)).thenReturn(expectedUrl);
 
-//     @Test
-//     void testUploadFile_Failure() throws Exception {
-//         // Simulate an IOException during file upload
-//         when(firebaseService.uploadFile(any(MultipartFile.class), any(String.class)))
-//                 .thenThrow(new IOException("File upload failed"));
+        ResponseEntity<String> response = controller.uploadFile(mockFile, path);
 
-//         // Simulate the file upload request and expect an error
-//         mockMvc.perform(multipart("/api/v1/all/upload")
-//                         .file("file", "test content".getBytes())  // Mock file data
-//                         .param("path", "product_images"))
-//                 .andExpect(status().isInternalServerError())
-//                 .andExpect(content().string("File upload failed: File upload failed"));
-//     }
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(expectedUrl, response.getBody());
+    }
 
-//     @Test
-//     void testDownloadFile_Success() throws Exception {
-//         byte[] fileContent = "test content".getBytes();
+    @Test
+    void uploadFile_Failure() throws IOException {
+        MockMultipartFile mockFile = new MockMultipartFile("file", "test.txt", "text/plain", "Sample Content".getBytes());
+        String path = "uploads";
 
-//         // Mock successful file download
-//         when(firebaseService.downloadFile(any(String.class)))
-//                 .thenReturn(ResponseEntity.ok().body(fileContent));
+        when(firebaseService.uploadFile(mockFile, path)).thenThrow(new IOException("Upload failed"));
 
-//         // Simulate the file download request
-//         mockMvc.perform(get("/download")
-//                         .param("path", "product_images/test-file.jpg"))
-//                 .andExpect(status().isOk())
-//                 .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
-//                 .andExpect(content().bytes(fileContent));
-//     }
+        ResponseEntity<String> response = controller.uploadFile(mockFile, path);
 
-//     @Test
-//     void testDownloadFile_Failure() throws Exception {
-//         // Simulate an IOException during file download
-//         when(firebaseService.downloadFile(any(String.class)))
-//                 .thenThrow(new IOException("File not found"));
+        assertEquals(500, response.getStatusCodeValue());
+        assertTrue(response.getBody().contains("File upload failed"));
+    }
 
-//         // Simulate the file download request and expect an error
-//         mockMvc.perform(get("/download")
-//                         .param("path", "product_images/non-existing-file.jpg"))
-//                 .andExpect(status().isInternalServerError())
-//                 .andExpect(content().bytes(null));  // No content returned
-//     }
-// }
+    @Test
+    void downloadFile_Success() throws IOException {
+        String path = "uploads/test.txt";
+        byte[] fileContent = "Sample Content".getBytes();
+        ResponseEntity<byte[]> expectedResponse = ResponseEntity.ok(fileContent);
+
+        when(firebaseService.downloadFile(path)).thenReturn(expectedResponse);
+
+        ResponseEntity<byte[]> response = controller.downloadFile(path);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertArrayEquals(fileContent, response.getBody());
+    }
+
+    @Test
+    void downloadFile_Failure() throws IOException {
+        String path = "invalid/test.txt";
+
+        when(firebaseService.downloadFile(path)).thenThrow(new IOException("File not found"));
+
+        ResponseEntity<byte[]> response = controller.downloadFile(path);
+
+        assertEquals(500, response.getStatusCodeValue());
+        assertNull(response.getBody());
+    }
+}

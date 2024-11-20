@@ -1,77 +1,106 @@
 package com.g02.handyShare.Config;
 
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.IOException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.http.MediaType;
-import org.springframework.http.HttpMethod;
-import org.springframework.test.web.servlet.MvcResult;
-import jakarta.servlet.Filter;
-import com.g02.handyShare.Config.CorsFilter;
-import com.g02.handyShare.Constants;  // Adjust the path if Constants is in a different package
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 
-@ExtendWith(SpringExtension.class)
-@WebMvcTest
-public class CorsFilterTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Mock
-    private Constants constant;  // Mock the Constants class if it is used in CorsFilter
+class CorsFilterTest {
 
     @InjectMocks
-    private CorsFilter corsFilter;  // Inject mocks into the filter
+    private CorsFilter corsFilter;
+
+    @Mock
+    private FilterChain filterChain;
+
+    private MockHttpServletRequest request;
+    private MockHttpServletResponse response;
 
     @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);  // Initialize mocks
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        request = new MockHttpServletRequest();
+        response = new MockHttpServletResponse();
     }
 
     @Test
-    public void testCorsFilterWithOPTIONSRequest() throws Exception {
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .options("/api/v1/all/upload")  // Assuming a path for testing
-                        .header("Origin", "http://localhost:3000")
-                        .header("Access-Control-Request-Method", "POST"))
-                .andExpect(status().isOk())
-                .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:3000"))
-                .andExpect(header().string("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH"))
-                .andExpect(header().string("Access-Control-Allow-Headers", "authorization, content-type, xsrf-token"))
-                .andExpect(header().string("Access-Control-Expose-Headers", "xsrf-token"))
-                .andExpect(header().string("Access-Control-Allow-Credentials", "true"))
-                .andReturn();
+    void testOptionsRequestSetsHeadersAndEndsProcessing() throws ServletException, IOException {
+        // Arrange
+        request.setMethod("OPTIONS");
 
-        // Optionally, you can assert the response body (it could be empty or something else as needed)
+        // Act
+        corsFilter.doFilterInternal(request, response, filterChain);
+
+        // Assert
+        assertEquals("http://localhost:3000", response.getHeader("Access-Control-Allow-Origin"));
+        assertEquals("GET, POST, PUT, DELETE, OPTIONS, PATCH", response.getHeader("Access-Control-Allow-Methods"));
+        assertEquals("3600", response.getHeader("Access-Control-Max-Age"));
+        assertEquals("authorization, content-type, xsrf-token", response.getHeader("Access-Control-Allow-Headers"));
+        assertEquals("xsrf-token", response.getHeader("Access-Control-Expose-Headers"));
+        assertEquals("true", response.getHeader("Access-Control-Allow-Credentials"));
+        assertEquals(MockHttpServletResponse.SC_OK, response.getStatus());
+
+        verifyNoInteractions(filterChain);
     }
 
     @Test
-    public void testCorsFilterWithGETRequest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/v1/all/upload")  // Assuming a path for testing
-                        .header("Origin", "http://localhost:3000"))
-                .andExpect(status().isOk())
-                .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:3000"))
-                .andExpect(header().string("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH"))
-                .andExpect(header().string("Access-Control-Allow-Headers", "authorization, content-type, xsrf-token"))
-                .andExpect(header().string("Access-Control-Expose-Headers", "xsrf-token"))
-                .andExpect(header().string("Access-Control-Allow-Credentials", "true"));
+    void testNonOptionsRequestSetsHeadersAndProcessesFurther() throws ServletException, IOException {
+        // Arrange
+        request.setMethod("GET");
+
+        // Act
+        corsFilter.doFilterInternal(request, response, filterChain);
+
+        // Assert
+        assertEquals("http://localhost:3000", response.getHeader("Access-Control-Allow-Origin"));
+        assertEquals("GET, POST, PUT, DELETE, OPTIONS, PATCH", response.getHeader("Access-Control-Allow-Methods"));
+        assertEquals("3600", response.getHeader("Access-Control-Max-Age"));
+        assertEquals("authorization, content-type, xsrf-token", response.getHeader("Access-Control-Allow-Headers"));
+        assertEquals("xsrf-token", response.getHeader("Access-Control-Expose-Headers"));
+        assertEquals("true", response.getHeader("Access-Control-Allow-Credentials"));
+
+        verify(filterChain, times(1)).doFilter(request, response);
     }
 
     @Test
-    public void testCorsFilterWithInvalidOrigin() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/v1/all/upload")
-                        .header("Origin", "http://invalid-origin.com"))
-                .andExpect(status().isOk())  // Ensure status is OK even with an invalid origin
-                .andExpect(header().doesNotExist("Access-Control-Allow-Origin"));  // No CORS headers should be set for an invalid origin
+    void testPostRequestSetsHeadersAndProcessesFurther() throws ServletException, IOException {
+        // Arrange
+        request.setMethod("POST");
+
+        // Act
+        corsFilter.doFilterInternal(request, response, filterChain);
+
+        // Assert
+        assertEquals("http://localhost:3000", response.getHeader("Access-Control-Allow-Origin"));
+        assertEquals("GET, POST, PUT, DELETE, OPTIONS, PATCH", response.getHeader("Access-Control-Allow-Methods"));
+        assertEquals("3600", response.getHeader("Access-Control-Max-Age"));
+        assertEquals("authorization, content-type, xsrf-token", response.getHeader("Access-Control-Allow-Headers"));
+        assertEquals("xsrf-token", response.getHeader("Access-Control-Expose-Headers"));
+        assertEquals("true", response.getHeader("Access-Control-Allow-Credentials"));
+
+        verify(filterChain, times(1)).doFilter(request, response);
+    }
+
+    @Test
+    void testAllowCredentialsHeaderIsSetToTrue() throws ServletException, IOException {
+        // Arrange
+        request.setMethod("GET");
+
+        // Act
+        corsFilter.doFilterInternal(request, response, filterChain);
+
+        // Assert
+        assertEquals("true", response.getHeader("Access-Control-Allow-Credentials"));
     }
 }

@@ -41,30 +41,27 @@ public class JwtControllerTest {
         testUser.setPassword("password123");
     }
 
-   @Test
-public void testGenToken_Success() {
-    // Arrange
-    UserDetails mockUserDetails = mock(UserDetails.class);
-    
-    // Ensure mocking is lenient for generateToken so it doesn't fail due to argument mismatch
-    lenient().when(customUserDetailsService.loadUserByUsername(testUser.getEmail())).thenReturn(mockUserDetails);
-    
-    // Mock the generateToken method with the correct argument
-    when(jwtUtil.generateToken(testUser.getEmail())).thenReturn("mock-jwt-token");
+    @Test
+    public void testGenToken_Success() {
+        // Arrange
+        UserDetails mockUserDetails = mock(UserDetails.class);
+        when(mockUserDetails.getUsername()).thenReturn(testUser.getEmail());
 
-    // Act
-    String jwtToken = jwtController.genToken(testUser);
+        when(customUserDetailsService.loadUserByUsername(testUser.getEmail())).thenReturn(mockUserDetails);
+        when(jwtUtil.generateToken(testUser.getEmail())).thenReturn("mock-jwt-token");
 
-    // Assert
-    assertNotNull(jwtToken);
-    assertEquals("mock-jwt-token", jwtToken);
+        // Act
+        String jwtToken = jwtController.genToken(testUser);
 
-    // Verify interactions
-    verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
-    verify(customUserDetailsService, times(1)).loadUserByUsername(testUser.getEmail());
-    verify(jwtUtil, times(1)).generateToken(testUser.getEmail());
-}
+        // Assert
+        assertNotNull(jwtToken);
+        assertEquals("mock-jwt-token", jwtToken);
 
+        // Verify interactions
+        verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(customUserDetailsService, times(1)).loadUserByUsername(testUser.getEmail());
+        verify(jwtUtil, times(1)).generateToken(testUser.getEmail());
+    }
 
     @Test
     public void testGenToken_FailedAuthentication() {
