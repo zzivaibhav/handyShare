@@ -3,10 +3,10 @@ name: HandyShare CI/CD
 on:
   push:
     branches:
-      - main
+      - Development
   pull_request:
     branches:
-      - main
+      - Development
   workflow_dispatch:
 
 jobs:
@@ -71,22 +71,21 @@ jobs:
         working-directory: ./handyShare/Backend
         run: mvn clean install
 
-      - name: Download DesigniteJava
-        run: wget "https://www.designite-tools.com/assets/DesigniteJava.jar"
-
-      - name: Analyze backend with DesigniteJava
-        run: |
-          java -jar DesigniteJava.jar -ci -repo ${{ github.repository }} -pat ${{ secrets.PAT }} -k ${{ secrets.D_KEY }} -o ./handyShare/Backend/designite_output
-
-      - name: Upload DesigniteJava output
-        uses: actions/upload-artifact@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
         with:
-          name: designite-output
-          path: ./handyShare/Backend/designite_output
+          python-version: '3.10'
 
       - name: Package backend
         working-directory: ./handyShare/Backend
         run: mvn package
+
+      - name: Run Designite for code quality analysis
+        run: |
+          mkdir -p ./code_quality/report
+          java -jar ./code_quality/DesigniteJava.jar -i ./handyShare/Backend -o ./code_quality/report
+          cd code_quality
+          python3 issue.py ${{ github.sha }} ${{ secrets.SAMARTH_PAT }}
 
       - name: Upload backend artifact
         uses: actions/upload-artifact@v3
