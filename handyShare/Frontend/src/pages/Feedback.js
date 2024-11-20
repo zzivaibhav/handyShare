@@ -58,7 +58,7 @@ const FeedbackPage = ({ productId, userId }) => {
       const response = await axios.post('http://localhost:8080/api/v1/user/review-create', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
         withCredentials: true,
       });

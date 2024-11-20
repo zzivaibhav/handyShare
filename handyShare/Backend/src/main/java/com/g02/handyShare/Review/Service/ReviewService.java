@@ -1,5 +1,6 @@
 package com.g02.handyShare.Review.Service;
 
+import com.g02.handyShare.Config.Firebase.FirebaseService;
 import com.g02.handyShare.Review.Dto.ReviewWithUserDTO;
 import com.g02.handyShare.Review.Entity.Review;  
 import com.g02.handyShare.Review.Repository.ReviewRepository;
@@ -7,7 +8,9 @@ import com.g02.handyShare.User.Repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +22,13 @@ public class ReviewService {
 
     @Autowired
     private UserRepository userRepository;
+
+    private FirebaseService firebaseService;
+
+    @Autowired
+    public void Controller(FirebaseService firebaseService) {
+        this.firebaseService = firebaseService;
+    }
 
         public List<ReviewWithUserDTO> getReviewsForProduct(Long productId) {
         List<Review> reviews = reviewRepository.findByProductId(productId);
@@ -42,8 +52,12 @@ public class ReviewService {
         return reviewRepository.findByUserId(userId);  
     }
 
-    public Review createReview(Long userId, Long productId, String reviewText, int rating, String image) {
-        Review review = new Review(userId, productId, reviewText, rating, image);  
-        return reviewRepository.save(review);  
+    public Review createReview(Long userId, Long productId, String reviewText, int rating, MultipartFile image) throws IOException { 
+        String imageUrl = null;
+        if (image != null && !image.isEmpty()) {
+            imageUrl = firebaseService.uploadFile(image, "/reviews");
+        }
+        Review review = new Review(userId, productId, reviewText, rating, imageUrl);  
+        return reviewRepository.save(review); 
     }
 }
