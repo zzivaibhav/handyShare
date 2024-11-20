@@ -20,7 +20,7 @@ const ProductPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedHours, setSelectedHours] = useState(1);
-  const [showTimeSelector, setShowTimeSelector] = useState(false);
+  const [showTimeSelector, setShowTimeSelector] = useState(true);
   const [timeValid, setTimeValid] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [lenderProducts, setLenderProducts] = useState([]);
@@ -174,7 +174,6 @@ const ProductPage = () => {
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="heading-lg text-gray-800">{product.name}</h2>
           <p className="text-lg text-gray-600 mb-4">Price: <span className="font-semibold">${product.rentalPrice}/hour</span></p>
-          <p className="text-gray-600">Transaction Time: <span className="font-semibold">{product.transactionTime || '2'}</span> hours</p>
 
           {/* Hours Selector */}
           <div className="mt-4">
@@ -184,7 +183,7 @@ const ProductPage = () => {
               onChange={(e) => {
                 const hours = Number(e.target.value);
                 setSelectedHours(hours);
-                setShowTimeSelector(hours > 0);
+                setShowTimeSelector(true);
               }}
               className="w-full p-2 border border-gray-300 rounded-md"
             >
