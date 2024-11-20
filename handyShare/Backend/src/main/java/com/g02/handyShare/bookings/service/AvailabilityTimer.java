@@ -40,7 +40,7 @@ public class AvailabilityTimer {
            if (returnDateTime == null) {
                // Check start time - make unavailable
                if (currentTime.isEqual(startTime) ||
-                       (currentTime.isAfter(startTime) && currentTime.isBefore(endTime))) {
+                       (currentTime.isAfter(startTime) )) {
 
                    product.setAvailable(false);
                    productRepository.save(product);
