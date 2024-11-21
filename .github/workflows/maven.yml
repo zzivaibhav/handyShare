@@ -82,6 +82,11 @@ jobs:
           cd handyShare/code_quality
           python3 issue.py ${{ github.sha }} ${{ secrets.SAMARTH_PAT }}
 
+      - name: Debug Designite output
+        run: |
+          ls -R ./handyShare/code_quality/report
+          find ./handyShare/Backend -name "*.csv"
+
   deploy:
     runs-on: self-hosted
     needs: backend
