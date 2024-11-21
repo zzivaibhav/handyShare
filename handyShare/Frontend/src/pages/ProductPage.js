@@ -3,11 +3,11 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
 import { message, Modal, List } from 'antd';
-import { MailOutlined, PhoneOutlined, StarFilled } from '@ant-design/icons';
+import { MailOutlined, PhoneOutlined, ProductFilled, StarFilled } from '@ant-design/icons';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import lenderService from '../services/lenderService.js'; 
-import LenderMap from '../components/LendingPage/LenderMap'; 
+import lenderService from '../services/lenderService.js';
+import LenderMap from '../components/LendingPage/LenderMap';
 
 const ProductPage = () => {
   const navigate = useNavigate();
@@ -15,6 +15,7 @@ const ProductPage = () => {
   const [product, setProduct] = useState(null);
   const [lenderDetails, setLenderDetails] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -40,11 +41,21 @@ const ProductPage = () => {
 
       try {
         const token = localStorage.getItem('token');
+
+        // Fetch product details
         const productResponse = await axios.get(`http://localhost:8080/api/v1/user/product/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true
         });
         setProduct(productResponse.data);
+
+        // Fetch reviews for the product
+        const reviewsResponse = await axios.get(`http://localhost:8080/api/v1/user/review-product/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true
+        });
+        setReviews(reviewsResponse.data);
+
         setLoading(false);
       } catch (err) {
         setError('Error loading product details.');
@@ -53,6 +64,7 @@ const ProductPage = () => {
     };
     fetchProductDetails();
   }, [id]);
+
 
   const handleLenderClick = async () => {
     if (!product || !product.lender || !product.lender.id) {
@@ -77,20 +89,32 @@ const ProductPage = () => {
     }
   };
 
+  const handleNextReview = () => {
+    setCurrentReviewIndex((prevIndex) =>
+      prevIndex === reviews.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const handlePrevReview = () => {
+    setCurrentReviewIndex((prevIndex) =>
+      prevIndex === 0 ? reviews.length - 1 : prevIndex - 1
+    );
+  };
+
   // Handle rent now
   const handleRentNow = async () => {
     if (!selectedDate || !selectedTime) {
       message.warning('Please select both date and time to proceed with the rental.');
       return;
     }
-  
+
     try {
       const token = localStorage.getItem('token');
       const totalAmount = product.rentalPrice * selectedHours;
 
       // Format the date-time string as requested
       const formattedDateTime = `${selectedDate.toISOString().split('T')[0]}T${selectedTime}:00`;
-  
+
       const borrowData = {
         product: { id: parseInt(id) },
         duration: selectedHours,
@@ -98,7 +122,8 @@ const ProductPage = () => {
         penalty: Math.ceil(totalAmount * 0.5),
         timerStart: formattedDateTime
       };
-      
+
+
 
       const response = await axios.post(
         'http://localhost:8080/api/v1/user/borrowProduct',
@@ -111,7 +136,7 @@ const ProductPage = () => {
           withCredentials: true
         }
       );
-  
+
       if (response.status === 200 || response.status === 201) {
         message.success('Rental request processed successfully!');
         navigate('/rent-summary', {
@@ -160,11 +185,42 @@ const ProductPage = () => {
           <p className="text-gray-600">{product.description}</p>
           <h3 className="heading-lg mt-6">Reviews</h3>
           {reviews.length > 0 ? (
-            reviews.map((review, index) => (
-              <div key={index} className="mt-2 text-gray-600">
-                <p><strong>{review.user}:</strong> {review.comment}</p>
+            <div className="relative mt-4">
+              <div className="text-gray-600 text-center">
+                <p>
+                  <strong>{reviews[currentReviewIndex].username}:</strong>{" "}
+                  <span className="text-yellow-500">
+                    {"★".repeat(reviews[currentReviewIndex].rating)}
+                  </span>
+                </p>
+                <p>{reviews[currentReviewIndex].reviewText}</p>
+                {reviews[currentReviewIndex].image && (
+                  <img
+                    src={reviews[currentReviewIndex].image}
+                    alt="Review"
+                    className="mt-2 mx-auto w-64 h-64 object-contain"
+                  />
+                )}
               </div>
-            ))
+
+              {/* Conditionally render navigation buttons */}
+              {reviews.length > 1 && (
+                <>
+                  <button
+                    onClick={handlePrevReview}
+                    className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-gray-200 rounded-full p-2 shadow hover:bg-gray-300"
+                  >
+                    ◀
+                  </button>
+                  <button
+                    onClick={handleNextReview}
+                    className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-gray-200 rounded-full p-2 shadow hover:bg-gray-300"
+                  >
+                    ▶
+                  </button>
+                </>
+              )}
+            </div>
           ) : (
             <p>No reviews available.</p>
           )}
@@ -350,3 +406,4 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
+

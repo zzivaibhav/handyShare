@@ -111,6 +111,7 @@ public class UserController {
             Map<String, String> responseBody = new HashMap<>();
             responseBody.put("token", jwt);
             responseBody.put("role", existingUser.getRole()); // Adding role to the response
+            responseBody.put("userId", String.valueOf(existingUser.getId()));
 
             return ResponseEntity.ok().body(responseBody);
         } catch (Exception e) {
