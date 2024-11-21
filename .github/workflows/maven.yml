@@ -77,7 +77,7 @@ jobs:
       - name: Run Designite for code quality analysis
         run: |
           mkdir -p ./handyShare/code_quality/report
-          java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend -o ./code_quality/report
+          java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend -o ./handyShare/code_quality/report
           cd handyShare/code_quality
           python3 issue.py ${{ github.sha }} ${{ secrets.SAMARTH_PAT }}
 
