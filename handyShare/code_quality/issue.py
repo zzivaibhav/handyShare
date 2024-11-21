@@ -40,7 +40,7 @@ headers = {
     "Authorization": f"Bearer {pat}",
     "Accept": "application/vnd.github+json",
 }
-URL = "https://api.github.com/repos/CSCI5308/course-project-g02/issues“
+URL = "https://api.github.com/repos/CSCI5308/course-project-g02/issues"
 
 # Iterate through the smell files
 for sf in smell_files:
