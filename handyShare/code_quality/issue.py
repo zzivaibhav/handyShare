@@ -16,7 +16,6 @@ import sys
 import requests
 from csv2md import table
 import csv
-import glob
 
 # Ensure the correct arguments are passed
 if len(sys.argv) < 3:
@@ -26,42 +25,15 @@ if len(sys.argv) < 3:
 commit = sys.argv[1]
 pat = sys.argv[2]
 
-# Print current working directory and environment
-print("Current Working Directory:", os.getcwd())
-print("Environment Variables:")
-for key, value in os.environ.items():
-    if 'PATH' in key or 'GITHUB' in key:
-        print(f"{key}: {value}")
-
-# Predefined list of expected smell files
-expected_smell_files = [
+# Path to the smell reports
+path_to_smells = "./handyShare/code_quality/report/"
+smell_files = [
     "ArchitectureSmells.csv",
     "DesignSmells.csv",
     "TestSmells.csv",
     "ImplementationSmells.csv",
     "TestabilitySmells.csv",
 ]
-
-# Explicitly set the path to the report directory
-path_to_smells = './handyShare/code_quality/report'
-
-# Debug: Print contents of the directory
-print(f"Contents of {path_to_smells}:")
-for item in os.listdir(path_to_smells):
-    print(item)
-
-# Find all CSV files in the report directory
-smell_files = []
-for filename in expected_smell_files:
-    file_path = os.path.join(path_to_smells, filename)
-    print(f"Checking file: {file_path}")
-    if os.path.exists(file_path):
-        print(f"Found file: {file_path}")
-        smell_files.append(file_path)
-    else:
-        print(f"Warning: {filename} not found in {path_to_smells}")
-
-print("Smell files found:", smell_files)
 
 # GitHub API endpoint
 headers = {
@@ -71,34 +43,33 @@ headers = {
 URL = "https://api.github.com/repos/CSCI5308/course-project-g02/issues"
 
 # Iterate through the smell files
-for smell_file_path in smell_files:
-    # Print file contents for debugging
-    print(f"\nProcessing file: {smell_file_path}")
-    with open(smell_file_path, 'r') as f:
-        print("File contents:")
-        print(f.read())
-    
-    # Reset file pointer
+for sf in smell_files:
+    smell_file_path = os.path.join(path_to_smells, sf)
+
+    # Check if the smell file exists
+    if not os.path.exists(smell_file_path):
+        print(f"Warning: {sf} not found in {path_to_smells}. Skipping...")
+        continue
+
+    # Read the smell file and generate Markdown
     with open(smell_file_path) as csv_file:
         list_smells = list(csv.reader(csv_file))
-    
+
     raw_md = table.Table(list_smells).markdown()
-    
+
     # Prepare issue title and body
-    filename = os.path.basename(smell_file_path)
-    title = str(filename).replace(".csv", "") + " for commit - " + str(commit)[:7]
+    title = str(sf).replace(".csv", "") + " for commit - " + str(commit)[:7]
     body = {"title": title, "body": raw_md, "labels": ["Designite", "Smells"]}
-    
+
     # Check if a similar issue already exists
     issues = requests.get(URL, headers=headers).json()
     create_issue = True
-    
     for issue in issues:
         if issue.get("title") == title or issue.get("body") == raw_md:
             print(f"Issue already exists: {issue['html_url']}, {title}. Skipping...")
             create_issue = False
             break
-    
+
     # Create the GitHub issue if it doesn't exist
     if create_issue:
         github_output = requests.post(URL, headers=headers, json=body)
