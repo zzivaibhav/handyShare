@@ -1,71 +1,61 @@
-// package com.g02.handyShare.Product.Controller;
+package com.g02.handyShare.Product.Controller;
 
-// import com.g02.handyShare.Product.Service.CustomException;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.mockito.InjectMocks;
-// import org.mockito.Mock;
-// import org.springframework.http.HttpStatus;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.validation.FieldError;
-// import org.springframework.validation.BindingResult;
-// import org.springframework.web.bind.MethodArgumentNotValidException;
+import com.g02.handyShare.Product.Service.CustomException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
-// import static org.mockito.Mockito.*;
-// import static org.junit.jupiter.api.Assertions.*;
+import java.util.Map;
 
-// import java.util.Arrays;
-// import java.util.List;
-// import java.util.Map;
+import static org.junit.jupiter.api.Assertions.*;
 
-// class ValidationHandlerTest {
+public class ValidationHandlerTest {
 
-//     @InjectMocks
-//     private ValidationHandler validationHandler;
+    private ValidationHandler validationHandler;
 
-//     @Mock
-//     private BindingResult bindingResult;
+    @BeforeEach
+    void setUp() {
+        validationHandler = new ValidationHandler();
+    }
 
-//     @Mock
-//     private FieldError fieldError;
+    @Test
+    void handleValidationExceptions_shouldReturnBadRequestWithFieldErrors() {
+        // Arrange
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(new Object(), "testObject");
+        bindingResult.addError(new FieldError("testObject", "field1", "Field1 is invalid"));
+        bindingResult.addError(new FieldError("testObject", "field2", "Field2 cannot be null"));
+        MethodArgumentNotValidException exception = new MethodArgumentNotValidException(null, bindingResult);
 
-//     @BeforeEach
-//     void setUp() {
-//         // Initialize mocks if necessary
-//     }
+        // Act
+        ResponseEntity<Map<String, String>> response = validationHandler.handleValidationExceptions(exception);
 
-//     @Test
-//     void testHandleValidationExceptions() throws Exception {
-//         // Arrange: Set up the mock for MethodArgumentNotValidException
-//         List<FieldError> fieldErrors = Arrays.asList(
-//             new FieldError("object", "field1", "Field 1 cannot be empty"),
-//             new FieldError("object", "field2", "Field 2 is required")
-//         );
-//         when(bindingResult.getFieldErrors()).thenReturn(fieldErrors);
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        Map<String, String> errors = response.getBody();
+        assertNotNull(errors);
+        assertEquals(2, errors.size());
+        assertEquals("Field1 is invalid", errors.get("field1"));
+        assertEquals("Field2 cannot be null", errors.get("field2"));
+    }
 
-//         // MethodArgumentNotValidException constructor requires MethodParameter and BindingResult
-//         MethodArgumentNotValidException exception = new MethodArgumentNotValidException(null, bindingResult);
+    @Test
+    void handleProductNotFoundException_shouldReturnNotFoundWithMessage() {
+        // Arrange
+        String errorMessage = "Product not found";
+        CustomException customException = new CustomException(errorMessage);
 
-//         // Act: Call the handler method
-//         ResponseEntity<Map<String, String>> response = validationHandler.handleValidationExceptions(exception);
+        // Act
+        ResponseEntity<String> response = validationHandler.handleProductNotFoundException(customException);
 
-//         // Assert: Verify that the response contains the expected errors
-//         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-//         assertEquals(2, response.getBody().size());
-//         assertEquals("Field 1 cannot be empty", response.getBody().get("field1"));
-//         assertEquals("Field 2 is required", response.getBody().get("field2"));
-//     }
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(errorMessage, response.getBody());
+    }
+}
 
-//     @Test
-//     void testHandleProductNotFoundException() {
-//         // Arrange: Create a CustomException
-//         CustomException customException = new CustomException("Product not found");
 
-//         // Act: Call the handler method
-//         ResponseEntity<String> response = validationHandler.handleProductNotFoundException(customException);
-
-//         // Assert: Verify that the response contains the expected message and status
-//         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-//         assertEquals("Product not found", response.getBody());
-//     }
-// }

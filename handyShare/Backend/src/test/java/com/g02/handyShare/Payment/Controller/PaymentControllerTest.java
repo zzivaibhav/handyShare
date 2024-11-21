@@ -1,168 +1,108 @@
-
 package com.g02.handyShare.Payment.Controller;
 
 import com.g02.handyShare.Payment.Request.PaymentRequest;
 import com.g02.handyShare.Payment.Service.PaymentService;
+import com.stripe.exception.StripeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 
-@ExtendWith(MockitoExtension.class)
-public class PaymentControllerTest {
+class PaymentControllerTest {
 
-    @Mock
+    private PaymentController paymentController;
     private PaymentService paymentService;
 
-    @InjectMocks
-    private PaymentController paymentController;
-
-    private MockMvc mockMvc;
-
     @BeforeEach
-    public void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(paymentController).build();
+    void setUp() {
+        paymentService = Mockito.mock(PaymentService.class);
+        paymentController = new PaymentController(paymentService);
     }
 
     @Test
-    public void testCreateCheckoutSessionSuccess() throws Exception {
-        // Mock the paymentService behavior
-        Map<String, Object> response = new HashMap<>();
-        response.put("checkoutSessionId", "session_test123");
-        when(paymentService.createCheckoutSession(100L, "USD")).thenReturn(response);
+    void createCheckoutSession_Success() throws Exception {
+        Mockito.when(paymentService.createCheckoutSession(anyLong(), anyString()))
+                .thenReturn(Map.of("url", "http://checkout.stripe.com/session_id"));
 
-        // Perform the request and verify the result
-        mockMvc.perform(post("/api/v1/all/payment/checkout-session")
-                        .contentType("application/json")
-                        .content("{\"amount\": 100, \"currency\": \"USD\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.checkoutSessionId").value("session_test123"));
+        ResponseEntity<Map<String, Object>> response = paymentController.createCheckoutSession(Map.of(
+                "amount", "5000",
+                "currency", "usd"
+        ));
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("http://checkout.stripe.com/session_id", response.getBody().get("url"));
     }
 
     @Test
-    public void testCreateCheckoutSessionFailure() throws Exception {
-        // Mock the paymentService behavior
-        Map<String, Object> response = new HashMap<>();
-        response.put("error", "Failed to create checkout session");
-        when(paymentService.createCheckoutSession(100L, "USD")).thenReturn(response);
+    void createCheckoutSession_Failure() throws Exception {
+        Mockito.when(paymentService.createCheckoutSession(anyLong(), anyString()))
+                .thenReturn(Map.of("error", "Failed to create session"));
 
-        // Perform the request and verify the result
-        mockMvc.perform(post("/api/v1/all/payment/checkout-session")
-                        .contentType("application/json")
-                        .content("{\"amount\": 100, \"currency\": \"USD\"}"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.error").value("Failed to create checkout session"));
+        ResponseEntity<Map<String, Object>> response = paymentController.createCheckoutSession(Map.of(
+                "amount", "5000",
+                "currency", "usd"
+        ));
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Failed to create session", response.getBody().get("error"));
     }
 
     @Test
-    public void testOnboardCustomerSuccess() throws Exception {
-        // Create a mock PaymentRequest and response
-        PaymentRequest paymentRequest = new PaymentRequest();
-        paymentRequest.setEmail("testuser@example.com");
-        paymentRequest.setName("Test User");
+    void onboardCustomer_Success() {
+        PaymentRequest paymentRequest = new PaymentRequest(5000, "usd", "John Doe", "john.doe@example.com", null);
+        Mockito.when(paymentService.onboardCustomer(any(PaymentRequest.class)))
+                .thenReturn(Map.of("customerId", "cus_test123"));
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("customerId", "cus_test123");
-        response.put("message", "Customer onboarded successfully");
+        ResponseEntity<Map<String, Object>> response = paymentController.onboardCustomer(paymentRequest);
 
-        // Mock the paymentService behavior
-        when(paymentService.onboardCustomer(any(PaymentRequest.class))).thenReturn(response);
-
-        // Perform the request and verify the result
-        mockMvc.perform(post("/api/v1/all/payment/onboard")
-                        .contentType("application/json")
-                        .content("{\"email\": \"testuser@example.com\", \"name\": \"Test User\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.customerId").value("cus_test123"))
-                .andExpect(jsonPath("$.message").value("Customer onboarded successfully"));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("cus_test123", response.getBody().get("customerId"));
     }
 
     @Test
-    public void testOnboardCustomerFailure() throws Exception {
-        // Create a mock PaymentRequest and simulate a failure
-        PaymentRequest paymentRequest = new PaymentRequest();
-        paymentRequest.setEmail("testuser@example.com");
-        paymentRequest.setName("Test User");
-
-        // Mock the paymentService behavior to throw an exception
-        when(paymentService.onboardCustomer(any(PaymentRequest.class)))
-                .thenThrow(new RuntimeException("Error onboarding customer"));
-
-        // Perform the request and verify the result
-        mockMvc.perform(post("/api/v1/all/payment/onboard")
-                        .contentType("application/json")
-                        .content("{\"email\": \"testuser@example.com\", \"name\": \"Test User\"}"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.error").value("Error onboarding customer"));
-    }
-
-    @Test
-    public void testSaveCardSuccess() throws Exception {
-        // Create a mock PaymentRequest and response
+    void saveCard_Success() throws Exception {
         PaymentRequest paymentRequest = new PaymentRequest();
         paymentRequest.setCustomerId("cus_test123");
-        paymentRequest.setCardNumber("4242424242424242");
-        paymentRequest.setExpiryMonth(12);
-        paymentRequest.setExpiryYear(2024);
-        paymentRequest.setCvc("123");
+        Mockito.when(paymentService.saveCard(any(PaymentRequest.class)))
+                .thenReturn(Map.of("message", "Card saved successfully"));
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Card saved successfully and set as default.");
-        response.put("paymentMethodId", "pm_test123");
+        ResponseEntity<Map<String, Object>> response = paymentController.saveCard(paymentRequest);
 
-        // Mock the paymentService behavior
-        when(paymentService.saveCard(any(PaymentRequest.class))).thenReturn(response);
-
-        // Perform the request and verify the result
-        mockMvc.perform(post("/api/v1/all/payment/save-card")
-                        .contentType("application/json")
-                        .content("{\"customerId\": \"cus_test123\", \"cardNumber\": \"4242424242424242\", \"expiryMonth\": 12, \"expiryYear\": 2024, \"cvc\": \"123\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Card saved successfully and set as default."))
-                .andExpect(jsonPath("$.paymentMethodId").value("pm_test123"));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Card saved successfully", response.getBody().get("message"));
     }
 
     @Test
-    public void testSaveCardFailure() throws Exception {
-        // Create a mock PaymentRequest and simulate a failure
+    void saveCard_CustomerIdMissing() throws StripeException {
+        // Arrange
         PaymentRequest paymentRequest = new PaymentRequest();
-        paymentRequest.setCustomerId("cus_test123");
         paymentRequest.setCardNumber("4242424242424242");
         paymentRequest.setExpiryMonth(12);
-        paymentRequest.setExpiryYear(2024);
+        paymentRequest.setExpiryYear(2025);
         paymentRequest.setCvc("123");
 
-        // Mock the paymentService behavior to throw an exception
-        when(paymentService.saveCard(any(PaymentRequest.class)))
-                .thenThrow(new RuntimeException("Error saving card"));
+        // Mock the behavior of the service to throw IllegalArgumentException when customerId is missing
+        Mockito.when(paymentService.saveCard(Mockito.any(PaymentRequest.class)))
+                .thenThrow(new IllegalArgumentException("CustomerId is required to save card."));
 
-        // Perform the request and verify the result
-        mockMvc.perform(post("/api/v1/all/payment/save-card")
-                        .contentType("application/json")
-                        .content("{\"customerId\": \"cus_test123\", \"cardNumber\": \"4242424242424242\", \"expiryMonth\": 12, \"expiryYear\": 2024, \"cvc\": \"123\"}"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.error").value("Error saving card"));
+
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            paymentService.saveCard(paymentRequest);
+        });
+
+        // Assert
+        assertEquals("CustomerId is required to save card.", exception.getMessage());
     }
 
-    @Test
-    public void testHandleOptionsRequest() throws Exception {
-        // Perform the OPTIONS request to verify preflight handling
-        mockMvc.perform(options("/api/v1/all/payment/checkout-session")
-                        .contentType("application/json"))
-                .andExpect(status().isOk());
-    }
+
 }

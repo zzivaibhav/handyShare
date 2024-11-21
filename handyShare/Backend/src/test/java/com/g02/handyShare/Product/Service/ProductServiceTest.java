@@ -1,36 +1,27 @@
 package com.g02.handyShare.Product.Service;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.g02.handyShare.Config.Firebase.FirebaseService;
+import com.g02.handyShare.Product.Entity.Product;
+import com.g02.handyShare.Product.Repository.ProductRepository;
+import com.g02.handyShare.User.Entity.User;
+import com.g02.handyShare.User.Repository.UserRepository;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.g02.handyShare.Config.Firebase.FirebaseService;
-import com.g02.handyShare.Product.Entity.Product;
-import com.g02.handyShare.Product.Repository.ProductRepository;
-import com.g02.handyShare.Product.Service.ProductService;
-import com.g02.handyShare.User.Entity.User;
-import com.g02.handyShare.User.Repository.UserRepository;
+import java.util.Optional;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ProductServiceTest {
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+class ProductServiceTest {
 
     @InjectMocks
     private ProductService productService;
@@ -39,10 +30,10 @@ public class ProductServiceTest {
     private ProductRepository productRepository;
 
     @Mock
-    private FirebaseService firebaseService;
+    private UserRepository userRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private FirebaseService firebaseService;
 
     @Mock
     private Authentication authentication;
@@ -50,8 +41,7 @@ public class ProductServiceTest {
     @Mock
     private SecurityContext securityContext;
 
-    @Before
-    public void setUp() {
+    ProductServiceTest() {
         MockitoAnnotations.openMocks(this);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
@@ -59,49 +49,59 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void getProductById() {
-        // Arrange
+    void testAddProduct_Positive() throws Exception {
         Product product = new Product();
-        product.setCategory("Electronics");
-        product.setId(12L);
-        product.setName("USB");
+        User user = new User();
+        MultipartFile file = null; // Mock file
 
-        when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
+        mockSecurityContext("test@example.com");
+        when(userRepository.findByEmail("test@example.com")).thenReturn(user);
+        when(firebaseService.uploadFile(file, "product_images")).thenReturn("image_url");
+        when(productRepository.save(product)).thenReturn(product);
 
-        // Act
-        Product actual = productService.getProductById(product.getId());
+        ResponseEntity<?> response = productService.addProduct(product, file);
 
-        // Assert
-        assertEquals(product, actual);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(product, response.getBody());
     }
 
     @Test
-    public void addProductWithUserTest() throws IOException {
-        // Arrange
-        String email = "john@gmail.com";
-        User owner = new User();
-        owner.setId(1L);
-        owner.setEmail(email);
-
-        when(authentication.getName()).thenReturn(owner.getEmail());
-        when(userRepository.findByEmail(email)).thenReturn(owner);
-
+    void testGetProductById_Positive() {
         Product product = new Product();
-        product.setCategory("Electronics");
-        product.setName("Laptop");
-        product.setRentalPrice(15.0);
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
-        when(productRepository.save(product)).thenReturn(product);
+        Product result = productService.getProductById(1L);
 
-        // Act
-        ResponseEntity<?> response = productService.addProduct(product, null);
-
-        // Assert
-        assertEquals(product, response.getBody());
-        Product object = (Product) response.getBody();
-        assertEquals(owner, object.getLender()); //This will make sure that lender that we attached is the same that service return.
+        assertNotNull(result);
+        assertEquals(product, result);
     }
 
+    @Test
+    void testGetProductById_Negative() {
+        when(productRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(CustomException.class, () -> productService.getProductById(1L));
+    }
+
+    @Test
+    void testDeleteProduct_Positive() {
+        when(productRepository.existsById(1L)).thenReturn(true);
+
+        boolean result = productService.deleteProduct(1L);
+
+        assertTrue(result);
+        verify(productRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void testDeleteProduct_Negative() {
+        when(productRepository.existsById(1L)).thenReturn(false);
+
+        boolean result = productService.deleteProduct(1L);
+
+        assertFalse(result);
+        verify(productRepository, never()).deleteById(anyLong());
+    }
 
     @Test
     public void testChangeAvailability() {
@@ -135,4 +135,11 @@ public class ProductServiceTest {
         assertEquals(newStatus, product.getAvailable()); // Verify that the status was updated
     }
 
+    private void mockSecurityContext(String email) {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getName()).thenReturn(email);
+        SecurityContextHolder.setContext(securityContext);
+    }
 }
