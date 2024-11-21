@@ -65,7 +65,7 @@ for sf in smell_files:
     issues = requests.get(URL, headers=headers).json()
     create_issue = True
     for issue in issues:
-        if issue.get("title") == title or issue.get("body") == raw_md:
+        if issue["title"] == title or issue["body"] == raw_md:
             print(f"Issue already exists: {issue['html_url']}, {title}. Skipping...")
             create_issue = False
             break
