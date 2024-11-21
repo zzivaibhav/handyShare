@@ -52,10 +52,14 @@ public class ReviewService {
         return reviewRepository.findByUserId(userId);  
     }
 
-    public Review createReview(Long userId, Long productId, String reviewText, int rating, MultipartFile image) throws IOException { 
+    public Review createReview(Long userId, Long productId, String reviewText, int rating, MultipartFile image) throws IOException {
         String imageUrl = null;
         if (image != null && !image.isEmpty()) {
-            imageUrl = firebaseService.uploadFile(image, "/reviews");
+            try {
+                imageUrl = firebaseService.uploadFile(image, "/reviews");
+            } catch (IOException e) {
+                throw new IOException("Failed to upload image", e);
+            }
         }
         Review review = new Review(userId, productId, reviewText, rating, imageUrl);  
         return reviewRepository.save(review); 
