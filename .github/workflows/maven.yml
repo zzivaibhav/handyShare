@@ -3,10 +3,10 @@ name: HandyShare CI/CD
 on:
   push:
     branches:
-      - ci/cd-test
+      - Development
   pull_request:
     branches:
-      - ci/cd-test
+      - Development
   workflow_dispatch:
 
 jobs:
@@ -74,23 +74,7 @@ jobs:
         working-directory: ./handyShare/Backend
         run: mvn package
         
-      name: Run Code Quality Checks and Deploy
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  code-quality:
-    runs-on: ubuntu-latest
-
-    steps:
-      # Step 1: Checkout the repository
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-     - name: Create CSV output directory
+      - name: Create CSV output directory
         run: mkdir -p ./handyShare/code_quality/report  # Adjust the path as needed
         
       - name: Run Java JAR file
@@ -101,23 +85,8 @@ jobs:
         run: |
           pip install -r ./handyShare/code_quality/requirements.txt
        # Step 7: Run the Python script
-
-      - name : show pwd
-        run: pwd
-            # Step 3: (Optional) List files to confirm location
-      - name: List directory contents
-        run: ls -la
       - name: Open Issues
-        run: python ./handyShare/code_quality/issue.py ${{ github.sha }}
-  
-  deploy:
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Deploy (Placeholder)
-        run: echo "Add your deploy steps here"
-
+        run: python ./code_quality/create_issue.py ${{ github.sha }}
   
   deploy:
     runs-on: self-hosted
