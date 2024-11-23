@@ -73,20 +73,21 @@ jobs:
       - name: Package backend
         working-directory: ./handyShare/Backend
         run: mvn package
-
-      - name: Run Designite for code quality analysis
+        
+      - name: Create CSV output directory
+        run: mkdir -p ./handyShare/code_quality/report  # Adjust the path as needed
+        
+      - name: Run Java JAR file
+        run: java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend/ -o ./handyShare/code_quality/report
+          cd handyShare/code_quality -d 
+          
+      - name: Install Python dependencies
         run: |
-          rm -rf ./handyShare/code_quality/report
-          mkdir -p ./handyShare/code_quality/report
-          java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend/ -o ./handyShare/code_quality/report
-          cd handyShare/code_quality
-          python3 issue.py ${{ github.sha }} ${{ secrets.SAMARTH_PAT }}
-
-      - name: Debug Designite output
-        run: |
-          ls -R ./handyShare/code_quality/report
-          find ./handyShare/Backend -name "*.csv"
-
+          pip install -r ./handyShare/code_quality/requirements.txt
+       # Step 7: Run the Python script
+      - name: Open Issues
+        run: python ./code_quality/create_issue.py ${{ github.sha }}
+  
   deploy:
     runs-on: self-hosted
     needs: backend
