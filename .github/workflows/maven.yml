@@ -86,14 +86,14 @@ jobs:
           # Run Designite
           java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend/ -o ./handyShare/code_quality/report
           
-          # Debug: List contents of report directory
-          echo "Contents of report directory:"
-          ls -la ./handyShare/code_quality/report
+          # Install required Python package
+          pip install csv2md requests
           
           # Change to code_quality directory and run Python script
           cd ./handyShare/code_quality
           python3 issue.py "${{ github.sha }}" "${{ secrets.SAMARTH_PAT }}"
-        
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
    
       
 
