@@ -5,7 +5,7 @@ from csv2md import table
 import csv
 import math
 
-def chunk_data(data, max_rows=500):
+def split_into_chunks(data, max_rows=500):
     """Split data into chunks that won't exceed GitHub's size limit."""
     return [data[i:i + max_rows] for i in range(0, len(data), max_rows)]
 
@@ -79,16 +79,18 @@ def main():
             data_rows = all_smells[1:]
             
             # Split data into chunks
-            chunks = chunk_data(data_rows)
-            total_chunks = len(chunks)
+            data_chunks = split_into_chunks(data_rows)
+            total_chunks = len(data_chunks)
+            
+            print(f"File {sf} will be split into {total_chunks} chunks")
             
             # Create issues for each chunk
-            for i, chunk in enumerate(chunks, 1):
+            for i, current_chunk in enumerate(data_chunks, 1):
                 # Create full data with headers
-                chunk_data = [headers_row] + chunk
+                chunk_with_headers = [headers_row] + current_chunk
                 
                 # Generate markdown table
-                raw_md = table.Table(chunk_data).markdown()
+                raw_md = table.Table(chunk_with_headers).markdown()
                 
                 # Create issue title with part number if multiple parts
                 base_title = f"{sf.replace('.csv', '')} for commit - {commit}"
@@ -98,7 +100,7 @@ def main():
                 summary = f"""
 ### Summary
 - Total Records: {len(data_rows)}
-- Current Chunk: {len(chunk)} records
+- Current Chunk: {len(current_chunk)} records
 - Part {i} of {total_chunks}
 
 ---
@@ -114,6 +116,7 @@ def main():
                     
         except Exception as e:
             print(f"Error processing file {sf}: {e}")
+            print(f"Exception details:", str(e))  # More detailed error information
             continue  # Continue with next file instead of exiting
 
 if __name__ == "__main__":
