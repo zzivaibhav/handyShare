@@ -76,19 +76,24 @@ jobs:
         
       - name: Create CSV output directory
         run: mkdir -p ./handyShare/code_quality/report  # Adjust the path as needed
+
+    
+
         
       - name: Run Java JAR file
         run: java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend/ -o ./handyShare/code_quality/report -d
- 
+   
+      - name: Verify report generation
+        run: ls -R ./handyShare/code_quality/report || echo "Directory not found or empty"
         
       - name: Install Python dependencies
         run: |
           pip install -r ./handyShare/code_quality/requirements.txt
        # Step 7: Run the Python script
-    # Step 7: Run the Python script
       - name: Open Issues
-        working-directory: ./handyShare  # Add this line to set the correct working directory
+        working-directory: ./handyShare
         run: python ./code_quality/issue.py ${{ github.sha }}
+
   
   deploy:
     runs-on: self-hosted
