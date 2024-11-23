@@ -5,8 +5,8 @@ from csv2md import table
 import csv
 
 commit = sys.argv[1]
-pat = os.environ.get("PAT")
-path_to_smells = "smells/"
+pat = os.environ.get("SAMARTH_PAT")
+path_to_smells = "/handyShare/code_quality/report/"
 smell_files = [f for f in os.listdir(path_to_smells) if os.path.isfile(
     os.path.join(path_to_smells, f)) and str(f).strip().endswith(".csv")]
 
