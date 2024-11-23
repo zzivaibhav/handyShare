@@ -78,7 +78,7 @@ jobs:
         run: mkdir -p ./handyShare/code_quality/report  # Adjust the path as needed
         
       - name: Run Java JAR file
-        run: java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend/ -o report -d
+        run: java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend/ -o ./handyShare/code_quality/report -d
  
         
       - name: Install Python dependencies
