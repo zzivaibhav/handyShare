@@ -75,16 +75,11 @@ jobs:
         run: mvn package
         
       - name: Create CSV output directory
-        run: mkdir -p ./handyShare/code_quality/report  # Adjust the path as needed
+        run: mkdir -p ./report  # Adjust the path as needed
         
       - name: Run Java JAR file
-        run: java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend/ -o ./handyShare/code_quality/report
-          cd handyShare/code_quality -d 
-
-      - name: List report directory contents
-        run: |
-          ls -la ./handyShare/code_quality/report
-        continue-on-error: true
+        run: java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend/ -o report -d
+ 
         
       - name: Install Python dependencies
         run: |
