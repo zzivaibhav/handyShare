@@ -27,6 +27,6 @@ for sf in smell_files:
         "body": raw_md
     }
     github_output = requests.post(
-        f"https://api.github.com/repos/MootezSaaD/lab-8-code-smells/issues", headers=headers, json=body)
+        f"https://api.github.com/repos/CSCI5308/course-project-g02/issues", headers=headers, json=body)
     if not github_output.status_code == 201:
         raise Exception
