@@ -86,7 +86,7 @@ jobs:
           pip install -r ./handyShare/code_quality/requirements.txt
        # Step 7: Run the Python script
       - name: Open Issues
-        run: python ./code_quality/create_issue.py ${{ github.sha }}
+        run: python ./code_quality/issue.py ${{ github.sha }}
   
   deploy:
     runs-on: self-hosted
