@@ -75,7 +75,7 @@ jobs:
         run: mvn package
         
       - name: Create CSV output directory
-        run: mkdir -p ./report  # Adjust the path as needed
+        run: mkdir -p ./handyShare/code_quality/report  # Adjust the path as needed
         
       - name: Run Java JAR file
         run: java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend/ -o report -d
