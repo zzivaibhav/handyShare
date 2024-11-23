@@ -74,25 +74,28 @@ jobs:
         working-directory: ./handyShare/Backend
         run: mvn package
         
-      - name: Create CSV output directory
-        run: mkdir -p ./handyShare/code_quality/report  # Adjust the path as needed
-
-    
-
-        
-      - name: Run Java JAR file
-        run: java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend/ -o ./handyShare/code_quality/report -d
-   
-      - name: Verify report generation
-        run: ls -R ./handyShare/code_quality/report || echo "Directory not found or empty"
-        
       - name: Install Python dependencies
         run: |
           pip install -r ./handyShare/code_quality/requirements.txt
-       # Step 7: Run the Python script
-      - name: Open Issues
-        working-directory: ./handyShare
-        run: python ./code_quality/issue.py ${{ github.sha }}
+          
+      - name: Run Designite for code quality analysis
+        run: |
+          # Create the report directory
+          mkdir -p ./handyShare/code_quality/report
+          
+          # Run Designite
+          java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend/ -o ./handyShare/code_quality/report
+          
+          # Debug: List contents of report directory
+          echo "Contents of report directory:"
+          ls -la ./handyShare/code_quality/report
+          
+          # Change to code_quality directory and run Python script
+          cd ./handyShare/code_quality
+          python3 issue.py "${{ github.sha }}" "${{ secrets.SAMARTH_PAT }}"
+        
+   
+      
 
   
   deploy:
