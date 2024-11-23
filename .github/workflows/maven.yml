@@ -90,32 +90,28 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Step 2: Create CSV output directory
-      - name: Create CSV Output Directory
-        run: mkdir -p ./handyShare/code_quality/report
-
-      # Step 3: Run the Java JAR file
-      - name: Run Java JAR File
+     - name: Create CSV output directory
+        run: mkdir -p ./handyShare/code_quality/report  # Adjust the path as needed
+        
+      - name: Run Java JAR file
         run: java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend/ -o ./handyShare/code_quality/report
-
-      # Step 4: Show the current directory
-      - name: Show Current Directory
-        run: pwd
-
-      # Step 5: List directory contents
-      - name: List Directory Contents
-        run: ls -la ./handyShare/code_quality/report
-
-      # Step 6: Install Python dependencies
-      - name: Install Python Dependencies
+          cd handyShare/code_quality -d 
+          
+      - name: Install Python dependencies
         run: |
           pip install -r ./handyShare/code_quality/requirements.txt
+       # Step 7: Run the Python script
 
-      # Step 7: Run the Python script to create issues
+      - name : show pwd
+        run: pwd
+            # Step 3: (Optional) List files to confirm location
+      - name: List directory contents
+        run: ls -la
       - name: Open Issues
-        run: python ./handyShare/code_quality/create_issue.py ${{ github.sha }}
-
+        run: python ./handyShare/code_quality/issue.py ${{ github.sha }}
+  
   deploy:
+
     runs-on: ubuntu-latest
 
     steps:
