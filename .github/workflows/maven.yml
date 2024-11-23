@@ -80,7 +80,12 @@ jobs:
       - name: Run Java JAR file
         run: java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend/ -o ./handyShare/code_quality/report
           cd handyShare/code_quality -d 
-          
+
+      - name: List report directory contents
+        run: |
+          ls -la ./handyShare/code_quality/report
+        continue-on-error: true
+        
       - name: Install Python dependencies
         run: |
           pip install -r ./handyShare/code_quality/requirements.txt
