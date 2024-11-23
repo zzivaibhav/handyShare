@@ -85,7 +85,9 @@ jobs:
         run: |
           pip install -r ./handyShare/code_quality/requirements.txt
        # Step 7: Run the Python script
+    # Step 7: Run the Python script
       - name: Open Issues
+        working-directory: ./handyShare  # Add this line to set the correct working directory
         run: python ./code_quality/issue.py ${{ github.sha }}
   
   deploy:
