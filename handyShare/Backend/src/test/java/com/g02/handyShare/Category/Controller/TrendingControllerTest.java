@@ -1,125 +1,93 @@
-// package com.g02.handyShare.Category.Controller;
+package com.g02.handyShare.Category.Controller;
 
-// import com.g02.handyShare.Category.DTO.ProductIDRequest;
-// import com.g02.handyShare.Category.Entity.Trending;
-// import com.g02.handyShare.Category.Service.TrendingService;
-// import com.g02.handyShare.Product.Entity.Product;
-// import com.fasterxml.jackson.databind.ObjectMapper;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.junit.jupiter.api.extension.ExtendWith;
-// import org.mockito.InjectMocks;
-// import org.mockito.Mock;
-// import org.mockito.junit.jupiter.MockitoExtension;
-// import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-// import org.springframework.http.MediaType;
-// import org.springframework.test.web.servlet.MockMvc;
-// import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import com.g02.handyShare.Category.DTO.ProductIDRequest;
+import com.g02.handyShare.Category.Entity.Trending;
+import com.g02.handyShare.Category.Service.TrendingService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-// import static org.mockito.ArgumentMatchers.anyLong;
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-// import static org.mockito.Mockito.*;
+import java.util.ArrayList;
+import java.util.List;
 
-// import java.util.Arrays;
-// import java.util.List;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-// @ExtendWith(MockitoExtension.class)
-// @WebMvcTest(TrendingController.class)  // Test only the controller layer
-// class TrendingControllerTest {
+class TrendingControllerTest {
 
-//     @Mock
-//     private TrendingService trendingService;
+    @Mock
+    private TrendingService service;
 
-//     @InjectMocks
-//     private TrendingController trendingController;
+    @InjectMocks
+    private TrendingController controller;
 
-//     private MockMvc mockMvc;
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
-//     @BeforeEach
-//     void setUp() {
-//         mockMvc = MockMvcBuilders.standaloneSetup(trendingController).build();
-//     }
+    @Test
+    void testGetTrendingByCategory_Positive() {
+        // Arrange
+        String category = "Electronics";
+        List<Trending> mockTrendingList = new ArrayList<>();
+        mockTrendingList.add(new Trending()); // Adding a mock Trending object
+        ResponseEntity<List<Trending>> mockResponse = ResponseEntity.ok(mockTrendingList);
+        doReturn(mockResponse).when(service).fetchTrendingsByCategory(category);
 
-//     @Test
-//     void testGetTrendingByCategory_Success() throws Exception {
-//         // Arrange
-//         String category = "Tools";
-//         Product product1 = new Product(1L, "Hammer", "Description", category, "hammer.jpg", 10.0, null, null, true);
-//         Product product2 = new Product(2L, "Drill", "Description", category, "drill.jpg", 20.0, null, null, true);
-        
-//         Trending trending1 = new Trending(1L, product1);
-//         Trending trending2 = new Trending(2L, product2);
-        
-//         List<Trending> trendingList = Arrays.asList(trending1, trending2);
-        
-//         // Use doReturn to mock the service's behavior
-//         doReturn(trendingList).when(trendingService).fetchTrendingsByCategory("Tools");
+        // Act
+        ResponseEntity<?> response = controller.getTrendingByCategory(category);
 
-//         // Act & Assert
-//         mockMvc.perform(get("/api/v1/user/getTrendingByCategory")
-//                         .param("category", category)
-//                         .contentType(MediaType.APPLICATION_JSON))
-//                 .andExpect(status().isOk())
-//                 .andExpect(jsonPath("$[0].product.id").value(1L))
-//                 .andExpect(jsonPath("$[1].product.id").value(2L))
-//                 .andExpect(jsonPath("$[0].product.name").value("Hammer"))
-//                 .andExpect(jsonPath("$[1].product.name").value("Drill"));
-//     }
+        // Assert
+        assertEquals(mockResponse.getStatusCode(), response.getStatusCode());
+        assertNotNull(response.getBody());
+        verify(service, times(1)).fetchTrendingsByCategory(category);
+    }
 
-//     @Test
-//     void testGetTrendingByCategory_NoResults() throws Exception {
-//         // Arrange
-//         String category = "NonExistentCategory";
-        
-//         // Use doReturn instead of thenReturn
-//         doReturn(java.util.Collections.emptyList()).when(trendingService).fetchTrendingsByCategory(category);
+    @Test
+    void testGetTrendingByCategory_Negative() {
+        // Arrange
+        String category = "InvalidCategory";
+        doThrow(new RuntimeException("No products found")).when(service).fetchTrendingsByCategory(category);
 
-//         // Act & Assert
-//         mockMvc.perform(get("/api/v1/user/getTrendingByCategory")
-//                         .param("category", category)
-//                         .contentType(MediaType.APPLICATION_JSON))
-//             .andExpect(status().isOk())
-//             .andExpect(jsonPath("$").isEmpty());  // Check if the response body is empty
-//     }
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> controller.getTrendingByCategory(category));
+        assertEquals("No products found", exception.getMessage());
+        verify(service, times(1)).fetchTrendingsByCategory(category);
+    }
 
-//     @Test
-//     void testAddToTrending_Success() throws Exception {
-//         // Arrange
-//         Long productId = 1L;
-//         Product product = new Product(1L, "Hammer", "Description", "Tools", "hammer.jpg", 10.0, null, null, true);
-//         Trending expectedTrending = new Trending(1L, product);
+    @Test
+    void testAddToTrending_Positive() {
+        // Arrange
+        ProductIDRequest request = new ProductIDRequest();
+        request.setProduct_id(1L);
+        Trending mockTrending = new Trending(); // Mock Trending object
+        doReturn(mockTrending).when(service).addToTrending(request.getProduct_id());
 
-//         ProductIDRequest request = new ProductIDRequest();
-//         request.setProduct_id(productId);
+        // Act
+        ResponseEntity<?> response = controller.addToTrending(request);
 
-//         when(trendingService.addToTrending(productId)).thenReturn(expectedTrending);
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody() instanceof Trending);
+        verify(service, times(1)).addToTrending(request.getProduct_id());
+    }
 
-//         // Act & Assert
-//         mockMvc.perform(post("/api/v1/all/addToTrending")
-//                         .contentType(MediaType.APPLICATION_JSON)
-//                         .content(new ObjectMapper().writeValueAsString(request)))
-//                 .andExpect(status().isOk())
-//                 .andExpect(jsonPath("$.product.id").value(1L))
-//                 .andExpect(jsonPath("$.product.name").value("Hammer"));
-//     }
+    @Test
+    void testAddToTrending_Negative() {
+        // Arrange
+        ProductIDRequest request = new ProductIDRequest();
+        request.setProduct_id(99L);
+        doThrow(new RuntimeException("Product not found")).when(service).addToTrending(request.getProduct_id());
 
-//     @Test
-//     void testAddToTrending_ProductNotFound() throws Exception {
-//         // Arrange
-//         Long productId = 999L;
-//         ProductIDRequest request = new ProductIDRequest();
-//         request.setProduct_id(productId);
-
-//         when(trendingService.addToTrending(productId)).thenThrow(new RuntimeException("Product not found with id: " + productId));
-
-//         // Act & Assert
-//         mockMvc.perform(post("/api/v1/all/addToTrending")
-//                         .contentType(MediaType.APPLICATION_JSON)
-//                         .content(new ObjectMapper().writeValueAsString(request)))
-//                 .andExpect(status().isInternalServerError())
-//                 .andExpect(jsonPath("$.message").value("Something went wrong while adding the product to the trending table: Product not found with id: " + productId));
-//     }
-// }
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> controller.addToTrending(request));
+        assertEquals("Product not found", exception.getMessage());
+        verify(service, times(1)).addToTrending(request.getProduct_id());
+    }
+}

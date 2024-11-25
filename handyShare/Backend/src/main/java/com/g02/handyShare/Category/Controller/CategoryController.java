@@ -6,6 +6,7 @@ import com.g02.handyShare.Category.Service.CategoryService;
 import com.g02.handyShare.Category.Service.CategoryServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,9 +33,9 @@ public class CategoryController {
         Category category = new Category();
         category.setName((String) categoryData.get("name"));
         category.setDescription((String) categoryData.get("description"));
-
-        
-
+        if (category.getName() == null || category.getName().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
         // Set the isActive status from the incoming data, defaulting to true if not provided
         Boolean isActive = (Boolean) categoryData.getOrDefault("isActive", true);
         category.setIsActive(isActive);
@@ -71,17 +72,23 @@ public class CategoryController {
     @PutMapping("/all/category/{id}")
     public ResponseEntity<Category> updateCategory(@PathVariable(value = "id") Long categoryId,
                                                    @RequestBody Category categoryDetails) {
+        Optional<Category> existingCategory = categoryService.getCategoryById(categoryId);
+        if (!existingCategory.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         Category updatedCategory = categoryService.updateCategory(categoryId, categoryDetails);
         return ResponseEntity.ok(updatedCategory);
     }
 
     @DeleteMapping("/all/category/delete/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable(value = "id") Long categoryId) {
+        Optional<Category> category = categoryService.getCategoryById(categoryId);
+        if (!category.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
+        }
         categoryService.deleteCategory(categoryId);
         return ResponseEntity.ok().build();
     }
-
-  
 
     @RequestMapping(method = RequestMethod.OPTIONS)
     public void handleOptions() {

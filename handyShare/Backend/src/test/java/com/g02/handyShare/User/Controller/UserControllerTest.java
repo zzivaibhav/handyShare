@@ -1,162 +1,175 @@
-//package com.g02.handyShare.User.Controller;
-//import com.g02.handyShare.User.DTO.LenderDetailsDTO;
-//
-//import com.g02.handyShare.User.Controller.UserController;
-//import com.g02.handyShare.User.Service.UserService;
-//import com.g02.handyShare.User.Entity.User;
-//import com.g02.handyShare.User.Repository.UserRepository;
-//import com.g02.handyShare.Config.CustomUserDetailsService;
-//import com.g02.handyShare.Config.Jwt.JwtUtil;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.*;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-//import org.springframework.boot.test.mock.mockito.MockBean;
-//import org.springframework.http.MediaType;
-//import org.springframework.security.authentication.AuthenticationManager;
-//import org.springframework.test.web.servlet.MockMvc;
-//
-//import java.util.List;
-//
-//import static org.mockito.Mockito.*;
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-//
-//@WebMvcTest(UserController.class)
-//public class UserControllerTest {
-//
-//    @Autowired
-//    private MockMvc mockMvc;
-//
-//    @MockBean
-//    private UserService userService;
-//
-//    @MockBean
-//    private CustomUserDetailsService customUserDetailsService;
-//
-//    @MockBean
-//    private UserRepository userRepository;
-//
-//    @MockBean
-//    private JwtUtil jwtUtil;
-//
-//    @MockBean
-//    private AuthenticationManager authenticationManager;
-//
-//    private User mockUser;
-//
-//    @BeforeEach
-//    void setUp() {
-//        mockUser = new User();
-//        mockUser.setId(1L);
-//        mockUser.setEmail("test@example.com");
-//        mockUser.setPassword("password123");
-//        mockUser.setRole("user");
-//        mockUser.setEmailVerified(true);
-//    }
-//
+package com.g02.handyShare.User.Controller;
+
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import com.g02.handyShare.User.Service.UserService;
+import com.g02.handyShare.User.Repository.UserRepository;
+import com.g02.handyShare.Config.Jwt.JwtUtil;
+import com.g02.handyShare.Config.CustomUserDetailsService;
+import com.g02.handyShare.User.Entity.User;
+import com.g02.handyShare.User.DTO.LenderDetailsDTO;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.*;
+
+public class UserControllerTest {
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private JwtUtil jwtUtil;
+
+    @Mock
+    private CustomUserDetailsService customUserDetailsService;
+
+    @Mock
+    private AuthenticationManager authenticationManager;
+
+    @InjectMocks
+    private UserController userController;
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    private User testUser;
+    private LenderDetailsDTO lenderDetailsDTO;
+
+    @BeforeEach
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+        testUser = new User(1L, "John Doe", "john@example.com", "password", "user", true, "token", "address", "12345", "555-5555", "imageData", null, null);
+        lenderDetailsDTO = new LenderDetailsDTO(1L, "John Doe", "john@example.com", "address", "555-5555", "12345", "imageData", null);
+    }
+
+    @Test
+    public void testRegisterUser_Success() {
+        when(userService.registerUser(any(User.class))).thenReturn("User registered successfully. Please check your email for verification.");
+
+        ResponseEntity<String> response = userController.registerUser(testUser);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("User registered successfully. Please check your email for verification.", response.getBody());
+    }
+    @Test
+    public void testRegisterUser_EmailAlreadyRegistered() {
+        when(userService.registerUser(any(User.class))).thenReturn("already registered");
+
+        ResponseEntity<String> response = userController.registerUser(testUser);
+
+        assertEquals(400, response.getStatusCodeValue());
+        assertEquals("already registered", response.getBody());
+    }
+
+    @Test
+    public void testRegisterUser_EmailIsNull() {
+        testUser.setEmail(null);
+
+        ResponseEntity<String> response = userController.registerUser(testUser);
+
+        assertEquals(400, response.getStatusCodeValue());
+        assertEquals("Email is required", response.getBody());
+    }
+
+    @Test
+    public void testGetUsers_Admin() {
+        when(userService.getAllUsers()).thenReturn(List.of(testUser));
+
+        ResponseEntity<List<User>> response = userController.getUsers();
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+    }
+
+    @Test
+    public void testVerifyEmail_Success() {
+        when(userService.verifyUser("valid-token")).thenReturn("Successfully verified email");
+
+        ResponseEntity<String> response = userController.verifyEmail("valid-token");
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Email verified", response.getBody());
+    }
+
+    @Test
+    public void testVerifyEmail_InvalidToken() {
+        when(userService.verifyUser("invalid-token")).thenReturn("Failed verifying the email");
+
+        ResponseEntity<String> response = userController.verifyEmail("invalid-token");
+
+        assertEquals(400, response.getStatusCodeValue());
+        assertEquals("Invalid or expired token.", response.getBody());
+    }
+
 //    @Test
-//    void testRegisterUserSuccess() throws Exception {
-//        when(userService.registerUser(any(User.class))).thenReturn("Registration successful");
+//    public void testLogin_Success() {
+//        // Create a mock Authentication object
+//        Authentication authentication = mock(Authentication.class);
+//        when(authenticationManager.authenticate(any())).thenReturn(authentication);
 //
-//        mockMvc.perform(post("/api/v1/all/register")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("{\"name\": \"John Doe\", \"email\": \"test@example.com\", \"password\": \"password123\"}"))
-//                .andExpect(status().isOk())
-//                .andExpect(content().string("Registration successful"));
+//        // Mock UserDetails and return it when loadUserByUsername is called
+//        UserDetails userDetails = mock(UserDetails.class);
+//        when(customUserDetailsService.loadUserByUsername("yashharjani1@yopmail.com")).thenReturn(userDetails);
+//        when(userDetails.getUsername()).thenReturn("yashharjani1@yopmail.com");
+//
+//        // Generate token mock
+//        when(jwtUtil.generateToken("yashharjani1@yopmail.com")).thenReturn("jwt-token");
+//
+//        // Mock the repository to return a test user
+//        when(userRepository.findByEmail("yashharjani1@yopmail.com")).thenReturn(testUser);
+//
+//        // Call the login method
+//        ResponseEntity<Map<String, String>> response = userController.login(testUser);
+//
+//        // Assert the response
+//        assertEquals(200, response.getStatusCodeValue());
+//        assertTrue(response.getBody().containsKey("token"));
+//        assertTrue(response.getBody().containsKey("role"));
 //    }
-//
-//    @Test
-//    void testRegisterUserEmailRequired() throws Exception {
-//        mockMvc.perform(post("/api/v1/all/register")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("{\"name\": \"John Doe\", \"password\": \"password123\"}"))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(content().string("Email is required"));
-//    }
-//
-//    @Test
-//    void testGetUsersAsAdmin() throws Exception {
-//        when(userService.getAllUsers()).thenReturn(List.of(mockUser));
-//
-//        mockMvc.perform(get("/api/v1/admin/getUser"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$[0].email").value("test@example.com"));
-//    }
-//
-//    @Test
-//    void testLoginSuccess() throws Exception {
-//        when(userRepository.findByEmail(anyString())).thenReturn(mockUser);
-//        when(jwtUtil.generateToken(anyString())).thenReturn("mockJwtToken");
-//
-//        mockMvc.perform(post("/api/v1/all/login")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("{\"email\": \"test@example.com\", \"password\": \"password123\"}"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.token").value("mockJwtToken"))
-//                .andExpect(jsonPath("$.role").value("user"));
-//    }
-//
-//    @Test
-//    void testLoginEmailNotVerified() throws Exception {
-//        mockUser.setEmailVerified(false);
-//        when(userRepository.findByEmail(anyString())).thenReturn(mockUser);
-//        when(jwtUtil.generateToken(anyString())).thenReturn("mockJwtToken");
-//
-//        mockMvc.perform(post("/api/v1/all/login")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("{\"email\": \"test@example.com\", \"password\": \"password123\"}"))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$.error").value("Verify email first"));
-//    }
-//
-//    @Test
-//    void testLoginBadCredentials() throws Exception {
-//        mockMvc.perform(post("/api/v1/all/login")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content("{\"email\": \"wrong@example.com\", \"password\": \"wrongpassword\"}"))
-//                .andExpect(status().isUnauthorized())
-//                .andExpect(jsonPath("$.error").value("Bad credentials!"));
-//    }
-//
-//    @Test
-//    void testVerifyEmailSuccess() throws Exception {
-//        when(userService.verifyUser(anyString())).thenReturn("Successfully verified");
-//
-//        mockMvc.perform(get("/api/v1/all/verifyUser")
-//                        .param("token", "validToken"))
-//                .andExpect(status().isOk())
-//                .andExpect(content().string("Email varified"));
-//    }
-//
-//    @Test
-//    void testVerifyEmailFailure() throws Exception {
-//        when(userService.verifyUser(anyString())).thenReturn("Invalid token");
-//
-//        mockMvc.perform(get("/api/v1/all/verifyUser")
-//                        .param("token", "invalidToken"))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(content().string("Invalid or expired token."));
-//    }
-//
-//    @Test
-//    void testGetLenderDetailsSuccess() throws Exception {
-//        LenderDetailsDTO lenderDetailsDTO = new LenderDetailsDTO();
-//        lenderDetailsDTO.setName("John Doe");
-//        when(userService.getLenderDetails(anyLong())).thenReturn(lenderDetailsDTO);
-//
-//        mockMvc.perform(get("/api/v1/user/lender/{id}", 1L))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.name").value("John Doe"));
-//    }
-//
-//    @Test
-//    void testGetLenderDetailsNotFound() throws Exception {
-//        when(userService.getLenderDetails(anyLong())).thenThrow(new RuntimeException("Not found"));
-//
-//        mockMvc.perform(get("/api/v1/user/lender/{id}", 999L))
-//                .andExpect(status().isNotFound())
-//                .andExpect(content().string("Not found"));
-//    }
-//}
+
+    @Test
+    public void testLogin_BadCredentials() {
+        when(authenticationManager.authenticate(any())).thenThrow(new RuntimeException("Bad credentials"));
+
+        ResponseEntity<Map<String, String>> response = userController.login(testUser);
+
+        assertEquals(401, response.getStatusCodeValue());
+        assertTrue(response.getBody().containsKey("error"));
+        assertEquals("Bad credentials!", response.getBody().get("error"));
+    }
+
+    @Test
+    public void testGetLenderDetails_Success() {
+        when(userService.getLenderDetails(1L)).thenReturn(lenderDetailsDTO);
+
+        ResponseEntity<?> response = userController.getLenderDetails(1L);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody() instanceof LenderDetailsDTO);
+    }
+
+    @Test
+    public void testGetLenderDetails_NotFound() {
+        when(userService.getLenderDetails(1L)).thenThrow(new RuntimeException("Lender not found"));
+
+        ResponseEntity<?> response = userController.getLenderDetails(1L);
+
+        assertEquals(404, response.getStatusCodeValue());
+        assertEquals("Lender not found", response.getBody());
+    }
+
+
+
+}
+

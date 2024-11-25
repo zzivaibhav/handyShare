@@ -1,195 +1,206 @@
-
 package com.g02.handyShare.Product.Controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.g02.handyShare.Product.Entity.Product;
+import com.g02.handyShare.Product.Service.CustomException;
 import com.g02.handyShare.Product.Service.ProductService;
-import com.g02.handyShare.User.Service.UserService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
 import java.util.List;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.util.Map;
 
-@RunWith(SpringRunner.class)
-public class ProductControllerTest {
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doThrow;
 
-    @Mock
-    private ProductService productService;
-
-    @Mock
-    private UserService userService;
+class ProductControllerTest {
 
     @InjectMocks
     private ProductController productController;
 
-    private MockMvc mockMvc;
+    @Mock
+    private ProductService productService;
 
-    @Before
-    public void setUp() {
+    ProductControllerTest() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
     }
 
     @Test
-    @WithMockUser
-    public void testAddProduct() throws Exception {
+    void testAddProducts_Positive() {
         Product product = new Product();
-        product.setId(1L);
-        product.setName("Test Product");
-        product.setCategory("Electronics");
-        product.setRentalPrice(50.0);
+        MultipartFile file = null;
 
-        MultipartFile file = mock(MultipartFile.class);
-        ResponseEntity<Product> responseEntity = new ResponseEntity<>(product, HttpStatus.CREATED);
-        doReturn(responseEntity).when(productService).addProduct(any(Product.class), any(MultipartFile.class));
+        doReturn(ResponseEntity.ok(product)).when(productService).addProduct(any(Product.class), any(MultipartFile.class));
 
-        mockMvc.perform(multipart("/api/v1/user/add")
-                .file("image", "dummy content".getBytes())
-                .param("name", product.getName())
-                .param("category", product.getCategory())
-                .param("rentalPrice", String.valueOf(product.getRentalPrice())))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Test Product"))
-                .andExpect(jsonPath("$.category").value("Electronics"))
-                .andExpect(jsonPath("$.rentalPrice").value(50.0));
+        ResponseEntity<?> response = productController.addProducts(product, file);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }
 
     @Test
-    @WithMockUser
-    public void testViewProductById() throws Exception {
+    void testViewProductById_Positive() {
         Product product = new Product();
         product.setId(1L);
-        product.setName("Test Product");
-        product.setCategory("Electronics");
-        product.setRentalPrice(50.0);
 
         doReturn(product).when(productService).getProductById(1L);
 
-        mockMvc.perform(get("/api/v1/user/product/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Test Product"))
-                .andExpect(jsonPath("$.category").value("Electronics"))
-                .andExpect(jsonPath("$.rentalPrice").value(50.0));
+        ResponseEntity<?> response = productController.viewProductById(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(product, response.getBody());
     }
 
     @Test
-    @WithMockUser
-    public void testDeleteProduct() throws Exception {
+    void testViewProductById_Negative() {
+        doReturn(null).when(productService).getProductById(1L);
+
+        ResponseEntity<?> response = productController.viewProductById(1L);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Product not found", response.getBody());
+    }
+
+    @Test
+    void testDeleteProduct_Positive() {
         doReturn(true).when(productService).deleteProduct(1L);
 
-        mockMvc.perform(delete("/api/v1/user/product/delete/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Product deleted Successfully!"));
+        ResponseEntity<?> response = productController.deleteProduct(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Product deleted Successfully!", response.getBody());
     }
 
     @Test
-    @WithMockUser
-    public void testUpdateProduct() throws Exception {
-        Product updatedProduct = new Product();
-        updatedProduct.setId(1L);
-        updatedProduct.setName("Updated Product");
-        updatedProduct.setCategory("Home Appliances");
-        updatedProduct.setRentalPrice(75.0);
+    void testDeleteProduct_Negative() {
+        doReturn(false).when(productService).deleteProduct(1L);
 
-        MultipartFile file = mock(MultipartFile.class);
-        ResponseEntity<Product> responseEntity = new ResponseEntity<>(updatedProduct, HttpStatus.OK);
-        doReturn(responseEntity).when(productService).updateProduct(eq(1L), any(Product.class), any(MultipartFile.class));
+        ResponseEntity<?> response = productController.deleteProduct(1L);
 
-        mockMvc.perform(multipart("/api/v1/user/product/update/1")
-                .file("image", "dummy content".getBytes())
-                .param("name", updatedProduct.getName())
-                .param("category", updatedProduct.getCategory())
-                .param("rentalPrice", String.valueOf(updatedProduct.getRentalPrice())))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Updated Product"))
-                .andExpect(jsonPath("$.category").value("Home Appliances"))
-                .andExpect(jsonPath("$.rentalPrice").value(75.0));
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Product ID does not exist!", response.getBody());
     }
 
     @Test
-    @WithMockUser
-    public void testChangeAvailability() throws Exception {
-        String requestBody = "{\"status\": true}";
-
-        doReturn(ResponseEntity.ok("Product availability changed successfully")).when(productService).changeAvailability(1L, true);
-
-        mockMvc.perform(put("/api/v1/user/product/changeAvailability/1")
-                .contentType("application/json")
-                .content(requestBody))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Product availability changed successfully"));
-    }
-
-    @Test
-    @WithMockUser
-    public void testGetAllProducts() throws Exception {
+    void testGetAllCategories() {
         Product product1 = new Product();
-        product1.setId(1L);
-        product1.setName("Product 1");
-        product1.setCategory("Electronics");
-        product1.setRentalPrice(50.0);
-
         Product product2 = new Product();
-        product2.setId(2L);
-        product2.setName("Product 2");
-        product2.setCategory("Home Appliances");
-        product2.setRentalPrice(75.0);
+        List<Product> productList = List.of(product1, product2);
 
-        doReturn(List.of(product1, product2)).when(productService).getAllProducts();
+        doReturn(productList).when(productService).getAllProducts();
 
-        mockMvc.perform(get("/api/v1/user/allProducts"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[1].id").value(2L));
+        ResponseEntity<List<Product>> response = productController.getAllProducts();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(productList, response.getBody());
     }
 
     @Test
-    @WithMockUser
-    public void testGetNewlyAddedProductsByCategory() throws Exception {
+    void testGetNewlyAddedProductsByCategory() {
         Product product = new Product();
-        product.setId(1L);
-        product.setName("Newly Added Product");
-        product.setCategory("Electronics");
+        List<Product> productList = List.of(product);
 
-        doReturn(List.of(product)).when(productService).getNewlyAddedProductsByCategory("electronics");
+        doReturn(productList).when(productService).getNewlyAddedProductsByCategory("Electronics");
 
-        mockMvc.perform(get("/api/v1/user/newly-added")
-                .param("category", "electronics"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(1L));
+        ResponseEntity<List<Product>> response = productController.getNewlyAddedProductsByCategory("Electronics");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(productList, response.getBody());
     }
 
     @Test
-    @WithMockUser
-    public void testListProductsForUser() throws Exception {
+    void testListProducts() {
+        Product product = new Product();
+        List<Product> productList = List.of(product);
+
+        doReturn(productList).when(productService).listProductsForUser();
+
+        ResponseEntity<List<Product>> response = productController.listProducts();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(productList, response.getBody());
+    }
+
+    @Test
+    void testUpdateProduct_Positive() {
         Product product = new Product();
         product.setId(1L);
-        product.setName("User Product");
-        product.setCategory("Electronics");
+        product.setName("Updated Product");
 
-        doReturn(List.of(product)).when(productService).listProductsForUser();
+        MultipartFile file = null; // Simulate no file
 
-        mockMvc.perform(get("/api/v1/user/listUserItems"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(1L));
+        doReturn(ResponseEntity.ok(product)).when(productService).updateProduct(eq(1L), any(Product.class), eq(file));
+
+        ResponseEntity<?> response = productController.updateProduct(1L, product, file);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(product, response.getBody());
     }
+
+    @Test
+    void testUpdateProduct_Negative_NotFound() {
+        Product product = new Product();
+        product.setId(1L);
+        product.setName("Updated Product");
+
+        MultipartFile file = null;
+
+        doThrow(new CustomException("Product not found")).when(productService).updateProduct(eq(1L), any(Product.class), eq(file));
+
+        ResponseEntity<?> response = productController.updateProduct(1L, product, file);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Product not found", response.getBody());
+    }
+
+    @Test
+    void testUpdateProduct_Negative_InternalError() {
+        Product product = new Product();
+        product.setId(1L);
+        product.setName("Updated Product");
+
+        MultipartFile file = null;
+
+        doThrow(new RuntimeException("Internal error")).when(productService).updateProduct(eq(1L), any(Product.class), eq(file));
+
+        ResponseEntity<?> response = productController.updateProduct(1L, product, file);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Error while updating the product.", response.getBody());
+    }
+
+    @Test
+    void testChangeAvailability_Positive() {
+        Map<String, Boolean> statusMap = new HashMap<>();
+        statusMap.put("status", true);
+
+        doReturn(ResponseEntity.ok("Availability updated")).when(productService).changeAvailability(eq(1L), eq(true));
+
+        ResponseEntity<?> response = productController.changeAvailability(1L, statusMap);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Availability updated", response.getBody());
+    }
+
+    @Test
+    void testChangeAvailability_Negative() {
+        Map<String, Boolean> statusMap = new HashMap<>();
+        statusMap.put("status", false);
+
+        doReturn(ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error changing availability"))
+                .when(productService).changeAvailability(eq(1L), eq(false));
+
+        ResponseEntity<?> response = productController.changeAvailability(1L, statusMap);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Error changing availability", response.getBody());
+    }
+
 }

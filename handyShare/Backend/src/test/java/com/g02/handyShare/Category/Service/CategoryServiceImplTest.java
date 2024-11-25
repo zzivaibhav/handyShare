@@ -2,22 +2,21 @@ package com.g02.handyShare.Category.Service;
 
 import com.g02.handyShare.Category.Entity.Category;
 import com.g02.handyShare.Category.Repository.CategoryRepository;
-import com.g02.handyShare.Category.DTO.SubCategoryDTO;
-import com.g02.handyShare.Category.Service.CategoryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class CategoryServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+public class CategoryServiceImplTest {
 
     @Mock
     private CategoryRepository categoryRepository;
@@ -25,130 +24,142 @@ class CategoryServiceImplTest {
     @InjectMocks
     private CategoryServiceImpl categoryService;
 
-    private Category parentCategory;
-    private Category subCategory;
-    
+    private Category category;
+
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-
-        // Create a parent category
-        parentCategory = new Category();
-        parentCategory.setCategoryId(1L);
-        parentCategory.setName("Parent Category");
-
-        // Create a subcategory
-        subCategory = new Category();
-        subCategory.setCategoryId(2L);
-        subCategory.setName("Sub Category");
-       // subCategory.setParentCategory(parentCategory);
+    public void setUp() {
+        category = new Category();
+        category.setCategoryId(1L);
+        category.setName("Test Category");
+        category.setDescription("Test Description");
+        category.setIsActive(true);
+        category.setSortOrder(1);
     }
 
     @Test
-    void testCreateCategory() {
+    public void testCreateCategory() {
         // Arrange
-        when(categoryRepository.save(parentCategory)).thenReturn(parentCategory);
+        when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
         // Act
-        Category result = categoryService.createCategory(parentCategory);
+        Category createdCategory = categoryService.createCategory(category);
 
         // Assert
-        assertNotNull(result);
-        assertEquals("Parent Category", result.getName());
-        verify(categoryRepository, times(1)).save(parentCategory);
+        assertNotNull(createdCategory);
+        assertEquals("Test Category", createdCategory.getName());
+        verify(categoryRepository, times(1)).save(any(Category.class));
     }
 
     @Test
-    void testGetCategoryById() {
+    public void testGetCategoryById_Success() {
         // Arrange
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(parentCategory));
-        List<Category> allCategories = List.of(parentCategory, subCategory);
-        when(categoryRepository.findAll()).thenReturn(allCategories);
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
 
         // Act
-        Optional<Category> result = categoryService.getCategoryById(1L);
+        Optional<Category> fetchedCategory = categoryService.getCategoryById(1L);
 
         // Assert
-        assertTrue(result.isPresent());
-        assertEquals("Parent Category", result.get().getName());
-        // assertEquals(1, result.get().getSubCategories().size());  // Should have 1 subcategory
-        // assertEquals("Sub Category", result.get().getSubCategories().get(0).getName());
+        assertTrue(fetchedCategory.isPresent());
+        assertEquals("Test Category", fetchedCategory.get().getName());
+        verify(categoryRepository, times(1)).findById(1L);
     }
 
     @Test
-    void testGetAllCategories() {
+    public void testGetCategoryById_NotFound() {
         // Arrange
-        List<Category> allCategories = List.of(parentCategory, subCategory);
-        when(categoryRepository.findAll()).thenReturn(allCategories);
+        when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act
-        List<Category> result = categoryService.getAllCategories();
+        Optional<Category> fetchedCategory = categoryService.getCategoryById(1L);
 
         // Assert
-        assertEquals(2, result.size());
-        assertEquals("Parent Category", result.get(0).getName());
+        assertFalse(fetchedCategory.isPresent());
+        verify(categoryRepository, times(1)).findById(1L);
     }
 
     @Test
-    void testUpdateCategory() {
+    public void testGetAllCategories() {
+        // Arrange
+        when(categoryRepository.findAll()).thenReturn(List.of(category));
+
+        // Act
+        List<Category> categories = categoryService.getAllCategories();
+
+        // Assert
+        assertNotNull(categories);
+        assertEquals(1, categories.size());
+        verify(categoryRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void testUpdateCategory_Success() {
         // Arrange
         Category updatedCategory = new Category();
         updatedCategory.setName("Updated Category");
         updatedCategory.setDescription("Updated Description");
+        updatedCategory.setIsActive(false);
+        updatedCategory.setSortOrder(2);
 
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(parentCategory));
-        when(categoryRepository.save(parentCategory)).thenReturn(parentCategory);
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+        when(categoryRepository.save(any(Category.class))).thenReturn(updatedCategory);
 
         // Act
         Category result = categoryService.updateCategory(1L, updatedCategory);
 
         // Assert
+        assertNotNull(result);
         assertEquals("Updated Category", result.getName());
         assertEquals("Updated Description", result.getDescription());
+        assertFalse(result.getIsActive());
+        assertEquals(2, result.getSortOrder());
+        verify(categoryRepository, times(1)).findById(1L);
+        verify(categoryRepository, times(1)).save(any(Category.class));
     }
 
     @Test
-    void testDeleteCategory() {
+    public void testUpdateCategory_NotFound() {
         // Arrange
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(parentCategory));
+        Category updatedCategory = new Category();
+        updatedCategory.setName("Updated Category");
+
+        when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            categoryService.updateCategory(1L, updatedCategory);
+        });
+
+        // Assert
+        assertEquals("Category not found", exception.getMessage());
+        verify(categoryRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    public void testDeleteCategory_Success() {
+        // Arrange
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+        doNothing().when(categoryRepository).delete(any(Category.class));
 
         // Act
         categoryService.deleteCategory(1L);
 
         // Assert
-        verify(categoryRepository, times(1)).delete(parentCategory);
+        verify(categoryRepository, times(1)).findById(1L);
+        verify(categoryRepository, times(1)).delete(any(Category.class));
     }
 
-    // @Test
-    // void testGetCategoryTree() {
-    //     // Arrange
-    //     List<Category> allCategories = List.of(parentCategory, subCategory);
-    //     when(categoryRepository.findAll()).thenReturn(allCategories);
-
-    //     // Act
-    //    // List<Category> result = categoryService.getCategoryTree();
-
-    //     // Assert
-    //     assertEquals(1, result.size()); // Only the parent category should be in the tree
-    //     assertEquals("Parent Category", result.get(0).getName());
-    //    // assertEquals(1, result.get(0).getSubCategories().size()); // Should have 1 subcategory
-    // }
-
     @Test
-    void testGetSubCategoryDTOs() throws Exception {
-        // Prepare the data
-        List<Category> allCategories = List.of(parentCategory, subCategory);
+    public void testDeleteCategory_NotFound() {
+        // Arrange
+        when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // Get the private method using reflection
-        Method method = CategoryServiceImpl.class.getDeclaredMethod("getSubCategoryDTOs", Long.class, List.class);
-        method.setAccessible(true);
+        // Act
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            categoryService.deleteCategory(1L);
+        });
 
-        // Invoke the method
-        List<SubCategoryDTO> result = (List<SubCategoryDTO>) method.invoke(categoryService, 1L, allCategories);
-
-        // Assert the result
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("Sub Category", result.get(0).getName());
+        // Assert
+        assertEquals("Category not found", exception.getMessage());
+        verify(categoryRepository, times(1)).findById(1L);
     }
 }
