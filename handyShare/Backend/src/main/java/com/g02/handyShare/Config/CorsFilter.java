@@ -17,6 +17,7 @@ public class CorsFilter extends OncePerRequestFilter {
     @Autowired
     Constants constant;
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         response.setHeader("Access-Control-Allow-Origin", "http://172.17.0.99:3000" );

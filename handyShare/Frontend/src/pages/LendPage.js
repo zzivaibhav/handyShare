@@ -1,97 +1,91 @@
 import React, { useState, useEffect } from 'react';
-import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
-import LendFormPage from '../components/LendingPage/LendFormPage.js'; 
-import { Layout, Menu, Table } from 'antd';
+import { Layout, Menu, Card, Button, Modal, message, Row, Col, Switch } from 'antd';
 import axios from 'axios';
-import { message } from 'antd';
+import { SERVER_URL } from '../constants.js';
+ import { Link } from 'react-router-dom';
+import LendFormPage from '../components/LendingPage/LendFormPage';
+import LentProductsList from '../components/LendingPage/LentProductsList';
+import  AnimatedHeader   from '../components/Header.js';
 
-const { Header, Content, Sider } = Layout;
+const { Content, Sider } = Layout;
 
-const LendPage = ({ onProductAdded }) => {
+const LendPage = () => {
   const [view, setView] = useState('lendings');
   const [loading, setLoading] = useState(true);
-  const [lentItems, setLentItems] = useState([]); // Define lentItems here
+  const [lentItems, setLentItems] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
-    const fetchLentItems = async () => {
-      try {
-        const response = await axios.get('http://172.17.0.99:8080/api/v1/all/lending/items');
-        setLentItems(response.data); // Add the fetched data
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching lent items:', error);
-        message.error('Failed to load lent items');
-        setLoading(false);
-      }
-    };
-
-    fetchLentItems();
+    // Fetch lent items when component mounts
+    fetchLentItemsRefresh();
   }, []);
 
-  // Handle item creation
-  const handleProductAdded = () => {
-    message.success('New product added successfully!');
-    onProductAdded(); // Notify the parent to refresh the product list
+  const fetchLentItemsRefresh = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${SERVER_URL}/api/v1/user/lendedProducts`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true
+      });
+      setLentItems(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching lent items:', error);
+      message.error('Failed to refresh lent items');
+      setLoading(false);
+    }
   };
 
-  // Columns for the table listing the items
-  const columns = [
-    {
-      title: 'Item Name',
-      dataIndex: 'name',
-      key: 'name',
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
-    },
-    {
-      title: 'Price (per hour)',
-      dataIndex: 'price',
-      key: 'price',
-    },
-    {
-      title: 'Availability',
-      dataIndex: 'availability',
-      key: 'availability',
-    },
-  ];
-
-  // Handle navigation click to switch between views
-  const handleMenuClick = (e) => {
-    setView(e.key);
+  const handleUpdate = () => {
+    fetchLentItemsRefresh();
+    setIsModalVisible(false);
   };
 
   return (
-    <div>
-      <HeaderBar />
+    <Layout>
+      <AnimatedHeader/>
       <Layout>
-        <Sider width={200}>
-          <Menu
-            mode="inline"
-            defaultSelectedKeys={['lendings']}
-            style={{ height: '100%', borderRight: 0 }}
-            onClick={handleMenuClick}
-          >
-            <Menu.Item key="lendings">Lendings</Menu.Item>
-            <Menu.Item key="newLending">New Lending</Menu.Item>
+        <Sider>
+          <Menu selectedKeys={[view]} onClick={(e) => setView(e.key)}>
+            <Menu.Item key="lendings">Rented Products</Menu.Item>
+            <Menu.Item key="add">Add New Product</Menu.Item>
           </Menu>
         </Sider>
-        <Layout style={{ padding: '20px' }}>
-          <Content style={{ padding: '20px', background: '#fff' }}>
-            {view === 'lendings' ? (
-              <>
-                <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom:'10px' }}>Your Lent Items</h1>
-                <Table columns={columns} dataSource={lentItems} loading={loading} />
-              </>
-            ) : (
-              <LendFormPage onProductAdded={handleProductAdded} />
+        <Layout style={{ padding: '0 24px 24px' }}>
+          <Content
+            className="site-layout-background"
+            style={{
+              padding: 24,
+              margin: 0,
+              minHeight: 280,
+            }}
+          >
+            {view === 'lendings' && (
+              <LentProductsList 
+                lentItems={lentItems} 
+                onRefresh={fetchLentItemsRefresh}
+              />
+            )}
+            {view === 'add' && (
+              <LendFormPage onSuccess={() => {
+                setView('lendings');
+                fetchLentItemsRefresh();
+              }} />
             )}
           </Content>
         </Layout>
       </Layout>
-    </div>
+
+      {/* Edit Modal for Updates */}
+      <Modal
+        title="Update Lent Item"
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+      >
+        {/* Your form for editing the lent product */}
+      </Modal>
+    </Layout>
   );
 };
 

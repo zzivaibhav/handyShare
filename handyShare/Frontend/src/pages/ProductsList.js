@@ -1,49 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import HeaderBar from '../components/ProfileUpdatePage/ProfileHeaderBar.js';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { message } from 'antd';
 
 const ProductsList = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [filters, setFilters] = useState({ priceRange: '', availability: '', category: '' });
   const [sortOption, setSortOption] = useState('newest');
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 6; 
+  const productsPerPage = 6;
 
   useEffect(() => {
     // Fetch products and categories data from API
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('token')
-        const productsResponse = await axios.get('http://172.17.0.99:8080/api/v1/user/allProducts',{
-        
-          headers: {
-                     
-            Authorization: `Bearer ${token}`
-        },
-        withCredentials: true
-
-        }
-      );  
-        const categoriesResponse = await axios.get('http://172.17.0.99:8080/api/v1/user/allCategories',{
-        
-            headers: {
-                       
-              Authorization: `Bearer ${token}`
-          },
-          withCredentials: true
-
-          }
-        );
-        console.log(productsResponse.data);
+        const token = localStorage.getItem('token');
+        const productsResponse = await axios.get('http://172.17.0.99:8080/api/v1/user/allProducts', {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        });
+        const categoriesResponse = await axios.get('http://172.17.0.99:8080/api/v1/user/allCategories', {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        });
         setProducts(productsResponse.data);
-        setCategories(categoriesResponse.data.map(cat => cat.name)); 
+        setCategories(categoriesResponse.data.map(cat => cat.name));
       } catch (error) {
         console.error('Error fetching products or categories:', error);
+        message.error('Failed to load products or categories.');
       }
     };
     fetchData();
@@ -52,7 +42,7 @@ const ProductsList = () => {
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters({ ...filters, [name]: value });
-    setCurrentPage(1); // Reset to first page when filters change
+    setCurrentPage(1);
   };
 
   const handleSortChange = (e) => {
@@ -61,10 +51,10 @@ const ProductsList = () => {
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-    setCurrentPage(1); // Reset to first page when search query changes
+    setCurrentPage(1);
   };
 
-  const sortedProducts = products.sort((a, b) => {
+  const sortedProducts = [...products].sort((a, b) => {
     if (sortOption === 'newest') {
       return b.id - a.id;
     } else if (sortOption === 'highest') {
@@ -76,8 +66,8 @@ const ProductsList = () => {
 
   const filteredProducts = sortedProducts.filter(product => {
     return (
-      (!filters.priceRange || product.rentalPrice <= filters.priceRange) &&
-      (!filters.availability || product.availability >= filters.availability) &&
+      (!filters.priceRange || product.rentalPrice <= parseFloat(filters.priceRange)) &&
+      (!filters.availability || product.available === (filters.availability === 'true')) &&
       (!filters.category || product.category === filters.category) &&
       (product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
        product.category.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -103,7 +93,7 @@ const ProductsList = () => {
     setFilters({ priceRange: '', availability: '', category: '' });
     setSortOption('newest');
     setSearchQuery('');
-    setCurrentPage(1); // Reset to first page
+    setCurrentPage(1);
   };
 
   return (
@@ -111,6 +101,14 @@ const ProductsList = () => {
       <HeaderBar />
       <div className="max-w-7xl mx-auto p-6">
         <h2 className="text-2xl font-semibold text-center mb-5">Items</h2>
+
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+        >
+          Back
+        </button>
 
         <div className="flex">
           {/* Sidebar for Filters and Sorting */}
@@ -143,16 +141,18 @@ const ProductsList = () => {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="availability" className="block text-md font-medium">Min Availability (hours)</label>
-              <input
-                type="number"
+              <label htmlFor="availability" className="block text-md font-medium">Availability</label>
+              <select
                 name="availability"
                 id="availability"
                 className="w-full mt-1 p-2 border rounded-md"
-                placeholder="Min Hours"
                 value={filters.availability}
                 onChange={handleFilterChange}
-              />
+              >
+                <option value="">Any</option>
+                <option value="true">Available</option>
+                <option value="false">Unavailable</option>
+              </select>
             </div>
 
             <div className="mb-4">
@@ -198,9 +198,15 @@ const ProductsList = () => {
 
           {/* Product Grid */}
           <div className="w-3/4 grid grid-cols-3 gap-6 ml-6">
-            {currentProducts.map((product) => (
-              <Link to={`/product/${product.id}`} key={product.id}>  
-                <div className="bg-white shadow-md rounded-lg p-4">
+            {currentProducts.map((product) => (  
+                <div 
+                  key={product.id}
+                  onClick={() => {
+                    localStorage.setItem('productId', product.id);
+                    navigate(`/product/${product.id}`);
+                  }}
+                  className="bg-white shadow-md rounded-lg p-4"
+                >
                   {product.productImage ? (
                     <img
                       src={product.productImage} 
@@ -217,7 +223,6 @@ const ProductsList = () => {
                   <p className="mt-2 text-lg font-medium">Hourly Price: ${product.rentalPrice}</p>
                   <p className="mt-1 text-gray-500">Available for {product.availability} hours</p>
                 </div>
-              </Link>
             ))}
           </div>
         </div>

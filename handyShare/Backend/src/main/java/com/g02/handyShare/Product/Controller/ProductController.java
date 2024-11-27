@@ -2,9 +2,15 @@ package com.g02.handyShare.Product.Controller;
 
 import com.g02.handyShare.Category.Entity.Category;
 import com.g02.handyShare.Config.Firebase.FirebaseService;
+ 
 import com.g02.handyShare.Product.Entity.Product;
 import com.g02.handyShare.Product.Repository.ProductRepository;
+import com.g02.handyShare.Product.Service.CustomException;
 import com.g02.handyShare.Product.Service.ProductService;
+import com.g02.handyShare.User.Entity.User;
+import com.g02.handyShare.User.Repository.UserRepository;
+import com.g02.handyShare.User.Service.UserService;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,11 +27,14 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1")
 
-@CrossOrigin(origins = "http://172.17.0.99:3000", allowCredentials = "true" )
+//@CrossOrigin(origins = "http://172.17.0.99:3000", allowCredentials = "true" )
 
 public class ProductController {
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private UserService  userService;
 
      @Autowired
     private ProductRepository productRepository;
@@ -53,14 +62,27 @@ public class ProductController {
 
 
 
-    @GetMapping("user/product/{id}")
-    public Product viewProductById(@PathVariable Long id){
-        return productService.getProductById(id);
+    @GetMapping("/user/product/{id}")
+    public ResponseEntity<?> viewProductById(@PathVariable Long id){
+
+        Product product = productService.getProductById(id);
+       if(product == null ){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+       }
+
+    
+       
+    //   User lender = userService.findUserById(id)
+
+        return ResponseEntity.ok(product);
+
+       // return productService.getProductById(id);
     }
 
     @GetMapping("/user/allProducts")
-    public List<Product> getAllCategories() {
-        return productService.getAllProducts();
+    public ResponseEntity<List<Product>> getAllProducts() {
+        List<Product> products = productService.getAllProducts();
+        return ResponseEntity.ok(products);
     }
 
     @DeleteMapping("/user/product/delete/{id}")
@@ -81,9 +103,41 @@ public class ProductController {
         return ResponseEntity.ok().body(products);
     }
 
-    //    @PutMapping("/update/{id}")
-//    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product){
-//        Product updatedProduct=productService.updateProduct(id, product);
-//        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
-//    }
+    @GetMapping("/user/listUserItems")
+    public ResponseEntity<List<Product>> listProducts(){
+      List<Product> response =   productService.listProductsForUser();
+        return ResponseEntity.ok(response);
+    }
+    
+    @PutMapping("/user/product/update/{id}")
+    public ResponseEntity<?> updateProduct(
+            @PathVariable Long id,
+            @ModelAttribute Product updatedProduct,
+            @RequestParam(value = "image", required = false) MultipartFile file) {
+        try {
+            ResponseEntity<?> response = productService.updateProduct(id, updatedProduct, file);
+            return ResponseEntity.ok(response.getBody());
+        } catch (CustomException ce) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ce.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error while updating the product.");
+        }
+    }
+
+    // @PatchMapping("/user/product/changeAvailibility/{id}")
+    // public ResponseEntity<?> changeAvailibility(@RequestParam Long id , @RequestBody Boolean status) {
+    //     if ((productService.changeAvailibility(id, status)).getBody().equals("success")) {
+    //         return ResponseEntity.ok("Chaged");
+    //     }
+    //     return  ResponseEntity.ok("cannot change");
+    // }
+
+    @PutMapping("/user/product/changeAvailability/{id}")
+    public ResponseEntity<?> changeAvailability(@PathVariable Long id, @RequestBody Map<String, Boolean> statusMap) {
+        Boolean status = statusMap.get("status");
+        return productService.changeAvailability(id, status);
+    }
+    
+
 }

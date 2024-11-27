@@ -32,7 +32,7 @@ export function ProductHeader() {
       />
 
       <Space>
-        <Link to="/lend">
+        <Link to="/lendings">
           <Button>Lendings</Button>
         </Link>
         <Button>Borrowings</Button>

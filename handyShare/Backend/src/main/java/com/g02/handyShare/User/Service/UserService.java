@@ -1,13 +1,18 @@
 package com.g02.handyShare.User.Service;
 
+import com.g02.handyShare.Constants;
 import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
+import com.g02.handyShare.Product.Entity.Product;
+import com.g02.handyShare.Product.Service.ProductService;
+import com.g02.handyShare.User.DTO.LenderDetailsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,6 +26,12 @@ public class UserService {
 
     @Autowired
     private EmailService emailService; // Injecting EmailService
+
+    @Autowired
+    private Constants constants;
+
+    @Autowired
+    private ProductService productService;
 
     public String registerUser(User user) {
         // Check if email already exists
@@ -38,7 +49,7 @@ public class UserService {
         user.setVerificationToken(token); // Set the token in user entity
 
         // Create verification link
-        String verificationLink = "http://172.17.0.99:8080/api/v1/all/verifyUser?token=" + token;
+        String verificationLink = constants.SERVER_URL+"/api/v1/all/verifyUser?token=" + token;
 
         // Send the email to the user to verify
         String response = emailService.sendEmail(user.getEmail(), "Verify your email", verificationLink);
@@ -70,5 +81,29 @@ public class UserService {
         return "Successfully verified email";
        }
       return "Failed verifying the email";
+    }
+
+    public Optional<User> findUserById(Long UserId){
+   
+          
+           Optional<User> owner = userRepository.findById(UserId);
+return  owner;
+    }
+
+    public LenderDetailsDTO getLenderDetails(Long lenderId) {
+        User lender = userRepository.findById(lenderId)
+                .orElseThrow(() -> new RuntimeException("Lender not found with id: " + lenderId));
+        List<Product> products = productService.getProductsByLenderEmail(lender.getEmail());
+
+        return new LenderDetailsDTO(
+                lender.getId(),
+                lender.getName(),
+                lender.getEmail(),
+                lender.getAddress(),
+                lender.getPhone(),
+                lender.getPincode(),
+                lender.getImageData(),
+                products
+        );
     }
 }

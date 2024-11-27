@@ -1,9 +1,33 @@
 import React from 'react';
-import { Input, Button, Space, Layout } from 'antd';
+import { Layout, Input, Button, Space, Menu, Dropdown, message } from 'antd';
 import { SearchOutlined, UserOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 
 const { Header } = Layout;
+
 const HeaderBar = () => {
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('productId');
+    localStorage.removeItem('userId');
+    message.success('Successfully signed out');
+    navigate('/login');
+  };
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="profile" onClick={() => navigate('/profile')}>
+        Profile
+      </Menu.Item>
+      <Menu.Item key="signout" onClick={handleSignOut}>
+        Sign Out
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <Header
       style={{
@@ -11,14 +35,19 @@ const HeaderBar = () => {
         alignItems: 'center',
         justifyContent: 'space-between',
         backgroundColor: '#3B7BF8',
-      
-        height: '100%', 
-        flex:1,
-       
+        height: '100%',
+        flex: 1,
       }}
     >
-     
-      <div style={{ display: 'flex', alignItems: 'center' , justifyContent:'space-between'}}>
+      <div 
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          cursor: 'pointer'
+        }}
+        onClick={() => navigate('/homepage')}
+      >
         <img
           src="/Assets/Logo.png"
           alt="App logo"
@@ -26,25 +55,22 @@ const HeaderBar = () => {
         />
       </div>
 
-      {/* Search Bar */}
       <Input
         placeholder="Search items"
         prefix={<SearchOutlined />}
         style={{ width: '400px' }}
       />
 
-      {/* Right side buttons */}
       <Space>
-        <Button
-        href='/lend'
-        >Lendings</Button>
-        <Button>Borrowings</Button>
-        <Button
-          href='/profile'
-          type="primary"
-          shape="circle"
-          icon={<UserOutlined />}
-        />
+        <Button onClick={() => navigate('/lendings')}>Lendings</Button>
+        <Button onClick={() => navigate('/borrow')}>Borrowings</Button>
+        <Dropdown overlay={menu} trigger={['click']}>
+          <Button
+            type="primary"
+            shape="circle"
+            icon={<UserOutlined />}
+          />
+        </Dropdown>
       </Space>
     </Header>
   );
