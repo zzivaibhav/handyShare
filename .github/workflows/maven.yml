@@ -49,6 +49,11 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
@@ -73,6 +78,7 @@ jobs:
       - name: Package backend
         working-directory: ./handyShare/Backend
         run: mvn package
+
         
       - name: Install Python dependencies
         run: |
@@ -94,9 +100,6 @@ jobs:
           python3 issue.py "${{ github.sha }}" "${{ secrets.SAMARTH_PAT }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-   
-      
-
   
   deploy:
     runs-on: self-hosted
