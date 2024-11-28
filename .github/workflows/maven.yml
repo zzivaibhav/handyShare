@@ -3,10 +3,10 @@ name: HandyShare CI/CD
 on:
   push:
     branches:
-      - Development
+      - main
   pull_request:
     branches:
-      - Development
+      - main
   workflow_dispatch:
 
 jobs:
