@@ -1,5 +1,6 @@
 package com.g02.handyShare.User;
 
+import com.g02.handyShare.TestConstants;
 import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
 import com.g02.handyShare.User.Service.UserService;
@@ -36,7 +37,7 @@ public class UserIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        baseUrl = "http://localhost:" + port + "/api/v1";
+        baseUrl = String.format(TestConstants.BASE_URL, port);
     }
 
     @Test
