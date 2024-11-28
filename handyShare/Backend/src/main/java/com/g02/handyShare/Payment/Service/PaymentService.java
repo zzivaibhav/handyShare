@@ -29,7 +29,7 @@ public class PaymentService {
     try {
       SessionCreateParams params = SessionCreateParams.builder()
           .setMode(SessionCreateParams.Mode.PAYMENT)
-          .setSuccessUrl("http://172.17.0.99:3000/feedback")
+          .setSuccessUrl("http://172.17.0.99:3000/borrow")
           // .setCancelUrl("http://172.17.0.99:3000/cancel") //In case want to add a cancel
           // endpoint
           .addLineItem(SessionCreateParams.LineItem.builder()
