@@ -5,8 +5,8 @@ import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import { FaSearch, FaCheck, FaUpload } from 'react-icons/fa'
 import AnimatedHeader from '../components/Header'
-import { useParams, useNavigate, Navigate } from 'react-router-dom';
 
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 
 dayjs.extend(duration)
 
@@ -90,7 +90,7 @@ function BorrowingPage() {
   const [selectedFile, setSelectedFile] = useState(null)
   const [returnedItems, setReturnedItems] = useState(new Set())
   const [selectedBorrowId, setSelectedBorrowId] = useState(null)
-
+const navigate = useNavigate();
   const itemsPerPage = 3
 
   useEffect(() => {
@@ -195,9 +195,9 @@ function BorrowingPage() {
 
       setReturnedItems((prev) => new Set(prev).add(selectedBorrowId))
       alert("Product returned successfully!")
-
-    navigate('/feedback')
-      
+ 
+navigate('/feedback')
+ 
     } catch (error) {
       alert("Failed to return product")
       console.error(error)
