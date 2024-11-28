@@ -115,7 +115,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # Build and push frontend Docker image
+     # Build and push frontend Docker image
       - name: Build and push frontend Docker image
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -148,3 +148,4 @@ jobs:
           docker stop handyshare-app-backend || true
           docker rm handyshare-app-backend || true
           docker run -d --name handyshare-app-backend -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/handyshare-app-backend:${{ github.sha }}
+
