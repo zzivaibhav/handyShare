@@ -90,7 +90,7 @@ function BorrowingPage() {
   const [selectedFile, setSelectedFile] = useState(null)
   const [returnedItems, setReturnedItems] = useState(new Set())
   const [selectedBorrowId, setSelectedBorrowId] = useState(null)
-const navigate = useNavigate();
+ 
   const itemsPerPage = 3
 
   useEffect(() => {
