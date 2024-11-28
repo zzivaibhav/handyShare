@@ -26,6 +26,7 @@ const RentSummaryPage = () => {
 
     try {
         // Make an API call to your backend to create the checkout session
+
         const response = await fetch('http://172.17.0.99:8080/api/v1/all/payment/checkout-session', {
             method: 'POST',
             headers: {
@@ -98,7 +99,7 @@ const RentSummaryPage = () => {
                 <p className="text-md mb-2"><strong>Rental Date:</strong> {rentalDate.toLocaleDateString()}</p>
               )}
               <p className="text-lg font-bold mb-4 text-blue-600">
-                <strong>Total Price:</strong> ${totalPrice.toFixed(2)}
+                <strong>Total Price:</strong> ${totalPrice.toFixed(2)} + 2% Platform Fees
               </p>
 
               {/* Confirm Button with Tooltip */}
