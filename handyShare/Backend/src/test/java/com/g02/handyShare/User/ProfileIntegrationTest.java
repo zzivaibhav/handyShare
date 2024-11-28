@@ -1,5 +1,6 @@
 package com.g02.handyShare.User;
 
+import com.g02.handyShare.CommonTestMethods;
 import com.g02.handyShare.TestConstants;
 import com.g02.handyShare.User.Entity.User;
 import com.g02.handyShare.User.Repository.UserRepository;
@@ -35,38 +36,15 @@ public class ProfileIntegrationTest {
 
     private String baseUrl;
     private String token;
+    private User testUser;
 
     @BeforeEach
     void setUp() {
         baseUrl = String.format(TestConstants.BASE_URL, port);
-        registerAndLogin();
-    }
-
-    private void registerAndLogin() {
-        // Register a new user
-        User registerRequest = new User();
-        registerRequest.setName("Test User");
-        registerRequest.setEmail("testuser@example.com");
-        registerRequest.setPassword("password123");
-
-        restTemplate.postForEntity(baseUrl + "/all/register", registerRequest, String.class);
-
-        // Simulate email verification
-        User savedUser = userRepository.findByEmail("testuser@example.com");
-        savedUser.set_email_verified(true);
-        userRepository.save(savedUser);
-
-        // Login to get the JWT token
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        User loginRequest = new User();
-        loginRequest.setEmail("testuser@example.com");
-        loginRequest.setPassword("password123");
-        ResponseEntity<Map> loginResponse = restTemplate.postForEntity(baseUrl + "/all/login", loginRequest, Map.class);
-
-        token = (String) loginResponse.getBody().get("token");
-        System.out.println("Token fetched is: "+token);
+        Map<String, Object> result = CommonTestMethods.registerAndLogin(restTemplate, userRepository, baseUrl);
+        token = (String) result.get("token");
+        testUser = (User) result.get("user");
+        System.out.println("Token fetched is: " + token);
     }
 
     @Test
@@ -83,8 +61,8 @@ public class ProfileIntegrationTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         User user = response.getBody();
         assertNotNull(user);
-        assertEquals("Test User", user.getName());
-        assertEquals("testuser@example.com", user.getEmail());
+        assertEquals(testUser.getName(), user.getName());
+        assertEquals(testUser.getEmail(), user.getEmail());
     }
 
     @Test
@@ -106,12 +84,12 @@ public class ProfileIntegrationTest {
         HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(body, headers);
 
         // Send PUT request
-        ResponseEntity<String> response = restTemplate.exchange(baseUrl + "/user/update-profile", HttpMethod.PUT,httpEntity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(baseUrl + "/user/update-profile", HttpMethod.PUT, httpEntity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody().contains("Profile updated successfully"));
 
         // Verify update in the database
-        User updatedUser = userRepository.findByEmail("testuser@example.com");
+        User updatedUser = userRepository.findByEmail(testUser.getEmail());
         assertEquals("Updated User", updatedUser.getName());
         assertEquals("123 Updated Street", updatedUser.getAddress());
     }
@@ -127,8 +105,7 @@ public class ProfileIntegrationTest {
     }
 
     @AfterEach
-    public void tearDown(){
-        userRepository.deleteAll();
+    public void tearDown() {
+        userRepository.delete(testUser);
     }
-
 }
