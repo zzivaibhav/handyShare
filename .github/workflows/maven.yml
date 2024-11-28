@@ -49,6 +49,11 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
@@ -74,19 +79,28 @@ jobs:
         working-directory: ./handyShare/Backend
         run: mvn package
 
+        
+      - name: Install Python dependencies
+        run: |
+          pip install -r ./handyShare/code_quality/requirements.txt
+          
       - name: Run Designite for code quality analysis
         run: |
-          rm -rf ./handyShare/code_quality/report
+          # Create the report directory
           mkdir -p ./handyShare/code_quality/report
+          
+          # Run Designite
           java -jar ./handyShare/code_quality/DesigniteJava.jar -i ./handyShare/Backend/ -o ./handyShare/code_quality/report
-          cd handyShare/code_quality
-          python3 issue.py ${{ github.sha }} ${{ secrets.SAMARTH_PAT }}
-
-      - name: Debug Designite output
-        run: |
-          ls -R ./handyShare/code_quality/report
-          find ./handyShare/Backend -name "*.csv"
-
+          
+          # Install required Python package
+          pip install csv2md requests
+          
+          # Change to code_quality directory and run Python script
+          cd ./handyShare/code_quality
+          python3 issue.py "${{ github.sha }}" "${{ secrets.SAMARTH_PAT }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
   deploy:
     runs-on: self-hosted
     needs: backend
