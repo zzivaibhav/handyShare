@@ -91,7 +91,8 @@ public class ProductController {
         if (isDeleted){
             return ResponseEntity.ok("Product deleted Successfully!");
         } else {
-            return ResponseEntity.status(404).body("Product ID does not exist!");
+            int status = 404;
+            return ResponseEntity.status(status).body("Product ID does not exist!");
         }
     }
 
