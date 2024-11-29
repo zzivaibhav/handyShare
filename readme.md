@@ -1,5 +1,7 @@
-# HandyShare!
-[Original Logo with White Background](https://github.com/user-attachments/assets/1eed6e1a-b49b-46b0-834f-d2f7865fdb80)
+
+![Original Logo with White Background](https://github.com/user-attachments/assets/42b96776-d66a-4373-b87b-457c4e7ac1be)
+
+# HandyShare
 
 
 HandyShare is a comprehensive web application designed to facilitate the sharing and renting of household items. Built with a robust backend using Spring Boot MVC and a dynamic frontend with React.js, HandyShare ensures a seamless user experience for both item owners and renters.
