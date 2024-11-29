@@ -49,11 +49,12 @@ public class JwtUtil {
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
+        long expiry_duration = 1000 * 60 * 60;
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour expiration time
+                .setExpiration(new Date(System.currentTimeMillis() + expiry_duration)) // 1 hour expiration time
                 .setHeaderParam("typ", "JWT")
 
                 .signWith(SignatureAlgorithm.HS256,getSigningKey() )

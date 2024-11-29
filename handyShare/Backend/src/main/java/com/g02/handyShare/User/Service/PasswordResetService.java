@@ -31,7 +31,8 @@ public class PasswordResetService {
 
         String token = UUID.randomUUID().toString();
         user.setResetToken(token);
-        user.setResetTokenExpiry(new Date(System.currentTimeMillis() + 3600000)); // 1 hour expiry
+        long token_expiry_duration = 60 * 60 * 1000;
+        user.setResetTokenExpiry(new Date(System.currentTimeMillis() + token_expiry_duration)); // 1 hour expiry
         userRepository.save(user);
 
         String resetLink = constants.FRONT_END_HOST + "/change-password?token=" + token;
