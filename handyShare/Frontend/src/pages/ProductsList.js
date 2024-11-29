@@ -198,31 +198,30 @@ const ProductsList = () => {
 
           {/* Product Grid */}
           <div className="w-3/4 grid grid-cols-3 gap-6 ml-6">
-            {currentProducts.map((product) => (  
-                <div 
-                  key={product.id}
-                  onClick={() => {
-                    localStorage.setItem('productId', product.id);
-                    navigate(`/product/${product.id}`);
-                  }}
-                  className="bg-white shadow-md rounded-lg p-4"
-                >
-                  {product.productImage ? (
-                    <img
-                      src={product.productImage} 
-                      alt={product.name}
-                      className="w-full h-48 object-cover rounded-md mb-4"
-                    />
-                  ) : (
-                    <div className="w-full h-48 bg-gray-300 rounded-md mb-4 flex items-center justify-center">
-                      <span>No Image Available</span>
-                    </div>
-                  )}
-                  <h3 className="text-xl font-semibold">{product.name}</h3>
-                  <p className="mt-2">{product.description || 'No description available.'}</p>
-                  <p className="mt-2 text-lg font-medium">Hourly Price: ${product.rentalPrice}</p>
-                  <p className="mt-1 text-gray-500">Available for {product.availability} hours</p>
-                </div>
+            {currentProducts.map((product) => (
+              <div 
+                key={product.id}
+                onClick={() => {
+                  localStorage.setItem('productId', product.id);
+                  navigate(`/product/${product.id}`);
+                }}
+                className={`bg-white shadow-md rounded-lg p-4 ${product.available ? '' : 'bg-gray-300 opacity-50'}`} // Apply greyed-out styles if unavailable
+              >
+                {product.productImage ? (
+                  <img
+                    src={product.productImage} 
+                    alt={product.name}
+                    className="w-full h-48 object-cover rounded-md mb-4"
+                  />
+                ) : (
+                  <div className="w-full h-48 bg-gray-300 rounded-md mb-4 flex items-center justify-center">
+                    <span>No Image Available</span>
+                  </div>
+                )}
+                <h3 className="text-xl font-semibold">{product.name}</h3>
+                <p className="mt-2">{product.description || 'No description available.'}</p>
+                <p className="mt-2 text-lg font-medium">Hourly Price: ${product.rentalPrice}</p>
+              </div>
             ))}
           </div>
         </div>
