@@ -182,8 +182,6 @@ docker run -d -p 3000:3000 handyshare-frontend
 2. **Email Verification**: After submitting, the user receives an email with a verification link.
 3. **Account Activation**: Clicking the verification link activates the user's account, allowing them to log in.
 
-![User Registration Screenshot](assets/registration_screenshot.png)
-
 ### 2. User Authentication and Login
 
 **Feature**: Registered users can log in using their credentials to access personalized features.
@@ -193,8 +191,6 @@ docker run -d -p 3000:3000 handyshare-frontend
 2. **Authentication**: The user enters their email and password.
 3. **Access Granted**: Upon successful authentication, the user is redirected to the dashboard.
 
-![User Login Screenshot](assets/login_screenshot.png)
-
 ### 3. Product Management
 
 **Feature**: Users can add, view, and delete products they wish to share or rent out.
@@ -203,8 +199,6 @@ docker run -d -p 3000:3000 handyshare-frontend
 1. **Add Product**: The user navigates to the "Add Product" page, fills in product details, and uploads an image.
 2. **View Products**: The user can view a list of all their added products.
 3. **Delete Product**: The user can delete any of their products if they no longer wish to share them.
-
-![Add Product Screenshot](assets/add_product_screenshot.png)
 
 ### 4. Payment Processing
 
@@ -216,8 +210,6 @@ docker run -d -p 3000:3000 handyshare-frontend
 3. **Complete Payment**: The user enters their payment details and completes the transaction.
 4. **Confirmation**: A confirmation message is displayed upon successful payment.
 
-![Payment Screenshot](assets/payment_screenshot.png)
-
 ### 5. Lending Items
 
 **Feature**: Users can lend out items and manage lending status.
@@ -226,8 +218,6 @@ docker run -d -p 3000:3000 handyshare-frontend
 1. **Add Lent Item**: The user adds an item they wish to lend.
 2. **View Lent Items**: The user can view all items they are currently lending out.
 3. **Manage Status**: The user can update the status of any lent item as needed.
-
-![Lending Items Screenshot](assets/lending_items_screenshot.png)
 
 ---
 
