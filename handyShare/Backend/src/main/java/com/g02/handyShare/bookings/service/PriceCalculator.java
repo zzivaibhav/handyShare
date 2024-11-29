@@ -32,12 +32,14 @@ public class PriceCalculator {
         // Only calculate penalty if returnTime is after the grace period
         LocalDateTime gracePeriodEnd = timerEnd.plusMinutes(30);
 
+        float plateFormFees = 0.05f;
+
         if (returnTime.isAfter(gracePeriodEnd)) {
             // Calculate extra time in hours (round up to nearest hour)
             long extraMinutes = Duration.between(gracePeriodEnd, returnTime).toMinutes();
             long extraHours = (extraMinutes + 59) / 60; // Round up minutes to the nearest hour
 
-            double extraPenalty = (product.getRentalPrice()+(0.05 *product.getRentalPrice())) * extraHours;
+            double extraPenalty = (product.getRentalPrice()+(plateFormFees *product.getRentalPrice())) * extraHours;
             borrowInstance.setPenalty(extraPenalty);
             bookingRepository.save(borrowInstance);
             System.out.println("-------------------------------------------------"+extraPenalty);
@@ -48,9 +50,9 @@ public class PriceCalculator {
      }
 
     
-
+     float charge = 0.02f;
     Double initialPrice =  (borrowInstance.getDuration() * product.getRentalPrice())+borrowInstance.getPenalty() ;
-    Double plateFormFees =   initialPrice*0.02;
+    Double plateFormFees =   initialPrice*charge;
     Double price = initialPrice + plateFormFees;
     System.out.println("-----------------------------------------------------------------------------------------"+price);
 

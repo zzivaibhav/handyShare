@@ -22,7 +22,8 @@ public class Controller {
         try {
             return ResponseEntity.ok().body(firebaseService.uploadFile(file, path));
         } catch (IOException e) {
-            return ResponseEntity.status(500).body("File upload failed: " + e.getMessage());
+            int status = 500;
+            return ResponseEntity.status(status).body("File upload failed: " + e.getMessage());
         }
     }
 
@@ -31,7 +32,8 @@ public class Controller {
         try {
             return firebaseService.downloadFile(path);
         } catch (IOException e) {
-            return ResponseEntity.status(500).body(null);
+            int status = 500;
+            return ResponseEntity.status(status).body(null);
         }
     }
 }

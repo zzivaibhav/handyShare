@@ -52,7 +52,7 @@ export default function Login() {
 
   const handleGoogleLogin = async () => {
     try {
-      window.location.href = `${SERVER_URL}/oauth2/authorization/google`;
+      window.location.href = `http://172.17.0.99:3000/oauth2/authorization/google`;
     } catch (err) {
       setError('Failed to initiate Google login. Please try again.');
     }
