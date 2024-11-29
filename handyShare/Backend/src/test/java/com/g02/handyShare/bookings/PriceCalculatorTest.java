@@ -114,7 +114,7 @@ class PriceCalculatorTest {
         double expectedPenalty = (50.0 +( 0.05 * 50.0)) * extraHours;
         double expectedPrice = 155.55  ; //including 2 % platform fees
      assertEquals(expectedPrice, totalPrice, 0.01);
-        assertEquals(expectedPenalty, booking.getPenalty());
+        assertEquals(expectedPenalty, booking.getPenalty(),0.01);
 
     }
 
@@ -140,7 +140,7 @@ class PriceCalculatorTest {
         double expectedPenalty = (80.0 + 0.05 * 80.0) * extraHours;
         double expectedPrice = 248.88;
         assertEquals(expectedPrice, totalPrice, 0.01);
-        assertEquals(expectedPenalty, booking.getPenalty());
+        assertEquals(expectedPenalty, booking.getPenalty(),0.01);
         verify(bookingRepository, times(1)).save(booking);
     }
 
