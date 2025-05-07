@@ -8,6 +8,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import lenderService from '../services/lenderService.js';
 import LenderMap from '../components/LendingPage/LenderMap';
 import AnimatedHeader from '../components/Header.js';
+import LoadingScreen from '../components/common/LoadingScreen';
 
 const ProductPage = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const ProductPage = () => {
   const [reviews, setReviews] = useState([]);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState("");
@@ -33,32 +35,26 @@ const ProductPage = () => {
 
   useEffect(() => {
     const fetchProductDetails = async () => {
-      if (!id || id === 'null') {
-        setError('Invalid product ID.');
-        setLoading(false);
-        return;
-      }
-
+      setLoading(true);
       try {
         const token = localStorage.getItem('token');
+        const [productRes, reviewsRes] = await Promise.all([
+          axios.get(`http://localhost:8080/api/v1/user/product/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true
+          }),
+          axios.get(`http://localhost:8080/api/v1/user/review-product/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true
+          })
+        ]);
 
-        // Fetch product details
-        const productResponse = await axios.get(`http://172.17.0.99:8080/api/v1/user/product/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true
-        });
-        setProduct(productResponse.data);
-
-        // Fetch reviews for the product
-        const reviewsResponse = await axios.get(`http://172.17.0.99:8080/api/v1/user/review-product/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true
-        });
-        setReviews(reviewsResponse.data);
-
-        setLoading(false);
-      } catch (err) {
-        setError('Error loading product details.');
+        setProduct(productRes.data);
+        setReviews(reviewsRes.data);
+        message.success('Product details loaded');
+      } catch (error) {
+        message.error('Failed to load product details');
+      } finally {
         setLoading(false);
       }
     };
@@ -108,6 +104,7 @@ const ProductPage = () => {
       return;
     }
 
+    setActionLoading(true);
     try {
       const token = localStorage.getItem('token');
       const totalAmount = product.rentalPrice * selectedHours;
@@ -126,7 +123,7 @@ const ProductPage = () => {
 
 
       const response = await axios.post(
-        'http://172.17.0.99:8080/api/v1/user/borrowProduct',
+        'http://localhost:8080/api/v1/user/borrowProduct',
         borrowData,
         {
           headers: {
@@ -152,6 +149,8 @@ const ProductPage = () => {
     } catch (error) {
       console.error('Rental error:', error);
       message.error(error.response?.data?.message || 'Failed to process rental request. Please try again.');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -163,7 +162,7 @@ const ProductPage = () => {
     return date <= maxDate;
   };
 
-  if (loading) return <div className="p-8 mt-16 animate-pulse text-blue-600">Loading...</div>;
+  if (loading) return <LoadingScreen tip="Loading product details..." />;
   if (error) return <div className="p-8 mt-16 text-red-500 font-semibold">{error}</div>;
   if (!product) return <div className="p-8 mt-16">Product not found.</div>;
 

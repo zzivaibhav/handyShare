@@ -38,19 +38,15 @@ const LendFormPage = ({ onUpdate }) => {
     const fetchCategories = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${SERVER_URL}/api/v1/user/allProducts`, {
+        const response = await axios.get(`${SERVER_URL}/api/v1/user/allCategories`, {
           headers: {
             Authorization: `Bearer ${token}`
           },
           withCredentials: true
         });
 
-        // Assuming categories can be derived from products
-        const uniqueCategories = response.data
-          .map(product => product.category)
-          .filter((value, index, self) => self.indexOf(value) === index);
-
-        setCategories(uniqueCategories);
+        // The API returns category objects directly
+        setCategories(response.data || []);
       } catch (error) {
         console.error('Error fetching categories:', error);
         message.error('Failed to fetch categories');
@@ -76,7 +72,7 @@ const LendFormPage = ({ onUpdate }) => {
               onChange={(value) => setFormData({ ...formData, category: value })}
             >
               {categories.map((cat) => (
-                <Option key={cat} value={cat}>{cat}</Option>
+                <Option key={cat.categoryId} value={cat.name}>{cat.name}</Option>
               ))}
             </Select>
           </Form.Item>
